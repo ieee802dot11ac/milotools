@@ -1,10 +1,15 @@
 #pragma once
 #ifndef HMXSTUFF_H
 #define HMXSTUFF_H
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+
 #include "hmxref.h"
+#include "hmxenums.h"
+#include "hmxtrans.h"
+
 
 typedef struct {
 	float x;
@@ -12,51 +17,6 @@ typedef struct {
 	float z;
 	float r;
 } HX_SPHERE;
-
-typedef enum
-{
-	kConstraintNone,
-	kConstraintLocalRotate,
-	kConstraintParentWorld,
-	kConstraintLookAtTarget,
-	kConstraintShadowTarget,
-	kConstraintBillboardZ,
-	kConstraintBillboardXZ,
-	kConstraintBillboardXYZ,
-	kConstraintFastBillboardXYZ
-} CONSTRAINT_ENUM; // i'm just stealing shit at this point, sorry cisco
-
-typedef enum
-{
-	kVolumeEmpty,
-	kVolumeTriangles,
-	kVolumeBSP,
-	kVolumeBox
-} VOLUME_ENUM;
-
-typedef enum
-{
-	kMutableNone = 0,
-	kMutableVerts = 31,
-	kMutableFaces = 32,
-	kMutableAll = 63
-} MUTABLE_ENUM;
-
-typedef struct {
-	uint32_t version; // should be 8
-	float localTransMtx[12]; // local transformation matrix
-	float worldTransMtx[12]; // world transformation matrix
-	
-	// i don't even know but trans so based
-	uint32_t transCount;
-	HX_EXTERNAL_REFERENCE* transObjects; // ????? completely optional but if it's there i don't want this thing choking and dying
-
-	// parent mesh stuff
-	CONSTRAINT_ENUM constraint;
-	HX_EXTERNAL_REFERENCE target;
-	bool preserveScale;
-	HX_EXTERNAL_REFERENCE parent;
-} HX_TRANS;
 
 typedef struct {
     float X; // standard coord system
