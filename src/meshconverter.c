@@ -60,8 +60,11 @@ int main(int argc, char **argv)
 	printf("\nftell location (should be 112): %i\n", (int)ftell(hxMeshFile));
 	fread(&hxMeshData.transform.preserveScale, 1, 1, hxMeshFile); 
 	printf("%i\n", hxMeshData.transform.preserveScale); // irrelevant for single files
+	printf("ftell location (should be 113): %i\n", (int)ftell(hxMeshFile));
+	fseek(hxMeshFile, 4, SEEK_CUR);
 	hxMeshData.transform.parent = extref_from_file(hxMeshFile);
 	printf("%i %s\n", hxMeshData.transform.parent.strLen, hxMeshData.transform.parent.refName);
+	printf("ftell location (should be 113 + strLen): %i\n", (int)ftell(hxMeshFile));
 	fread(&hxMeshData.bounding, sizeof(HX_SPHERE), 1, hxMeshFile);
 	printf("xyzr %f %f %f %f\n", hxMeshData.bounding.x, hxMeshData.bounding.y, hxMeshData.bounding.z, hxMeshData.bounding.r);
 	/*
@@ -79,7 +82,7 @@ EXIT_FAILED:
 void print_entire_file(FILE *file)
 {
 	size_t fileLen = 0;
-	char c;
+	int c;
 	while ((c = getc(file)) != EOF) {
 		// dump everything in the file to stdout with binary representation for debugging, newlining every 8 indices
 		fileLen++;
