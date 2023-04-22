@@ -58,8 +58,7 @@ $(LIBBINDIR)/libhmxobj.a: $(LIBOBJECTS)
 	$(AR) $(ARARGS) r $@ $^
 
 run: $(BINDIR)/mconv Box01.mesh
-	echo
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/mconv Box01.mesh
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/mconv Box01.mesh Box01.obj
 
 clean:
 	rm -fr $(BINDIR)/ $(OBJDIR)/

@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdio.h>
 
-#include "common.h"
+#include "hmxcommon.h"
 
 #include "hmxtransform.h"
 #include "hmxreference.h"

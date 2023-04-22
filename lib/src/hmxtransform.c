@@ -1,5 +1,5 @@
 #include "hmxtransform.h"
-#include "common.h"
+#include "hmxcommon.h"
 #include "hmxreference.h"
 #include "iohelper.h"
 #include <stdio.h>

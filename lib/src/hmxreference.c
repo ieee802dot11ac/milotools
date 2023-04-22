@@ -1,4 +1,4 @@
-#include "common.h"
+#include "hmxcommon.h"
 #include "hmxreference.h"
 
 #include <assert.h>

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "common.h"
+#include "hmxcommon.h"
 
 
 typedef struct {

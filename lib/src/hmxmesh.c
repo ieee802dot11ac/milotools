@@ -1,5 +1,5 @@
 #include "hmxmesh.h"
-#include "common.h"
+#include "hmxcommon.h"
 #include "hmxenums.h"
 #include "hmxreference.h"
 #include "hmxtransform.h"
