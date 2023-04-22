@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "include/hmxstuff.h"
+#include "hmxref.h"
+#include "hmxstuff.h"
 
 FILE* hxMeshFile;
 FILE* objtowriteto;
@@ -29,14 +30,14 @@ int main(int argc, char** argv) {
 			// dump everything in the file to stdout with binary representation for debugging, newlining every 8 indices
 			fileLen++;
 			printf(" 0x%02x ", c);
-			printf("%u", (c & 0b10000000 ? 1 : 0));
-			printf("%u", (c & 0b01000000 ? 1 : 0));
-			printf("%u", (c & 0b00100000 ? 1 : 0));
-			printf("%u ", (c & 0b00010000 ? 1 : 0));
-			printf("%u", (c & 0b00001000 ? 1 : 0));
-			printf("%u", (c & 0b00000100 ? 1 : 0));
-			printf("%u", (c & 0b00000010 ? 1 : 0));
-			printf("%u ", (c & 0b00000001 ? 1 : 0));
+			printf("%u", (c & 0x80 ? 1 : 0));
+			printf("%u", (c & 0x40 ? 1 : 0));
+			printf("%u", (c & 0x20 ? 1 : 0));
+			printf("%u", (c & 0x10 ? 1 : 0));
+			printf("%u", (c & 0x08 ? 1 : 0));
+			printf("%u", (c & 0x04 ? 1 : 0));
+			printf("%u", (c & 0x02 ? 1 : 0));
+			printf("%u", (c & 0x01 ? 1 : 0));
 			if (fileLen % 4 == 0) printf("  ");
 			if (fileLen % 8 == 0) printf("\n");
 		} else {
@@ -82,7 +83,7 @@ int main(int argc, char** argv) {
 	fread(&hxMeshData.transform.preserveScale, 1, 1, hxMeshFile); 
 	printf("%i\n", hxMeshData.transform.preserveScale); // irrelevant for single files
 	printf("i have trust issues. ftell: (should be 113) %i\n", (int)ftell(hxMeshFile));
-	hxMeshData.transform.parent = getRefFromFile(hxMeshFile);
+	hxMeshData.transform.parent = extref_from_file(hxMeshFile);
 	printf("%i %s\n", hxMeshData.transform.parent.strLen, hxMeshData.transform.parent.refName);
 	fread(&hxMeshData.bounding, sizeof(HX_SPHERE), 1, hxMeshFile);
 	printf("xyzr %f %f %f %f\n", hxMeshData.bounding.x, hxMeshData.bounding.y, hxMeshData.bounding.z, hxMeshData.bounding.r);

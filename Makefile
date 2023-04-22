@@ -15,7 +15,8 @@ bin/mconv: mkdirs
 	echo "Using compiler $(CC) $(CCARGS)"
 	echo "Using linker $(LD) $(LDARGS)"
 	$(CC) -c $(CCARGS) src/meshconverter.c -o obj/meshconverter.c.o
-	$(LD) $(LDARGS) obj/meshconverter.c.o -o bin/mconv
+	$(CC) -c $(CCARGS) src/hmxref.c -o obj/hmxref.c.o
+	$(LD) $(LDARGS) obj/*.c.o -o bin/mconv
 
 run: bin/mconv Box01.mesh
 	./bin/mconv Box01.mesh

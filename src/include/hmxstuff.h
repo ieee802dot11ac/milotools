@@ -6,26 +6,6 @@
 #include <stdint.h>
 
 typedef struct {
-    uint32_t strLen;
-    char* refName;
-} HX_EXTERNAL_REFERENCE;
-
-HX_EXTERNAL_REFERENCE getRefFromFile(FILE* file) {
-	uint32_t len;
-	HX_EXTERNAL_REFERENCE ret;
-	fread(&len, 4, 1, file);
-	ret.strLen = len;
-	if (len == 0) {
-		ret.refName = (char*)"\0";
-	} else {
-		for (uint32_t i = 0; i < len; i++)
-			ret.refName[i] = fgetc(file);
-	}
-	return ret;
-}
-
-
-typedef struct {
 	float x;
 	float y;
 	float z;
