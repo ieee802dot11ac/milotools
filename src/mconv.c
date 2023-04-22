@@ -10,7 +10,11 @@
 #include "hmxcommon.h"
 #include "hmxreference.h"
 #include "hmx.h"
+#include "hmxobj.h"
 #include "mconv.h"
+
+#define PROGRAM_NAME "HMXOBJConverter"
+#define PROGRAM_VERSION "v0.1.0"
 
 
 int main(int const argc, char const *const *const argv)
@@ -58,20 +62,8 @@ ACCEPT_PATHS:
 		goto EXIT_FAILED;
 	}
 
-	FILE *hxMeshFile;
-	FILE *objtowriteto;
-	HX_MESH_FILE_GH hxMeshData;
-
-	hxMeshFile = fopen(argv[1], "r");
-	if (hxMeshFile == NULL) {
-		fprintf(stderr, "Failed to open file %s: %s\n",
-				argv[1], strerror(errno));
+	if (!convert_hmx_to_obj(argv[1], argv[2]))
 		goto EXIT_FAILED;
-	}
-	// print_entire_file(hxMeshFile);
-
-	hxMeshData = hmx_mesh_load(hxMeshFile);
-	hmx_mesh_print(hxMeshData);
 
 EXIT_SUCCEED:
 	exitCode = EXIT_SUCCESS;
@@ -80,9 +72,33 @@ EXIT_FAILED:
 	return exitCode;
 }
 
+bool convert_hmx_to_obj(char const *const hxFilePath, char const *const objFilePath)
+{
+	FILE *hxMeshFile = fopen(hxFilePath, "r");
+	FILE *objMeshFile = fopen(objFilePath, "w");
+
+	if (hxMeshFile == NULL) {
+		fprintf(stderr, "Failed to open file `%s` for reading: %s\n",
+				hxFilePath, strerror(errno));
+		return false;
+	} else if (objMeshFile == NULL) {
+		fprintf(stderr, "Failed to open file `%s` for writing: %s\n",
+				objFilePath, strerror(errno));
+		return false;
+	}
+
+	HX_MESH_FILE_GH hxMeshData = hmx_mesh_load(hxMeshFile);
+	OBJData obj = obj_from_hmx(hxMeshData);
+
+	fputs("# Generated using " PROGRAM_NAME PROGRAM_VERSION "\n", objMeshFile);
+	obj_write(obj, objMeshFile);
+
+	return true;
+}
+
 void print_help(char const *const fileName, FILE *const writeTo)
 {
-	fputs("HMXOBJConverter v0.1.0\n\n", writeTo);
+	fputs(PROGRAM_NAME PROGRAM_VERSION"\n\n", writeTo);
 
 	fprintf(writeTo, "%s [-h | --help]: Show this help text.\n", fileName);
 	fprintf(writeTo, "%s <hmx_mesh_input> <obj_output>: Convert hmx mesh to obj file.\n", fileName);

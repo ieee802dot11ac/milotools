@@ -16,6 +16,7 @@ extern "C" {
 size_t fsize(FILE *file);
 void print_entire_file(FILE *file);
 void print_help(char const *const fileName, FILE *const writeTo);
+bool convert_hmx_to_obj(char const *const hxFilePath, char const *const objFilePath);
 
 INLINE bool streq(char const *const lhs, char const *const rhs)
 {
