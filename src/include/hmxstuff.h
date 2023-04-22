@@ -1,6 +1,7 @@
 #pragma once
 #ifndef HMXSTUFF_H
 #define HMXSTUFF_H
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -9,37 +10,55 @@ typedef struct {
     char* refName;
 } HX_EXTERNAL_REFERENCE;
 
-typedef struct HX_SPHERE {
+HX_EXTERNAL_REFERENCE getRefFromFile(FILE* file) {
+	uint32_t len;
+	HX_EXTERNAL_REFERENCE ret;
+	fread(&len, 4, 1, file);
+	ret.strLen = len;
+	if (len == 0) {
+		ret.refName = (char*)"\0";
+	} else {
+		for (uint32_t i = 0; i < len; i++)
+			ret.refName[i] = fgetc(file);
+	}
+	return ret;
+}
+
+
+typedef struct {
 	float x;
 	float y;
 	float z;
 	float r;
 } HX_SPHERE;
 
-typedef enum {
-    kConstraintNone,
-    kConstraintLocalRotate,
-    kConstraintParentWorld,
-    kConstraintLookAtTarget,
-    kConstraintShadowTarget,
-    kConstraintBillboardZ,
-    kConstraintBillboardXZ,
-    kConstraintBillboardXYZ,
-    kConstraintFastBillboardXYZ
+typedef enum
+{
+	kConstraintNone,
+	kConstraintLocalRotate,
+	kConstraintParentWorld,
+	kConstraintLookAtTarget,
+	kConstraintShadowTarget,
+	kConstraintBillboardZ,
+	kConstraintBillboardXZ,
+	kConstraintBillboardXYZ,
+	kConstraintFastBillboardXYZ
 } CONSTRAINT_ENUM; // i'm just stealing shit at this point, sorry cisco
 
-typedef enum {
-    kVolumeEmpty,
-    kVolumeTriangles,
-    kVolumeBSP,
-    kVolumeBox
+typedef enum
+{
+	kVolumeEmpty,
+	kVolumeTriangles,
+	kVolumeBSP,
+	kVolumeBox
 } VOLUME_ENUM;
 
-typedef enum {
-    kMutableNone = 0,
-    kMutableVerts = 31,
-    kMutableFaces = 32,
-    kMutableAll = 63
+typedef enum
+{
+	kMutableNone = 0,
+	kMutableVerts = 31,
+	kMutableFaces = 32,
+	kMutableAll = 63
 } MUTABLE_ENUM;
 
 typedef struct {
@@ -93,12 +112,9 @@ typedef struct {
 typedef struct {
 	// starting stuff
 	uint32_t version; // should be 25
-	HX_TRANS location;
+	HX_TRANS transform; // love me some 3d environments
 
-	// ????? idk bullet makes me crave death
-	uint32_t alwaysOne;
-	uint8_t prollyABool;
-	uint32_t ignoreForNow;
+	// bounding stuff. textures. fun times!
 	HX_SPHERE bounding;
 	HX_EXTERNAL_REFERENCE matName;
 

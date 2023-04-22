@@ -1,4 +1,5 @@
 all: bin/mconv
+cleanRun: clean run
 
 CC := gcc
 CCARGS := -Wall -Wextra -Wpedantic -Isrc/include/
