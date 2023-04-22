@@ -1,4 +1,4 @@
-all: bin/meshconverter
+all: clean bin/meshconverter run
 
 bin/meshconverter:
 	mkdir -p bin/
