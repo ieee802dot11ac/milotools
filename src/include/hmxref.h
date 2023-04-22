@@ -1,4 +1,4 @@
-// hmxref.h - HMX External Reference structure and associated functions
+// hmxref.h - Harmonix External Reference structure and associated functions
 #ifndef HMXREF_H
 #define HMXREF_H
 #ifdef __cplusplus
