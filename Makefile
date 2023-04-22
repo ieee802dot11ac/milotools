@@ -1,2 +1,3 @@
 default:
-	gcc meshconverter.c -o meshconverter
+	mkdir -p bin/
+	gcc -g meshconverter.c -o bin/meshconverter
