@@ -67,22 +67,23 @@ int main(int argc, char** argv) {
 		if (i % 4 == 0) printf("\n");
 		printf("%f ", hxMeshData.transform.worldTransMtx[i]);
 	}
-	printf("\n");
+	printf("\nftell location (should be 104): %i\n", (int)ftell(hxMeshFile));
 	fread(&hxMeshData.transform.transCount, 4, 1, hxMeshFile);
 	printf("%i\n", hxMeshData.transform.transCount);
 	if (hxMeshData.transform.transCount) { // i *do not* want to have to deal with these right now
 		printf("fak\n"); 
 		return -1;
 	}
+	printf("\nftell location (should be 108): %i\n", (int)ftell(hxMeshFile));
 	fread(&hxMeshData.transform.constraint, 4, 1, hxMeshFile);
 	printf("%i\n", hxMeshData.transform.constraint);
 	if (hxMeshData.transform.constraint) { // i'm just lazy
 		printf("fak 2\n"); 
 		return -1;
 	}
+	printf("\nftell location (should be 112): %i\n", (int)ftell(hxMeshFile));
 	fread(&hxMeshData.transform.preserveScale, 1, 1, hxMeshFile); 
 	printf("%i\n", hxMeshData.transform.preserveScale); // irrelevant for single files
-	printf("i have trust issues. ftell: (should be 113) %i\n", (int)ftell(hxMeshFile));
 	hxMeshData.transform.parent = extref_from_file(hxMeshFile);
 	printf("%i %s\n", hxMeshData.transform.parent.strLen, hxMeshData.transform.parent.refName);
 	fread(&hxMeshData.bounding, sizeof(HX_SPHERE), 1, hxMeshFile);
