@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
         printf("%f ", hxMeshData.location.worldTransMtx[i]);
     }
     printf("\n");
-    for (int i = 0; i < hxMeshData.vertCount; i++) {
+    for (uint32_t i = 0; i < hxMeshData.vertCount; i++) {
         printf("vert index %i: x %f y %f z %f", i, hxMeshData.vertTable[i].X, hxMeshData.vertTable[i].Y, hxMeshData.vertTable[i].Z);
     }
     fcloseall();

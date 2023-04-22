@@ -1,0 +1,11 @@
+# Build config
+# Compiler:
+# CC:=gcc
+# CCARGS:=
+
+# Linker:
+# LD:=ld
+# LDARGS:=
+
+
+# vim:set filetype=make:

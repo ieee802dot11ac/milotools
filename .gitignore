@@ -1,5 +1,9 @@
 # Binary
 bin/
+obj/
 
 # Core dumps
 vgcore.*
+
+# Clang compile commands
+compile_commands.json
