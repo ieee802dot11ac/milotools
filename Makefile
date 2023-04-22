@@ -7,6 +7,8 @@ CCARGS := -Wall -Wextra -Wpedantic -Isrc/include/ -g
 LD := gcc
 LDARGS := 
 
+.PHONY: genclang run clean mkdirs
+
 genclang: mkdirs
 	bear -- clang -c $(CCARGS) src/meshconverter.c -o obj/meshconverter.c.o
 	rm obj/meshconverter.c.o
