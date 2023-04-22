@@ -14,6 +14,7 @@ typedef struct {
 
 
 HX_TRIANGLE hmx_triangle_load(FILE *file);
+void hmx_triangle_print(HX_TRIANGLE triangle);
 
 
 #ifdef __cplusplus

@@ -17,6 +17,7 @@ typedef struct {
 
 
 HX_SPHERE hmx_primitive_sphere_load(FILE *file);
+void hmx_primitive_sphere_print(HX_SPHERE sphere);
 
 
 #ifdef __cplusplus

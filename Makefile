@@ -26,6 +26,7 @@ bin/mconv: mkdirs
 	$(LD) $(LDARGS) obj/*.c.o -o bin/mconv
 
 run: bin/mconv Box01.mesh
+	echo
 	./bin/mconv Box01.mesh
 
 clean:

@@ -1,5 +1,6 @@
 #include "hmxmesh.h"
 #include "common.h"
+#include "hmxenums.h"
 #include "hmxreference.h"
 #include "hmxtransform.h"
 #include "hmxvertex.h"
@@ -44,11 +45,59 @@ HX_MESH_FILE_GH hmx_mesh_load(FILE *file)
 	return mesh;
 }
 
-void hmx_mesh_print(HX_MESH_FILE_GH meshData)
+void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 {
-	printf("VERSION: %u\n", meshData.version);
-	puts("TRANSFORM:{");
-	hmx_transform_print(meshData.transform);
+	printf("VERSION: %u\n", mesh.version);
+
+	puts("TRANSFORM: {");
+	hmx_transform_print(mesh.transform);
 	puts("}");
-	//puts("BOUNDING:");
+
+	fputs("BOUNDING: ", stdout);
+	hmx_primitive_sphere_print(mesh.bounding);
+
+	fputs("_unknown0: [", stdout);
+	for (u32 i = 0; i < 9; ++i) {
+		printf("%u", mesh._unknown0[i]);
+		if (i != 8)
+			fputs(", ", stdout);
+	}
+	puts("]");
+
+	fputs("MATERIAL: ", stdout);
+	hmx_reference_print(mesh.matName);
+	putchar('\n');
+
+	fputs("GEOMETRY_OWNER: ", stdout);
+	hmx_reference_print(mesh.geometryOwner);
+	putchar('\n');
+
+	printf("MUTABLE_PARTS: %s\n", MUTABLE_ENUM_NAME[mesh.mutableParts]);
+	printf("VOLUME: %s\n", VOLUME_ENUM_NAME[mesh.volume]);
+
+	printf("BSP: %u\n", mesh.bsp);
+
+	fputs("VERTICES: [", stdout);
+	for (u32 i = 0; i < mesh.vertCount; ++i) {
+		hmx_vertex_print(mesh.vertTable[i]);
+		if (i != mesh.vertCount - 1)
+			fputs(", ", stdout);
+	}
+	puts("]");
+
+	fputs("TRIANGLES: [", stdout);
+	for (u32 i = 0; i < mesh.triCount; ++i) {
+		hmx_triangle_print(mesh.triTable[i]);
+		if (i != mesh.triCount - 1)
+			fputs(", ", stdout);
+	}
+	puts("]");
+
+	fputs("_unknown1: [", stdout);
+	for (u32 i = 0; i < 16*4; ++i) {
+		printf("%u", mesh._unknown1[i]);
+		if (i != 16*4-1)
+			fputs(", ", stdout);
+	}
+	puts("]");
 }

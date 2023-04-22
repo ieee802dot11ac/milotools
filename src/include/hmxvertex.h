@@ -25,6 +25,7 @@ typedef struct {
 
 
 HX_VERTEX hmx_vertex_load(FILE *file);
+void hmx_vertex_print(HX_VERTEX vertex);
 
 
 #ifdef __cplusplus
