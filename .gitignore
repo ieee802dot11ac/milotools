@@ -2,7 +2,7 @@
 bin/
 obj/
 
-# Core dumps
+# Valgrind core dumps
 vgcore.*
 
 # Clang compile commands
