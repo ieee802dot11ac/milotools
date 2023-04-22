@@ -16,24 +16,34 @@ typedef enum
 	kConstraintBillboardZ,
 	kConstraintBillboardXZ,
 	kConstraintBillboardXYZ,
-	kConstraintFastBillboardXYZ
+	kConstraintFastBillboardXYZ,
+	CONSTRAINT_ENUM_AMOUNT
 } CONSTRAINT_ENUM; // i'm just stealing shit at this point, sorry cisco
+
+extern char const *const CONSTRAINT_ENUM_NAME[CONSTRAINT_ENUM_AMOUNT];
 
 typedef enum
 {
 	kVolumeEmpty,
 	kVolumeTriangles,
 	kVolumeBSP,
-	kVolumeBox
+	kVolumeBox,
+	VOLUME_ENUM_AMOUNT
 } VOLUME_ENUM;
+
+extern char const *const VOLUME_ENUM_NAME[VOLUME_ENUM_AMOUNT];
 
 typedef enum
 {
 	kMutableNone = 0,
 	kMutableVerts = 31,
 	kMutableFaces = 32,
-	kMutableAll = 63
+	kMutableAll = 63,
 } MUTABLE_ENUM;
+
+#define MUTABLE_ENUM_AMOUNT 4
+
+extern char const *const MUTABLE_ENUM_NAME[MUTABLE_ENUM_AMOUNT];
 
 
 #ifdef __cplusplus

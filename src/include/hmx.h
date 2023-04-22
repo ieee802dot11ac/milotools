@@ -9,10 +9,10 @@ extern "C" {
 #include "hmxenums.h"
 #include "hmxmesh.h"
 #include "hmxprimitive.h"
-#include "hmxref.h"
-#include "hmxtrans.h"
-#include "hmxtri.h"
-#include "hmxvert.h"
+#include "hmxreference.h"
+#include "hmxtransform.h"
+#include "hmxtriangle.h"
+#include "hmxvertex.h"
 
 
 #ifdef __cplusplus

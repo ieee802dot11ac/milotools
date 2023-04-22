@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "hmxref.h"
+#include "hmxreference.h"
 #include "hmx.h"
 
 FILE *hxMeshFile;
@@ -22,12 +22,15 @@ int main(int argc, char **argv)
 	}
 
 	hxMeshFile = fopen(argv[1], "r");
-	print_entire_file(hxMeshFile);
-
 	if (hxMeshFile == NULL) {
 		printf("couldn't open file, so sad\n"); 
 		goto EXIT_FAILED;
 	}
+	print_entire_file(hxMeshFile);
+
+	hxMeshData = hmx_mesh_load(hxMeshFile);
+	hmx_mesh_print(hxMeshData);
+/*
 	fread(&hxMeshData, 4, 2, hxMeshFile);
 	if (hxMeshData.version != 25) {
 		printf("bad file, so sad\n"); 

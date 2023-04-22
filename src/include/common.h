@@ -10,6 +10,13 @@ extern "C" {
 #include <stdint.h>
 #include <stdio.h>
 
+#define INLINE static inline
+
+#define ALIGN(n) __attribute__((aligned(n)))
+#define PACKED __attribute__((packed))
+
+#define DEPRECATED __attribute__((deprecated))
+
 typedef void      u0;
 
 typedef uint8_t   u8;
