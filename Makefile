@@ -2,7 +2,7 @@ all: bin/mconv
 cleanRun: clean run
 
 CC := gcc
-CCARGS := -Wall -Wextra -Wpedantic -Isrc/include/
+CCARGS := -Wall -Wextra -Wpedantic -Isrc/include/ -g
 
 LD := gcc
 LDARGS := 
@@ -19,6 +19,10 @@ bin/mconv: mkdirs
 	$(CC) -c $(CCARGS) src/hmxenums.c -o obj/hmxenums.c.o
 	$(CC) -c $(CCARGS) src/hmxreference.c -o obj/hmxreference.c.o
 	$(CC) -c $(CCARGS) src/hmxtransform.c -o obj/hmxtransform.c.o
+	$(CC) -c $(CCARGS) src/hmxprimitive.c -o obj/hmxprimitive.c.o
+	$(CC) -c $(CCARGS) src/hmxvertex.c -o obj/hmxvertex.c.o
+	$(CC) -c $(CCARGS) src/hmxtriangle.c -o obj/hmxtriangle.c.o
+#	$(CC) -c $(CCARGS) src/hmx.c -o obj/hmx.c.o
 	$(LD) $(LDARGS) obj/*.c.o -o bin/mconv
 
 run: bin/mconv Box01.mesh

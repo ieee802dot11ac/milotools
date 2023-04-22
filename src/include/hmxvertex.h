@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+
+
 typedef struct {
     float x; // standard coord system
     float y; // standard coord system
@@ -19,6 +22,10 @@ typedef struct {
     float u; // texture space stuff
     float v; // texture space stuff
 } HX_VERTEX;
+
+
+HX_VERTEX hmx_vertex_load(FILE *file);
+
 
 #ifdef __cplusplus
 } /* extern "C" */

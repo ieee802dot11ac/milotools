@@ -23,6 +23,12 @@ INLINE u8 iohelper_readu8(FILE *fp)
 	BASIC_READ(u8);
 }
 
+INLINE float iohelper_readf(FILE *fp)
+{
+	BASIC_READ(float);
+}
+
+
 #undef BASIC_READ
 
 #ifdef __cplusplus
