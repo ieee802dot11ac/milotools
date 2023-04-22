@@ -1,0 +1,5 @@
+# Binary
+bin/
+
+# Core dumps
+vgcore.*
