@@ -106,7 +106,7 @@ size_t fsize(FILE *file)
 {
 	size_t curr = ftell(file);
 	fseek(file, 0, SEEK_END);
-	size_t len = (uint64_t)ftell(file);
+	size_t len = ftell(file);
 	fseek(file, curr, SEEK_SET);
 	return len;
 }

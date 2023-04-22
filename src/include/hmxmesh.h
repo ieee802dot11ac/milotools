@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct {
 	// starting stuff
-	uint32_t version; // should be 25
+	u32 version; // should be 25
 	HX_TRANS transform; // love me some 3d environments
 
 	// bounding stuff. textures. fun times!
@@ -28,11 +28,11 @@ typedef struct {
 	HX_EXTERNAL_REFERENCE geometryOwner;
 	MUTABLE_ENUM mutableParts;
 	VOLUME_ENUM volume;
-	uint8_t bsp; // no clue
+	u8 bsp; // no clue
 	
-	uint32_t vertCount;
+	u32 vertCount;
 	HX_VERT_GH* vertTable;
-	uint32_t faceCount;
+	u32 faceCount;
 	HX_TRI_GH* faceTable;
 } HX_MESH_FILE_GH;
 

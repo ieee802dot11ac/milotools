@@ -5,11 +5,11 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#include "common.h"
 #include <stdio.h>
 
 typedef struct {
-    uint32_t strLen;
+    u32 strLen;
     char *refName;
 } HX_EXTERNAL_REFERENCE;
 
