@@ -1,38 +1,40 @@
-all: bin/mconv
-cleanRun: clean run
+SRCDIR := src/
+
+OBJDIR := obj/
+BINDIR := bin/
+OUTLIBDIR := $(BINDIR)/lib/
+
+SOURCES := $(shell find "$(SRCDIR)/" -name "*.c")
+OBJECTS := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.c.o)
 
 CC := gcc
-CCARGS := -Wall -Wextra -Wpedantic -Isrc/include/ -g
+CCARGS := -Wall -Wextra -Wpedantic -I$(SRCDIR)/include/ -g
 
 LD := gcc
 LDARGS := 
 
-.PHONY: genclang run clean mkdirs
+.PHONY: all cleanRun genclang run clean mkdirs
+
+all: mkdirs $(BINDIR)/mconv
+cleanRun: clean run
 
 genclang: mkdirs
-	bear -- clang -c $(CCARGS) src/meshconverter.c -o obj/meshconverter.c.o
-	rm obj/meshconverter.c.o
+	bear -- clang -c $(CCARGS) $(SRCDIR)/meshconverter.c -o $(OBJDIR)/meshconverter.c.o
+	rm $(OBJDIR)/meshconverter.c.o
 
-bin/mconv: mkdirs
+$(OBJDIR)/%.c.o: $(SRCDIR)/%.c
+	mkdir -p "$(dir $@)"
+	$(CC) -c $(CCARGS) $< -o $@
+
+$(BINDIR)/mconv: $(OBJECTS)
+	mkdir -p "$(dir $@)"
 	echo "Using compiler $(CC) $(CCARGS)"
 	echo "Using linker $(LD) $(LDARGS)"
-	$(CC) -c $(CCARGS) src/meshconverter.c -o obj/meshconverter.c.o
-	$(CC) -c $(CCARGS) src/hmxmesh.c -o obj/hmxmesh.c.o
-	$(CC) -c $(CCARGS) src/hmxenums.c -o obj/hmxenums.c.o
-	$(CC) -c $(CCARGS) src/hmxreference.c -o obj/hmxreference.c.o
-	$(CC) -c $(CCARGS) src/hmxtransform.c -o obj/hmxtransform.c.o
-	$(CC) -c $(CCARGS) src/hmxprimitive.c -o obj/hmxprimitive.c.o
-	$(CC) -c $(CCARGS) src/hmxvertex.c -o obj/hmxvertex.c.o
-	$(CC) -c $(CCARGS) src/hmxtriangle.c -o obj/hmxtriangle.c.o
-#	$(CC) -c $(CCARGS) src/hmx.c -o obj/hmx.c.o
-	$(LD) $(LDARGS) obj/*.c.o -o bin/mconv
+	$(LD) $(LDARGS) $^ -o $@
 
-run: bin/mconv Box01.mesh
+run: $(BINDIR)/mconv Box01.mesh
 	echo
-	./bin/mconv Box01.mesh
+	./$(BINDIR)/mconv Box01.mesh
 
 clean:
-	rm -fr bin/ obj/
-
-mkdirs:
-	mkdir -p bin/ obj/
+	rm -fr $(BINDIR)/ $(OBJDIR)/ $(OUTLIBDIR)/
