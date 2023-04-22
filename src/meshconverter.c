@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "hmxref.h"
-#include "hmxstuff.h"
+#include "hmx.h"
 
 FILE *hxMeshFile;
 FILE *objtowriteto;
