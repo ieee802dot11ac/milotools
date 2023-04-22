@@ -1,6 +1,6 @@
 # Binary
-bin/
-obj/
+*/bin/
+*/obj/
 
 # Valgrind core dumps
 vgcore.*
