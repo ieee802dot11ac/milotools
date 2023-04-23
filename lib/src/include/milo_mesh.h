@@ -1,19 +1,19 @@
-// hmxmesh.h - Harmonix mesh structs and functions
-#ifndef HMXMESH_H
-#define HMXMESH_H
+// milo_mesh.h - Harmonix mesh structs and functions
+#ifndef MILO_MESH_H
+#define MILO_MESH_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stdio.h>
 
-#include "hmxcommon.h"
+#include "milo_common.h"
 
-#include "hmxtransform.h"
-#include "hmxstring.h"
-#include "hmxprimitive.h"
-#include "hmxvertex.h"
-#include "hmxtriangle.h"
+#include "milo_transform.h"
+#include "milo_string.h"
+#include "milo_primitive.h"
+#include "milo_vertex.h"
+#include "milo_triangle.h"
 
 
 typedef enum {
@@ -53,31 +53,31 @@ INLINE char *MUTABLE_ENUM_name(MUTABLE_ENUM mut)
 typedef struct {
 	// starting stuff
 	u32 version; // should be 25
-	HX_TRANSFORM transform; // love me some 3d environments
+	MILO_TRANSFORM transform; // love me some 3d environments
 
 	// bounding stuff. textures. fun times!
-	HX_SPHERE bounding;
+	MILO_SPHERE bounding;
 
 	u8 _unknown0[9];
 
-	HX_STRING matName;
+	MILO_STRING matName;
 
 	// "geometry owner" (???????)
-	HX_STRING geometryOwner;
+	MILO_STRING geometryOwner;
 	MUTABLE_ENUM mutableParts;
 	VOLUME_ENUM volume;
 	u8 bsp; // no clue
 	
 	u32 vertCount;
-	HX_VERTEX* vertTable;
+	MILO_VERTEX* vertTable;
 	u32 triCount;
-	HX_TRIANGLE* triTable;
+	MILO_TRIANGLE* triTable;
 
 	u8 _unknown1[16*4];
-} HX_MESH_FILE_GH;
+} MILO_MESH_FILE_GH;
 
-HX_MESH_FILE_GH hmx_mesh_load(FILE *file);
-void hmx_mesh_print(HX_MESH_FILE_GH meshData);
+MILO_MESH_FILE_GH milo_mesh_load(FILE *file);
+void milo_mesh_print(MILO_MESH_FILE_GH meshData);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -1,30 +1,30 @@
-#include "hmxtexture.h"
-#include "hmxstring.h"
+#include "milo_texture.h"
+#include "milo_string.h"
 #include "iohelper.h"
-#include "hmxbitmap.h"
+#include "milo_bitmap.h"
 #include <stdio.h>
 
-HX_TEXTURE hmx_texture_load(FILE *file)
+MILO_TEXTURE milo_texture_load(FILE *file)
 {
-	HX_TEXTURE tex;
+	MILO_TEXTURE tex;
 	tex.version = iohelper_readu32(file);
 
 	tex.width = iohelper_readu32(file);
 	tex.height = iohelper_readu32(file);
 	tex.bpp = iohelper_readu32(file);
 
-	tex.bmpName = hmx_string_load(file);
+	tex.bmpName = milo_string_load(file);
 
 	tex.index_f = iohelper_readf(file);
 	tex.index = iohelper_readu32(file);
 
 	tex.useExtPath = (iohelper_readu8(file) != 0);
 
-	tex.bmp = hmx_bitmap_load(file);
+	tex.bmp = milo_bitmap_load(file);
 	return tex;
 }
 
-void hmx_texture_print(HX_TEXTURE tex)
+void milo_texture_print(MILO_TEXTURE tex)
 {
 	printf("Version: %u\n", tex.version);
 
@@ -33,7 +33,7 @@ void hmx_texture_print(HX_TEXTURE tex)
 	printf("BPP: %u\n", tex.bpp);
 
 	fputs("BMP Name: ", stdout);
-	hmx_string_print(tex.bmpName);
+	milo_string_print(tex.bmpName);
 	putchar('\n');
 
 	printf("IndexF: %f\n", tex.index_f);
@@ -46,6 +46,6 @@ void hmx_texture_print(HX_TEXTURE tex)
 	}
 
 	puts("Bitmap: {");
-	hmx_bitmap_print(tex.bmp);
+	milo_bitmap_print(tex.bmp);
 	puts("}");
 }

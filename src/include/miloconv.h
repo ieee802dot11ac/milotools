@@ -1,6 +1,6 @@
-// hxconv.h - Harmonix converter (main) header file
-#ifndef HXCONV_H
-#define HXCONV_H
+// miloconv.h - Milo converter (main) header file
+#ifndef miloCONV_H
+#define miloCONV_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -11,7 +11,7 @@ extern "C" {
 #include <stdio.h>
 #undef _GNU_SOURCE
 #include <string.h>
-#include "hmxcommon.h"
+#include "milo_common.h"
 
 #define BIT(n) (1 << n)
 #define BITS(length) (BIT(length) - 1)
@@ -34,8 +34,8 @@ extern "C" {
 
 typedef enum {
 	IFILETYPE_UNKNOWN	= -1,
-	IFILETYPE_HX_MESH	= TYPE_MESH | FORMAT(0),
-	IFILETYPE_HX_TEX	= TYPE_TEX  | FORMAT(0),
+	IFILETYPE_MILO_MESH	= TYPE_MESH | FORMAT(0),
+	IFILETYPE_MILO_TEX	= TYPE_TEX  | FORMAT(0),
 } SUPPORTED_INPUT_FILETYPE;
 
 typedef enum {
@@ -48,9 +48,9 @@ size_t fsize(FILE *file);
 void print_entire_file(FILE *file);
 void print_help(char const *const fileName, FILE *const writeTo);
 
-bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePath);
+bool conv_milotex_to_pam(char const *const miloFilePath, char const *const pamFilePath);
 
-bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath);
+bool conv_milomesh_to_obj(char const *const miloFilePath, char const *const objFilePath);
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg);
 SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg);

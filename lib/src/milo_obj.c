@@ -1,53 +1,53 @@
-#include "hmxobj.h"
-#include "hmxcommon.h"
-#include "hmxmesh.h"
-#include "hmxtriangle.h"
-#include "hmxvertex.h"
+#include "milo_obj.h"
+#include "milo_common.h"
+#include "milo_mesh.h"
+#include "milo_triangle.h"
+#include "milo_vertex.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 
-OBJData obj_from_hmx(HX_MESH_FILE_GH const hxmesh)
+OBJData obj_from_milo(MILO_MESH_FILE_GH const milomesh)
 {
 	OBJData objmesh = {
-		.vertexCount	= hxmesh.vertCount,
-		.vertices	= malloc(hxmesh.vertCount * sizeof(Vector3f)),
-		.normalsCount	= hxmesh.vertCount,
-		.normals	= malloc(hxmesh.vertCount * sizeof(Vector3f)),
-		.texVertexCount	= hxmesh.vertCount,
-		.texVertices	= malloc(hxmesh.vertCount * sizeof(Vector2f)),
-		.faceCount	= hxmesh.triCount,
-		.faces		= malloc(hxmesh.triCount * sizeof(OBJFace)),
+		.vertexCount	= milomesh.vertCount,
+		.vertices	= malloc(milomesh.vertCount * sizeof(Vector3f)),
+		.normalsCount	= milomesh.vertCount,
+		.normals	= malloc(milomesh.vertCount * sizeof(Vector3f)),
+		.texVertexCount	= milomesh.vertCount,
+		.texVertices	= malloc(milomesh.vertCount * sizeof(Vector2f)),
+		.faceCount	= milomesh.triCount,
+		.faces		= malloc(milomesh.triCount * sizeof(OBJFace)),
 	};
 
-	HX_VERTEX *hxverts = hxmesh.vertTable;
-	for (size_t i = 0; i < hxmesh.vertCount; ++i) {
-		HX_VERTEX hxvert = hxverts[i];
-		Vector3f vertex =	{ .x = hxvert.x,
-					  .y = hxvert.y,
-					  .z = hxvert.z };
+	MILO_VERTEX *miloverts = milomesh.vertTable;
+	for (size_t i = 0; i < milomesh.vertCount; ++i) {
+		MILO_VERTEX milovert = miloverts[i];
+		Vector3f vertex =	{ .x = milovert.x,
+					  .y = milovert.y,
+					  .z = milovert.z };
 
-		Vector3f normal =	{ .x = hxvert.normX,
-					  .y = hxvert.normY,
-					  .z = hxvert.normZ };
+		Vector3f normal =	{ .x = milovert.normX,
+					  .y = milovert.normY,
+					  .z = milovert.normZ };
 
-		Vector4f color =	{ .r = hxvert.r,
-					  .g = hxvert.g,
-					  .b = hxvert.b,
-					  .a = hxvert.a };
+		Vector4f color =	{ .r = milovert.r,
+					  .g = milovert.g,
+					  .b = milovert.b,
+					  .a = milovert.a };
 
-		Vector2f tex =		{ .u = hxvert.u,
-					  .v = hxvert.v };
+		Vector2f tex =		{ .u = milovert.u,
+					  .v = milovert.v };
 
 		objmesh.vertices[i] = vertex;
 		objmesh.normals[i] = normal;
 		objmesh.texVertices[i] = tex;
 	}
 
-	HX_TRIANGLE *hxtris = hxmesh.triTable;
-	for (size_t i = 0; i < hxmesh.triCount; ++i) {
-		HX_TRIANGLE hxtri = hxtris[i];
+	MILO_TRIANGLE *milotris = milomesh.triTable;
+	for (size_t i = 0; i < milomesh.triCount; ++i) {
+		MILO_TRIANGLE milotri = milotris[i];
 		objmesh.faces[i] = (OBJFace) {
 			.vertexIdCount		= 3,
 			.vertexIds		= malloc(sizeof(ssize_t) * 3),
@@ -58,9 +58,9 @@ OBJData obj_from_hmx(HX_MESH_FILE_GH const hxmesh)
 		};
 
 		for (size_t j = 0; j < 3; ++j) {
-			objmesh.faces[i].vertexIds[j] = hxtri.vert[j] + 1;
-			objmesh.faces[i].texVertexIds[j] = hxtri.vert[j] + 1;
-			objmesh.faces[i].normalIds[j] = hxtri.vert[j] + 1;
+			objmesh.faces[i].vertexIds[j] = milotri.vert[j] + 1;
+			objmesh.faces[i].texVertexIds[j] = milotri.vert[j] + 1;
+			objmesh.faces[i].normalIds[j] = milotri.vert[j] + 1;
 		}
 	}
 

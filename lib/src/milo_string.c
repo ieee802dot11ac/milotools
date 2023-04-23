@@ -1,14 +1,14 @@
-#include "hmxcommon.h"
-#include "hmxstring.h"
+#include "milo_common.h"
+#include "milo_string.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-HX_STRING hmx_string_load(FILE *file)
+MILO_STRING milo_string_load(FILE *file)
 {
 	u32 len;
-	HX_STRING ret;
+	MILO_STRING ret;
 	fread(&len, 4, 1, file);
 
 	ret.strLen = len;
@@ -24,7 +24,7 @@ HX_STRING hmx_string_load(FILE *file)
 	return ret;
 }
 
-void hmx_string_print(HX_STRING ref)
+void milo_string_print(MILO_STRING ref)
 {
 	putchar('"');
 	for (u32 i = 0; i < ref.strLen; ++i)

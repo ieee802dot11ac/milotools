@@ -1,11 +1,11 @@
-// iohelper.h - Helpers for FILE IO!
-#ifndef IOHELPER_H
-#define IOHELPER_H
+// milo_iohelper.h - Helpers for file I/O
+#ifndef MILO_IOHELPER_H
+#define MILO_IOHELPER_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "hmxcommon.h"
+#include "milo_common.h"
 #include <stdio.h>
 
 #define BASIC_READ(type) \

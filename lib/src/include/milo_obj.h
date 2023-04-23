@@ -1,13 +1,13 @@
-// hmxobj.h - Object file format, but more binary
-#ifndef HMXOBJ_H
-#define HMXOBJ_H
+// milo_obj.h - Object file format, but more binary
+#ifndef MILO_OBJ_H
+#define MILO_OBJ_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stddef.h>
 #include <stdio.h>
-#include "hmxmesh.h"
+#include "milo_mesh.h"
 
 
 typedef struct {
@@ -74,7 +74,7 @@ typedef struct {
 	OBJFace *faces;
 } OBJData;
 
-OBJData obj_from_hmx(HX_MESH_FILE_GH const hxmesh);
+OBJData obj_from_milo(MILO_MESH_FILE_GH const milomesh);
 void obj_write(OBJData const mesh, FILE *const write);
 void obj_print(OBJData const mesh);
 

@@ -1,26 +1,26 @@
-#include "hmxmesh.h"
-#include "hmxcommon.h"
-#include "hmxstring.h"
-#include "hmxtransform.h"
-#include "hmxvertex.h"
+#include "milo_mesh.h"
+#include "milo_common.h"
+#include "milo_string.h"
+#include "milo_transform.h"
+#include "milo_vertex.h"
 #include "iohelper.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-HX_MESH_FILE_GH hmx_mesh_load(FILE *file)
+MILO_MESH_FILE_GH milo_mesh_load(FILE *file)
 {
-	HX_MESH_FILE_GH mesh;
+	MILO_MESH_FILE_GH mesh;
 	mesh.version = iohelper_readu32(file);
 
-	mesh.transform = hmx_transform_load(file);
-	mesh.bounding = hmx_primitive_sphere_load(file);
+	mesh.transform = milo_transform_load(file);
+	mesh.bounding = milo_primitive_sphere_load(file);
 
 	for (u32 i = 0; i < 9; ++i)
 		mesh._unknown0[i] = iohelper_readu8(file);
 
-	mesh.matName = hmx_string_load(file);
-	mesh.geometryOwner = hmx_string_load(file);
+	mesh.matName = milo_string_load(file);
+	mesh.geometryOwner = milo_string_load(file);
 
 	mesh.mutableParts = iohelper_readu32(file);
 	mesh.volume = iohelper_readu32(file);
@@ -28,32 +28,32 @@ HX_MESH_FILE_GH hmx_mesh_load(FILE *file)
 	mesh.bsp = iohelper_readu8(file);
 
 	mesh.vertCount = iohelper_readu32(file);
-	mesh.vertTable = malloc(sizeof(HX_VERTEX) * mesh.vertCount);
+	mesh.vertTable = malloc(sizeof(MILO_VERTEX) * mesh.vertCount);
 	assert (mesh.vertTable != NULL);
 	for (u32 i = 0; i < mesh.vertCount; ++i)
-		mesh.vertTable[i] = hmx_vertex_load(file);
+		mesh.vertTable[i] = milo_vertex_load(file);
 
 	mesh.triCount = iohelper_readu32(file);
-	mesh.triTable = malloc(sizeof(HX_VERTEX) * mesh.triCount);
+	mesh.triTable = malloc(sizeof(MILO_VERTEX) * mesh.triCount);
 	assert (mesh.triTable != NULL);
 	for (u32 i = 0; i < mesh.triCount; ++i)
-		mesh.triTable[i] = hmx_triangle_load(file);
+		mesh.triTable[i] = milo_triangle_load(file);
 
 	for (u32 i = 0; i < 16 * 4; ++i)
 		mesh._unknown1[i] = iohelper_readu8(file);
 	return mesh;
 }
 
-void hmx_mesh_print(HX_MESH_FILE_GH mesh)
+void milo_mesh_print(MILO_MESH_FILE_GH mesh)
 {
 	printf("VERSION: %u\n", mesh.version);
 
 	puts("TRANSFORM: {");
-	hmx_transform_print(mesh.transform);
+	milo_transform_print(mesh.transform);
 	puts("}");
 
 	fputs("BOUNDING: ", stdout);
-	hmx_primitive_sphere_print(mesh.bounding);
+	milo_primitive_sphere_print(mesh.bounding);
 
 	fputs("_unknown0: [", stdout);
 	for (u32 i = 0; i < 9; ++i) {
@@ -64,11 +64,11 @@ void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 	puts("]");
 
 	fputs("MATERIAL: ", stdout);
-	hmx_string_print(mesh.matName);
+	milo_string_print(mesh.matName);
 	putchar('\n');
 
 	fputs("GEOMETRY_OWNER: ", stdout);
-	hmx_string_print(mesh.geometryOwner);
+	milo_string_print(mesh.geometryOwner);
 	putchar('\n');
 
 	printf("MUTABLE_PARTS: %s\n", MUTABLE_ENUM_name(mesh.mutableParts));
@@ -78,7 +78,7 @@ void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 
 	fputs("VERTICES: [", stdout);
 	for (u32 i = 0; i < mesh.vertCount; ++i) {
-		hmx_vertex_print(mesh.vertTable[i]);
+		milo_vertex_print(mesh.vertTable[i]);
 		if (i != mesh.vertCount - 1)
 			fputs(", ", stdout);
 	}
@@ -86,7 +86,7 @@ void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 
 	fputs("TRIANGLES: [", stdout);
 	for (u32 i = 0; i < mesh.triCount; ++i) {
-		hmx_triangle_print(mesh.triTable[i]);
+		milo_triangle_print(mesh.triTable[i]);
 		if (i != mesh.triCount - 1)
 			fputs(", ", stdout);
 	}

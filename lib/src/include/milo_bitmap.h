@@ -1,14 +1,14 @@
-// hmxbitmap.h - Harmonix bitmap format
-#ifndef HMXBITMAP_H
-#define HMXBITMAP_H
+// milo_bitmap.h - Milo bitmap format
+#ifndef MILO_BITMAP_H
+#define MILO_BITMAP_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stddef.h>
 #include <stdio.h>
-#include "hmxcommon.h"
-#include "hmxcolor.h"
+#include "milo_common.h"
+#include "milo_color.h"
 
 typedef enum {
 	RGBA = 3,
@@ -50,20 +50,20 @@ typedef struct {
 	u8 padding[19];
 
 	// Neither of these need sizes, since they're calculated from the bpp
-	// and mipmap levels and stuff (see hmx_bitmap_len_color_palette and
-	// hmx_bitmap_len_tex_data).
-	HX_COLOR_8888 *colorPalette;
+	// and mipmap levels and stuff (see milo_bitmap_len_color_palette and
+	// milo_bitmap_len_tex_data).
+	MILO_COLOR_8888 *colorPalette;
 
 	u8 *texData;
-} HX_BITMAP;
+} MILO_BITMAP;
 
 
-INLINE size_t hmx_bitmap_len_color_palette(HX_BITMAP bmp)
+INLINE size_t milo_bitmap_len_color_palette(MILO_BITMAP bmp)
 {
 	return (1 << bmp.bpp);
 }
 
-INLINE size_t hmx_bitmap_len_tex_data(HX_BITMAP bmp)
+INLINE size_t milo_bitmap_len_tex_data(MILO_BITMAP bmp)
 {
 	size_t pixels = 0;
 	for (u8 i = 0; i <= bmp.mipmapLevels; ++i) {
@@ -76,8 +76,8 @@ INLINE size_t hmx_bitmap_len_tex_data(HX_BITMAP bmp)
 	return (pixels * bmp.bpp) / 8;
 }
 
-HX_BITMAP hmx_bitmap_load(FILE *file);
-void hmx_bitmap_print(HX_BITMAP bmp);
+MILO_BITMAP milo_bitmap_load(FILE *file);
+void milo_bitmap_print(MILO_BITMAP bmp);
 
 
 #ifdef __cplusplus

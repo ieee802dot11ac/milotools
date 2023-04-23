@@ -1,13 +1,13 @@
-#include "hmxbitmap.h"
+#include "milo_bitmap.h"
 #include "iohelper.h"
-#include "hmxstring.h"
-#include "hmxcolor.h"
+#include "milo_string.h"
+#include "milo_color.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-HX_BITMAP hmx_bitmap_load(FILE *file)
+MILO_BITMAP milo_bitmap_load(FILE *file)
 {
-	HX_BITMAP bmp;
+	MILO_BITMAP bmp;
 	bmp.version = iohelper_readu8(file);
 
 	bmp.bpp = iohelper_readu8(file);
@@ -23,15 +23,15 @@ HX_BITMAP hmx_bitmap_load(FILE *file)
 
 	fread(bmp.padding, 1, 19, file);
 
-	bmp.colorPalette = malloc(sizeof(HX_COLOR_8888) * hmx_bitmap_len_color_palette(bmp));
-	fread(bmp.colorPalette, sizeof(HX_COLOR_8888), hmx_bitmap_len_color_palette(bmp), file);
-	bmp.texData = malloc(sizeof(u8) * hmx_bitmap_len_tex_data(bmp));
-	fread(bmp.texData, sizeof(u8), hmx_bitmap_len_tex_data(bmp), file);
+	bmp.colorPalette = malloc(sizeof(MILO_COLOR_8888) * milo_bitmap_len_color_palette(bmp));
+	fread(bmp.colorPalette, sizeof(MILO_COLOR_8888), milo_bitmap_len_color_palette(bmp), file);
+	bmp.texData = malloc(sizeof(u8) * milo_bitmap_len_tex_data(bmp));
+	fread(bmp.texData, sizeof(u8), milo_bitmap_len_tex_data(bmp), file);
 
 	return bmp;
 }
 
-void hmx_bitmap_print(HX_BITMAP bmp)
+void milo_bitmap_print(MILO_BITMAP bmp)
 {
 	printf("VERSION: %u\n", bmp.version);
 
@@ -50,9 +50,9 @@ void hmx_bitmap_print(HX_BITMAP bmp)
 	puts("]");
 
 	fputs("COLOR PALETTE: [", stdout);
-	for (size_t i = 0; i < hmx_bitmap_len_color_palette(bmp); ++i) {
-		hmx_color_8888_print(bmp.colorPalette[i]);
-		if (i != hmx_bitmap_len_color_palette(bmp) - 1)
+	for (size_t i = 0; i < milo_bitmap_len_color_palette(bmp); ++i) {
+		milo_color_8888_print(bmp.colorPalette[i]);
+		if (i != milo_bitmap_len_color_palette(bmp) - 1)
 			fputs(", ", stdout);
 	}
 	puts("]");

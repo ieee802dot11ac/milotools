@@ -28,8 +28,8 @@ cleanBuild: clean all
 cleanRun: clean run
 
 genclang: mkdirs
-	bear -- clang -c $(CCARGS) $(SRCDIR)/hxconv.c -o $(OBJDIR)/hxconv.c.o
-	rm $(OBJDIR)/hxconv.c.o
+	bear -- clang -c $(CCARGS) $(SRCDIR)/miloconv.c -o $(OBJDIR)/miloconv.c.o
+	rm $(OBJDIR)/miloconv.c.o
 
 $(OBJDIR)/%.c.o: $(SRCDIR)/%.c
 	mkdir -p "$(dir $@)"
@@ -39,27 +39,27 @@ $(LIBOBJDIR)/%.c.o: $(LIBSRCDIR)/%.c
 	mkdir -p "$(dir $@)"
 	$(CC) -c -fPIC $(CCARGS) $< -o $@
 
-binary: library $(BINDIR)/hxconv
+binary: library $(BINDIR)/miloconv
 
-$(BINDIR)/hxconv: $(OBJECTS)
+$(BINDIR)/miloconv: $(OBJECTS)
 	mkdir -p "$(dir $@)"
 	echo "Using compiler $(CC) $(CCARGS)"
 	echo "Using linker $(LD) $(LDARGS)"
-	$(LD) $(LDARGS) $^ -o $@ -L$(LIBBINDIR)/ -lhmxobj
+	$(LD) $(LDARGS) $^ -o $@ -L$(LIBBINDIR)/ -lmilo_obj
 
-library: $(LIBBINDIR)/libhmxobj.so $(LIBBINDIR)/libhmxobj.a
+library: $(LIBBINDIR)/libmilo_obj.so $(LIBBINDIR)/libmilo_obj.a
 
-$(LIBBINDIR)/libhmxobj.so: $(LIBOBJECTS)
+$(LIBBINDIR)/libmilo_obj.so: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
 	$(LD) $(LDARGS) -shared $^ -o $@
 
-$(LIBBINDIR)/libhmxobj.a: $(LIBOBJECTS)
+$(LIBBINDIR)/libmilo_obj.a: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
 	$(AR) $(ARARGS) r $@ $^
 
-run: binary _input/Box01.hxmesh
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/Box01.hxmesh _output/Box01.obj
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/particle_board_mip.hxtex _output/particle_board_mip.pam
+run: binary _input/Box01.milomesh _input/particle_board_mip.milotex
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/miloconv _input/Box01.milomesh _output/Box01.obj
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/miloconv _input/particle_board_mip.milotex _output/particle_board_mip.pam
 
 clean:
 	rm -f vgcore*

@@ -1,12 +1,12 @@
-// hmxtrans.h - Harmonix Transform structure and functions
-#ifndef HMXTRANS_H
-#define HMXTRANS_H
+// milo_trans.h - Harmonix Transform structure and functions
+#ifndef MILO_TRANS_H
+#define MILO_TRANS_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "hmxcommon.h"
-#include "hmxstring.h"
+#include "milo_common.h"
+#include "milo_string.h"
 
 typedef enum
 {
@@ -30,18 +30,18 @@ typedef struct {
 
 	// i don't even know but trans so based
 	u32 transCount;
-	HX_STRING *transObjects; // ????? completely optional but if it's there i don't want this thing choking and dying
+	MILO_STRING *transObjects; // ????? completely optional but if it's there i don't want this thing choking and dying
 
 	// parent mesh stuff
 	CONSTRAINT_ENUM constraint;
-	HX_STRING targetRef;
+	MILO_STRING targetRef;
 	bool preserveScale;
-	HX_STRING parentRef;
-} HX_TRANSFORM;
+	MILO_STRING parentRef;
+} MILO_TRANSFORM;
 
 
-HX_TRANSFORM hmx_transform_load(FILE *file);
-void hmx_transform_print(HX_TRANSFORM transform);
+MILO_TRANSFORM milo_transform_load(FILE *file);
+void milo_transform_print(MILO_TRANSFORM transform);
 
 
 #ifdef __cplusplus

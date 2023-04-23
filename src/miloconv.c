@@ -1,5 +1,5 @@
-#include "hmxbitmap.h"
-#include "hmxtexture.h"
+#include "milo_bitmap.h"
+#include "milo_texture.h"
 #include <stdbool.h>
 #include <stddef.h>
 #define _GNU_SOURCE // For fcloseall()
@@ -9,14 +9,13 @@
 #include <stdint.h>
 #include <errno.h>
 #include <string.h>
-#include "hmxcommon.h"
-#include "hmxstring.h"
-#include "hmx.h"
-#include "hmxobj.h"
-#include "hxconv.h"
-#include "hmxcolor.h"
+#include "milo_common.h"
+#include "milo_string.h"
+#include "milo_obj.h"
+#include "miloconv.h"
+#include "milo_color.h"
 
-#define PROGRAM_NAME "HXConverter"
+#define PROGRAM_NAME "MILOConverter"
 #define PROGRAM_VERSION "v0.1.0"
 
 
@@ -125,11 +124,11 @@ ACCEPT_PATHS:
 		free(extension);
 	}
 
-	if (inputFileType == IFILETYPE_HX_MESH && outputFileType == OFILETYPE_WAVEFRONT_OBJ) {
-		if (!conv_hxmesh_to_obj(inputPath, outputPath))
+	if (inputFileType == IFILETYPE_MILO_MESH && outputFileType == OFILETYPE_WAVEFRONT_OBJ) {
+		if (!conv_milomesh_to_obj(inputPath, outputPath))
 			goto EXIT_FAILED;
-	} else if (inputFileType == IFILETYPE_HX_TEX && outputFileType == OFILETYPE_NETPBM_PAM) {
-		if (!conv_hxtex_to_pam(inputPath, outputPath))
+	} else if (inputFileType == IFILETYPE_MILO_TEX && outputFileType == OFILETYPE_NETPBM_PAM) {
+		if (!conv_milotex_to_pam(inputPath, outputPath))
 			goto EXIT_FAILED;
 	}
 
@@ -142,10 +141,10 @@ EXIT_FAILED:
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 {
-	if (streq(arg, "hxmesh") || streq(arg, "hxm")) {
-		return IFILETYPE_HX_MESH;
-	} else if (streq(arg, "hxtex") || streq(arg, "hxt")) {
-		return IFILETYPE_HX_TEX;
+	if (streq(arg, "milomesh") || streq(arg, "milom")) {
+		return IFILETYPE_MILO_MESH;
+	} else if (streq(arg, "milotex") || streq(arg, "milot")) {
+		return IFILETYPE_MILO_TEX;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -162,10 +161,10 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 {
-	if (streq(ext, "hxmesh") || streq(ext, "hxm")) {
-		return IFILETYPE_HX_MESH;
-	} else if (streq(ext, "hxtex") || streq(ext, "hxt")) {
-		return IFILETYPE_HX_TEX;
+	if (streq(ext, "milomesh") || streq(ext, "milom")) {
+		return IFILETYPE_MILO_MESH;
+	} else if (streq(ext, "milotex") || streq(ext, "milot")) {
+		return IFILETYPE_MILO_TEX;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -185,10 +184,10 @@ bool is_conversion_supported(SUPPORTED_INPUT_FILETYPE in, SUPPORTED_OUTPUT_FILET
 	if (in == IFILETYPE_UNKNOWN || out == OFILETYPE_UNKNOWN)
 		return false;
 
-	if (in == IFILETYPE_HX_MESH && out == OFILETYPE_WAVEFRONT_OBJ)
+	if (in == IFILETYPE_MILO_MESH && out == OFILETYPE_WAVEFRONT_OBJ)
 		return true;
 
-	if (in == IFILETYPE_HX_TEX && out == OFILETYPE_NETPBM_PAM)
+	if (in == IFILETYPE_MILO_TEX && out == OFILETYPE_NETPBM_PAM)
 		return true;
 
 	return false;
@@ -202,15 +201,15 @@ bool is_conversion_supported(SUPPORTED_INPUT_FILETYPE in, SUPPORTED_OUTPUT_FILET
 	// return (in & TYPE_MASK) == (out & TYPE_MASK);
 }
 
-bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePath)
+bool conv_milotex_to_pam(char const *const miloFilePath, char const *const pamFilePath)
 {
-	FILE *hxTexFile = fopen(hxFilePath, "r");
+	FILE *miloTexFile = fopen(miloFilePath, "r");
 	FILE *pamFile = fopen(pamFilePath, "w");
 	bool ret = true;
 
-	if (hxTexFile == NULL) {
+	if (miloTexFile == NULL) {
 		fprintf(stderr, "Failed to open file `%s` for reading: %s\n",
-				hxFilePath, strerror(errno));
+				miloFilePath, strerror(errno));
 		return false;
 	} else if (pamFile == NULL) {
 		fprintf(stderr, "Failed to open file `%s` for writing: %s\n",
@@ -218,35 +217,35 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 		return false;
 	}
 
-	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
-	HX_BITMAP hxBmp = hxTexData.bmp;
+	MILO_TEXTURE miloTexData = milo_texture_load(miloTexFile);
+	MILO_BITMAP miloBmp = miloTexData.bmp;
 
 	fputs("P7\n", pamFile);
-	fprintf(pamFile, "WIDTH %u\n", hxBmp.width);
-	fprintf(pamFile, "HEIGHT %u\n", hxBmp.height);
+	fprintf(pamFile, "WIDTH %u\n", miloBmp.width);
+	fprintf(pamFile, "HEIGHT %u\n", miloBmp.height);
 	fputs("DEPTH 4\n", pamFile);
 	fputs("MAXVAL 255\n", pamFile);
 	fputs("TUPLTYPE RGB_ALPHA\n", pamFile);
 	fputs("ENDHDR\n", pamFile);
 
-	for (int y = 0; y < hxBmp.height; ++y) {
-		for (int x = 0; x < hxBmp.width; ++x) {
+	for (int y = 0; y < miloBmp.height; ++y) {
+		for (int x = 0; x < miloBmp.width; ++x) {
 			u8 pixel;
-			if (hxBmp.bpp == 8) {
-				pixel = hxBmp.texData[x + y * hxBmp.width];
-			} else if (hxBmp.bpp == 4) {
-				size_t addr = (x / 2) + y * (hxBmp.width / 2);
+			if (miloBmp.bpp == 8) {
+				pixel = miloBmp.texData[x + y * miloBmp.width];
+			} else if (miloBmp.bpp == 4) {
+				size_t addr = (x / 2) + y * (miloBmp.width / 2);
 				u8 shift = (x & 1) << 2;
 				u8 mask = 0xF << shift;
-				pixel = (hxBmp.texData[addr] & mask) >> shift;
+				pixel = (miloBmp.texData[addr] & mask) >> shift;
 			} else {
 				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file `%s`",
-						hxBmp.bpp,
-						hxFilePath);
+						miloBmp.bpp,
+						miloFilePath);
 				goto CLEAN_UP_FAILURE;
 			}
-			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
-			color = hmx_color_8888_fix_alpha(color);
+			MILO_COLOR_8888 color = miloBmp.colorPalette[pixel];
+			color = milo_color_8888_fix_alpha(color);
 			fprintf(pamFile, "%c%c%c%c", color.r,
 						     color.g,
 						     color.b,
@@ -257,19 +256,19 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 CLEAN_UP_FAILURE:
 	ret = false;
 CLEAN_UP_SUCCESS:
-	fclose(hxTexFile);
+	fclose(miloTexFile);
 	fclose(pamFile);
 	return ret;
 }
 
-bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath)
+bool conv_milomesh_to_obj(char const *const miloFilePath, char const *const objFilePath)
 {
-	FILE *hxMeshFile = fopen(hxFilePath, "r");
+	FILE *miloMeshFile = fopen(miloFilePath, "r");
 	FILE *objMeshFile = fopen(objFilePath, "w");
 
-	if (hxMeshFile == NULL) {
+	if (miloMeshFile == NULL) {
 		fprintf(stderr, "Failed to open file `%s` for reading: %s\n",
-				hxFilePath, strerror(errno));
+				miloFilePath, strerror(errno));
 		return false;
 	} else if (objMeshFile == NULL) {
 		fprintf(stderr, "Failed to open file `%s` for writing: %s\n",
@@ -277,9 +276,9 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		return false;
 	}
 
-	HX_MESH_FILE_GH hxMeshData = hmx_mesh_load(hxMeshFile);
-	fclose(hxMeshFile);
-	OBJData obj = obj_from_hmx(hxMeshData);
+	MILO_MESH_FILE_GH miloMeshData = milo_mesh_load(miloMeshFile);
+	fclose(miloMeshFile);
+	OBJData obj = obj_from_milo(miloMeshData);
 
 	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
 	obj_write(obj, objMeshFile);
