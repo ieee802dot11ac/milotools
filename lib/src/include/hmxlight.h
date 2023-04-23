@@ -1,3 +1,10 @@
+// hmxlight.h - Harmonix lights
+#ifndef HMXLIGHT_H
+#define HMXLIGHT_H
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include "hmxenums.h"
 #include "hmxtransform.h"
@@ -11,3 +18,8 @@ typedef struct {
     float range;
     LIGHT_TYPE_ENUM type;
 } HX_LIGHT;
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
+#endif
