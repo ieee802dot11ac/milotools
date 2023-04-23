@@ -21,12 +21,12 @@ struct EnvironmentData {
     u32 version;
     Draw draw;
     Lights lights;
-    u8 ambient_color[4]; // could make it a struct but i'm lazy
+    float ambient_color[3]; // could make it a struct but i'm lazy
     float ambient_alpha;
     float fog_start;
     float fog_end;
     // u32 ignore_num;
-    u8 fog_color[4];
+    float fog_color[3];
     float fog_alpha; // Guessing field name...
     bool fog_enable;
 };
