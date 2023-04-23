@@ -1,13 +1,17 @@
-# Guitar Hero 1 milo stuff
+# Guitar Hero 1 Milo Conversion Tools
 
-this repo intends on converting stuff from Harmonix's various proprietary formats found inside Guitar Hero 1's .rnd_ps2 files (usually referred to as "milo" files, due to their basically-1:1ness to the later .milo_platform files)
+This project intends on converting files from Harmonix's various proprietary
+formats found inside Guitar Hero 1's .rnd_ps2 files into more standard filetypes,
+such as obj and png. These are usually referred to as "milo" files, due to their
+similarities to the newer .milo_platform files.
 
-### current conversions working:
+### Supported Conversions
 
-* .mesh -> .obj
-
-### conversions not yet implemented:
-
-* .mat -> .mtl
-* .tex -> .dds (or png. maybe both)
-* .rnd_ps2 -> .gltf (*very* far off)
+|   Source      |   Destination |   Status                      |
+|---------------|---------------|-------------------------------|
+|   .hmxmesh    |   .obj        |   Partially Complete          |
+|   .hmxtex     |   .pam        |   Partially Complete          |
+|   .hmxmat     |   .mtl        |   Not Yet Implemented (soon)  |
+|   .hmxtex     |   .png        |   Not Yet Implemented (soon)  |
+|   .hmxtex     |   .dds        |   Not Yet Implemented (soon)  |
+|   .rnd_ps2    |   .gltf       |   Not Yet Implemented         |
