@@ -62,6 +62,6 @@ run: binary _input/Box01.hxmesh
 	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/particle_board_mip.hxtex _output/particle_board_mip.pam
 
 clean:
-	rm vgcore*
+	rm -f vgcore*
 	rm -fr $(BINDIR)/ $(OBJDIR)/
 	rm -fr $(LIBBINDIR)/ $(LIBOBJDIR)/
