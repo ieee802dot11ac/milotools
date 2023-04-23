@@ -57,8 +57,8 @@ $(LIBBINDIR)/libhmxobj.a: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
 	$(AR) $(ARARGS) r $@ $^
 
-run: $(BINDIR)/mconv Box01.mesh
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/mconv Box01.mesh Box01.obj
+run: $(BINDIR)/mconv Box01.hxmesh
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/mconv Box01.hxmesh Box01.obj
 
 clean:
 	rm -fr $(BINDIR)/ $(OBJDIR)/

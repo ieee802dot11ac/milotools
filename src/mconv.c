@@ -21,11 +21,18 @@ int main(int const argc, char const *const *const argv)
 {
 	int exitCode = EXIT_FAILURE;
 
-	char const *hmxPath = NULL;
-	char const *objPath = NULL;
+	char const *inputPath = NULL;
+	char const *outputPath = NULL;
+	SUPPORTED_INPUT_FILETYPE inputFileType = IFILETYPE_UNKNOWN;
+	SUPPORTED_OUTPUT_FILETYPE outputFileType = OFILETYPE_UNKNOWN;
 	bool acceptPosixArgs = true;
 
+	int skipArgs = 0;
 	for (int i = 1; i < argc; ++i) {
+		if (skipArgs > 0) {
+			--skipArgs;
+			continue;
+		}
 		char const *const arg = argv[i];
 		if (acceptPosixArgs) {
 			if (streq(arg, "--")) {
@@ -33,37 +40,92 @@ int main(int const argc, char const *const *const argv)
 			} else if (streq(arg, "--help") || streq(arg, "-h")) {
 				print_help(argv[0], stdout);
 				goto EXIT_SUCCEED;
+			} else if (streq(arg, "--input") || streq(arg, "-i")) {
+				if (i == argc - 1) {
+					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
+					goto EXIT_FAILED;
+				}
+				if ((inputFileType = get_input_filetype_arg(argv[i + 1])) == IFILETYPE_UNKNOWN) {
+					fprintf(stderr, "Unimplemented input filetype: `%s`.\n", arg);
+					goto EXIT_FAILED;
+				}
+				skipArgs = 1;
+			} else if (streq(arg, "--input") || streq(arg, "-i")) {
+				if (i == argc - 1) {
+					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
+					goto EXIT_FAILED;
+				}
+				if ((outputFileType = get_output_filetype_arg(argv[i + 1])) == OFILETYPE_UNKNOWN) {
+					fprintf(stderr, "Unimplemented output filetype: `%s`.\n", arg);
+					goto EXIT_FAILED;
+				}
+				skipArgs = 1;
 			} else {
 				goto ACCEPT_PATHS;
 			}
 			continue;
 		}
 ACCEPT_PATHS:
-		if (hmxPath == NULL) {
-			hmxPath = arg;
-		} else if (objPath == NULL) {
-			objPath = arg;
+		if (inputPath == NULL) {
+			inputPath = arg;
+		} else if (outputPath == NULL) {
+			outputPath = arg;
 		} else {
-			fputs("Too many arguments provided!\n", stderr);
+			fputs("Too many arguments provided.\n", stderr);
 			print_help(argv[0], stderr);
 			goto EXIT_FAILED;
 		}
 	}
 
-	if (hmxPath == NULL) {
-		fputs("No input or output file provided!\n\n", stderr);
+	if (inputPath == NULL) {
+		fputs("No input or output file provided.\n\n", stderr);
 
 		print_help(argv[0], stderr);
 		goto EXIT_FAILED;
-	} else if (objPath == NULL) {
-		fputs("No output file provided!\n\n", stderr);
+	} else if (outputPath == NULL) {
+		fputs("No output file provided.\n\n", stderr);
 
 		print_help(argv[0], stderr);
 		goto EXIT_FAILED;
 	}
 
-	if (!convert_hmx_to_obj(argv[1], argv[2]))
-		goto EXIT_FAILED;
+	if (inputFileType == IFILETYPE_UNKNOWN) {
+		size_t extensionLength = 0;
+		for (size_t i = strlen(inputPath) - 1; i > 0; --i) {
+			if (inputPath[i] == '.')
+				break;
+			++extensionLength;
+		}
+		char *const extension = malloc(sizeof(char) * (extensionLength + 1));
+		strcpy(extension, &inputPath[strlen(inputPath) - extensionLength]);
+		if ((inputFileType = get_input_filetype_ext(extension)) == IFILETYPE_UNKNOWN) {
+			fprintf(stderr, "Unknown input file extension `.%s`\n", extension);
+			free(extension);
+			goto EXIT_FAILED;
+		}
+		free(extension);
+	}
+	if (outputFileType == OFILETYPE_UNKNOWN) {
+		size_t extensionLength = 0;
+		for (size_t i = strlen(outputPath) - 1; i > 0; --i) {
+			if (outputPath[i] == '.')
+				break;
+			++extensionLength;
+		}
+		char *const extension = malloc(sizeof(char) * (extensionLength + 1));
+		strcpy(extension, &outputPath[strlen(outputPath) - extensionLength]);
+		if ((outputFileType = get_output_filetype_ext(extension)) == OFILETYPE_UNKNOWN) {
+			fprintf(stderr, "Unknown output file extension `.%s`\n", extension);
+			free(extension);
+			goto EXIT_FAILED;
+		}
+		free(extension);
+	}
+
+	if (inputFileType == IFILETYPE_HX_MESH && outputFileType == OFILETYPE_WAVEFRONT_OBJ) {
+		if (!conv_hmx_to_obj(inputPath, outputPath))
+			goto EXIT_FAILED;
+	}
 
 EXIT_SUCCEED:
 	exitCode = EXIT_SUCCESS;
@@ -72,7 +134,57 @@ EXIT_FAILED:
 	return exitCode;
 }
 
-bool convert_hmx_to_obj(char const *const hxFilePath, char const *const objFilePath)
+SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
+{
+	if (streq(arg, "hxmesh") || streq(arg, "hxm")) {
+		return IFILETYPE_HX_MESH;
+	}
+	return IFILETYPE_UNKNOWN;
+}
+
+SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
+{
+	if (streq(arg, "obj") || streq(arg, "wavefront")) {
+		return OFILETYPE_WAVEFRONT_OBJ;
+	}
+	return OFILETYPE_UNKNOWN;
+}
+
+SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
+{
+	if (streq(ext, "hxmesh") || streq(ext, "hxm")) {
+		return IFILETYPE_HX_MESH;
+	}
+	return IFILETYPE_UNKNOWN;
+}
+
+SUPPORTED_OUTPUT_FILETYPE get_output_filetype_ext(char const *const ext)
+{
+	if (streq(ext, "obj"))
+		return OFILETYPE_WAVEFRONT_OBJ;
+	return OFILETYPE_UNKNOWN;
+}
+
+bool is_conversion_supported(SUPPORTED_INPUT_FILETYPE in, SUPPORTED_OUTPUT_FILETYPE out)
+{
+	if (in == IFILETYPE_UNKNOWN || out == OFILETYPE_UNKNOWN)
+		return false;
+
+	if (in == IFILETYPE_HX_MESH && out == OFILETYPE_WAVEFRONT_OBJ)
+		return true;
+
+	return false;
+
+	/* Until we can promise reliable conversions between various formats,
+	 * we should just bruteforce check and not actually use this code.
+	 * Note that the enum values were specifically designed along with the
+	 * macros TYPE_MESH, TYPE_TEX, TYPE_MAT, etc. so that this code
+	 * WILL work even if you uncomment it now.
+	 */
+	// return (in & TYPE_MASK) == (out & TYPE_MASK);
+}
+
+bool conv_hmx_to_obj(char const *const hxFilePath, char const *const objFilePath)
 {
 	FILE *hxMeshFile = fopen(hxFilePath, "r");
 	FILE *objMeshFile = fopen(objFilePath, "w");
@@ -98,10 +210,10 @@ bool convert_hmx_to_obj(char const *const hxFilePath, char const *const objFileP
 
 void print_help(char const *const fileName, FILE *const writeTo)
 {
-	fputs(PROGRAM_NAME PROGRAM_VERSION"\n\n", writeTo);
+	fputs(PROGRAM_NAME PROGRAM_VERSION"\n", writeTo);
 
 	fprintf(writeTo, "%s [-h | --help]: Show this help text.\n", fileName);
-	fprintf(writeTo, "%s <hmx_mesh_input> <obj_output>: Convert hmx mesh to obj file.\n", fileName);
+	fprintf(writeTo, "%s [-i | --input <inputtype>] [-o | --output <outputtype>] <input> <output>: Convert files. If -i or -o aren't provided, guess corresponding file type from extension.\n", fileName);
 }
 
 void print_entire_file(FILE *file)
