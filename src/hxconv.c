@@ -206,6 +206,7 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 {
 	FILE *hxTexFile = fopen(hxFilePath, "r");
 	FILE *pamFile = fopen(pamFilePath, "w");
+	bool ret = true;
 
 	if (hxTexFile == NULL) {
 		fprintf(stderr, "Failed to open file `%s` for reading: %s\n",
@@ -233,11 +234,16 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 			u8 pixel;
 			if (hxBmp.bpp == 8) {
 				pixel = hxBmp.texData[x + y * hxBmp.width];
-			} else {
+			} else if (hxBmp.bpp == 4) {
 				size_t addr = (x / 2) + y * (hxBmp.width / 2);
 				u8 shift = (x & 1) << 2;
 				u8 mask = 0xF << shift;
 				pixel = (hxBmp.texData[addr] & mask) >> shift;
+			} else {
+				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file `%s`",
+						hxBmp.bpp,
+						hxFilePath);
+				goto CLEAN_UP_FAILURE;
 			}
 			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
 			color = hmx_color_8888_fix_alpha(color);
@@ -247,9 +253,13 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 						     color.a);
 		}
 	}
+	goto CLEAN_UP_SUCCESS;
+CLEAN_UP_FAILURE:
+	ret = false;
+CLEAN_UP_SUCCESS:
 	fclose(hxTexFile);
 	fclose(pamFile);
-	return true;
+	return ret;
 }
 
 bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath)
