@@ -1,13 +1,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "hmxprimitive.h"
-#include "hmxreference.h"
+#include "hmxstring.h"
 
 typedef struct {
-    uint32_t version; // should be 1
+    u32 version; // should be 1
     bool showing;
 
-    uint32_t draw_count; // Drawables (mesh, env, view)
-    HX_REFERENCE* draw_objects;
+    u32 draw_count; // Drawables (mesh, env, view)
+    HX_STRING *draw_objects;
     HX_SPHERE bounding;
 } HX_DRAW;

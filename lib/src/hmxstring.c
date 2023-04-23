@@ -1,14 +1,14 @@
 #include "hmxcommon.h"
-#include "hmxreference.h"
+#include "hmxstring.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-HX_REFERENCE hmx_reference_load(FILE *file)
+HX_STRING hmx_string_load(FILE *file)
 {
 	u32 len;
-	HX_REFERENCE ret;
+	HX_STRING ret;
 	fread(&len, 4, 1, file);
 
 	ret.strLen = len;
@@ -24,7 +24,7 @@ HX_REFERENCE hmx_reference_load(FILE *file)
 	return ret;
 }
 
-void hmx_reference_print(HX_REFERENCE ref)
+void hmx_string_print(HX_STRING ref)
 {
 	putchar('"');
 	for (u32 i = 0; i < ref.strLen; ++i)

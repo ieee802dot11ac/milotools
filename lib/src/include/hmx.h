@@ -5,11 +5,14 @@
 extern "C" {
 #endif
 
-#include "hmxbmp.h"
-#include "hmxenums.h"
+#include "hmxtexture.h"
+#include "hmxbitmap.h"
+#include "hmxobj.h"
+#include "hmxdraw.h"
+#include "hmxcolor.h"
 #include "hmxmesh.h"
 #include "hmxprimitive.h"
-#include "hmxreference.h"
+#include "hmxstring.h"
 #include "hmxtransform.h"
 #include "hmxtriangle.h"
 #include "hmxvertex.h"

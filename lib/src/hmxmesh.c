@@ -1,7 +1,6 @@
 #include "hmxmesh.h"
 #include "hmxcommon.h"
-#include "hmxenums.h"
-#include "hmxreference.h"
+#include "hmxstring.h"
 #include "hmxtransform.h"
 #include "hmxvertex.h"
 #include "iohelper.h"
@@ -20,8 +19,8 @@ HX_MESH_FILE_GH hmx_mesh_load(FILE *file)
 	for (u32 i = 0; i < 9; ++i)
 		mesh._unknown0[i] = iohelper_readu8(file);
 
-	mesh.matName = hmx_reference_load(file);
-	mesh.geometryOwner = hmx_reference_load(file);
+	mesh.matName = hmx_string_load(file);
+	mesh.geometryOwner = hmx_string_load(file);
 
 	mesh.mutableParts = iohelper_readu32(file);
 	mesh.volume = iohelper_readu32(file);
@@ -65,14 +64,14 @@ void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 	puts("]");
 
 	fputs("MATERIAL: ", stdout);
-	hmx_reference_print(mesh.matName);
+	hmx_string_print(mesh.matName);
 	putchar('\n');
 
 	fputs("GEOMETRY_OWNER: ", stdout);
-	hmx_reference_print(mesh.geometryOwner);
+	hmx_string_print(mesh.geometryOwner);
 	putchar('\n');
 
-	printf("MUTABLE_PARTS: %s\n", MUTABLE_ENUM_NAME[mesh.mutableParts]);
+	printf("MUTABLE_PARTS: %s\n", MUTABLE_ENUM_name(mesh.mutableParts));
 	printf("VOLUME: %s\n", VOLUME_ENUM_NAME[mesh.volume]);
 
 	printf("BSP: %u\n", mesh.bsp);
@@ -101,3 +100,10 @@ void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 	}
 	puts("]");
 }
+
+char const *const VOLUME_ENUM_NAME[VOLUME_ENUM_AMOUNT] = {
+	"VolumeEmpty",
+	"VolumeTriangles",
+	"VolumeBSP",
+	"VolumeBox",
+};

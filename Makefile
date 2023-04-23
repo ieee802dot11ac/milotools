@@ -39,7 +39,7 @@ $(LIBOBJDIR)/%.c.o: $(LIBSRCDIR)/%.c
 	mkdir -p "$(dir $@)"
 	$(CC) -c -fPIC $(CCARGS) $< -o $@
 
-binary: $(BINDIR)/hxconv
+binary: library $(BINDIR)/hxconv
 
 $(BINDIR)/hxconv: $(OBJECTS)
 	mkdir -p "$(dir $@)"
@@ -57,9 +57,11 @@ $(LIBBINDIR)/libhmxobj.a: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
 	$(AR) $(ARARGS) r $@ $^
 
-run: $(BINDIR)/hxconv Box01.hxmesh
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv Box01.hxmesh Box01.obj
+run: binary _input/Box01.hxmesh
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/Box01.hxmesh _output/Box01.obj
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/particle_board_mip.hxtex _output/particle_board_mip.pam
 
 clean:
+	rm vgcore*
 	rm -fr $(BINDIR)/ $(OBJDIR)/
 	rm -fr $(LIBBINDIR)/ $(LIBOBJDIR)/

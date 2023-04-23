@@ -10,11 +10,44 @@ extern "C" {
 #include "hmxcommon.h"
 
 #include "hmxtransform.h"
-#include "hmxreference.h"
+#include "hmxstring.h"
 #include "hmxprimitive.h"
-#include "hmxenums.h"
 #include "hmxvertex.h"
 #include "hmxtriangle.h"
+
+
+typedef enum {
+	kVolumeEmpty,
+	kVolumeTriangles,
+	kVolumeBSP,
+	kVolumeBox,
+	VOLUME_ENUM_AMOUNT
+} VOLUME_ENUM;
+
+extern char const *const VOLUME_ENUM_NAME[VOLUME_ENUM_AMOUNT];
+
+typedef enum {
+	kMutableNone = 0,
+	kMutableVerts = 31,
+	kMutableFaces = 32,
+	kMutableAll = 63,
+} MUTABLE_ENUM;
+
+INLINE char *MUTABLE_ENUM_name(MUTABLE_ENUM mut)
+{
+	switch (mut) {
+	case kMutableNone:
+		return "MutableNone";
+	case kMutableVerts:
+		return "MutableVerts";
+	case kMutableFaces:
+		return "MutableFaces";
+	case kMutableAll:
+		return "MutableAll";
+	}
+	return "UNKNOWN";
+}
+
 
 
 typedef struct {
@@ -27,10 +60,10 @@ typedef struct {
 
 	u8 _unknown0[9];
 
-	HX_REFERENCE matName;
+	HX_STRING matName;
 
 	// "geometry owner" (???????)
-	HX_REFERENCE geometryOwner;
+	HX_STRING geometryOwner;
 	MUTABLE_ENUM mutableParts;
 	VOLUME_ENUM volume;
 	u8 bsp; // no clue

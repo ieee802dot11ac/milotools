@@ -1,3 +1,5 @@
+#include "hmxbitmap.h"
+#include "hmxtexture.h"
 #include <stdbool.h>
 #include <stddef.h>
 #define _GNU_SOURCE // For fcloseall()
@@ -8,10 +10,11 @@
 #include <errno.h>
 #include <string.h>
 #include "hmxcommon.h"
-#include "hmxreference.h"
+#include "hmxstring.h"
 #include "hmx.h"
 #include "hmxobj.h"
 #include "hxconv.h"
+#include "hmxcolor.h"
 
 #define PROGRAM_NAME "HXConverter"
 #define PROGRAM_VERSION "v0.1.0"
@@ -125,6 +128,9 @@ ACCEPT_PATHS:
 	if (inputFileType == IFILETYPE_HX_MESH && outputFileType == OFILETYPE_WAVEFRONT_OBJ) {
 		if (!conv_hxmesh_to_obj(inputPath, outputPath))
 			goto EXIT_FAILED;
+	} else if (inputFileType == IFILETYPE_HX_TEX && outputFileType == OFILETYPE_NETPBM_PAM) {
+		if (!conv_hxtex_to_pam(inputPath, outputPath))
+			goto EXIT_FAILED;
 	}
 
 EXIT_SUCCEED:
@@ -138,6 +144,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 {
 	if (streq(arg, "hxmesh") || streq(arg, "hxm")) {
 		return IFILETYPE_HX_MESH;
+	} else if (streq(arg, "hxtex") || streq(arg, "hxt")) {
+		return IFILETYPE_HX_TEX;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -146,6 +154,8 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 {
 	if (streq(arg, "obj") || streq(arg, "wavefront")) {
 		return OFILETYPE_WAVEFRONT_OBJ;
+	} else if (streq(arg, "pam")) {
+		return OFILETYPE_NETPBM_PAM;
 	}
 	return OFILETYPE_UNKNOWN;
 }
@@ -154,14 +164,19 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 {
 	if (streq(ext, "hxmesh") || streq(ext, "hxm")) {
 		return IFILETYPE_HX_MESH;
+	} else if (streq(ext, "hxtex") || streq(ext, "hxt")) {
+		return IFILETYPE_HX_TEX;
 	}
 	return IFILETYPE_UNKNOWN;
 }
 
 SUPPORTED_OUTPUT_FILETYPE get_output_filetype_ext(char const *const ext)
 {
-	if (streq(ext, "obj"))
+	if (streq(ext, "obj")) {
 		return OFILETYPE_WAVEFRONT_OBJ;
+	} else if (streq(ext, "pam")) {
+		return OFILETYPE_NETPBM_PAM;
+	}
 	return OFILETYPE_UNKNOWN;
 }
 
@@ -173,6 +188,9 @@ bool is_conversion_supported(SUPPORTED_INPUT_FILETYPE in, SUPPORTED_OUTPUT_FILET
 	if (in == IFILETYPE_HX_MESH && out == OFILETYPE_WAVEFRONT_OBJ)
 		return true;
 
+	if (in == IFILETYPE_HX_TEX && out == OFILETYPE_NETPBM_PAM)
+		return true;
+
 	return false;
 
 	/* Until we can promise reliable conversions between various formats,
@@ -182,6 +200,56 @@ bool is_conversion_supported(SUPPORTED_INPUT_FILETYPE in, SUPPORTED_OUTPUT_FILET
 	 * WILL work even if you uncomment it now.
 	 */
 	// return (in & TYPE_MASK) == (out & TYPE_MASK);
+}
+
+bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePath)
+{
+	FILE *hxTexFile = fopen(hxFilePath, "r");
+	FILE *pamFile = fopen(pamFilePath, "w");
+
+	if (hxTexFile == NULL) {
+		fprintf(stderr, "Failed to open file `%s` for reading: %s\n",
+				hxFilePath, strerror(errno));
+		return false;
+	} else if (pamFile == NULL) {
+		fprintf(stderr, "Failed to open file `%s` for writing: %s\n",
+				pamFilePath, strerror(errno));
+		return false;
+	}
+
+	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
+	HX_BITMAP hxBmp = hxTexData.bmp;
+
+	fputs("P7\n", pamFile);
+	fprintf(pamFile, "WIDTH %u\n", hxBmp.width);
+	fprintf(pamFile, "HEIGHT %u\n", hxBmp.height);
+	fputs("DEPTH 4\n", pamFile);
+	fputs("MAXVAL 255\n", pamFile);
+	fputs("TUPLTYPE RGB_ALPHA\n", pamFile);
+	fputs("ENDHDR\n", pamFile);
+
+	for (int y = 0; y < hxBmp.height; ++y) {
+		for (int x = 0; x < hxBmp.width; ++x) {
+			u8 pixel;
+			if (hxBmp.bpp == 8) {
+				pixel = hxBmp.texData[x + y * hxBmp.width];
+			} else {
+				size_t addr = (x / 2) + y * (hxBmp.width / 2);
+				u8 shift = (x & 1) << 2;
+				u8 mask = 0xF << shift;
+				pixel = (hxBmp.texData[addr] & mask) >> shift;
+			}
+			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
+			color = hmx_color_8888_fix_alpha(color);
+			fprintf(pamFile, "%c%c%c%c", color.r,
+						     color.g,
+						     color.b,
+						     color.a);
+		}
+	}
+	fclose(hxTexFile);
+	fclose(pamFile);
+	return true;
 }
 
 bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath)
@@ -200,11 +268,13 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 	}
 
 	HX_MESH_FILE_GH hxMeshData = hmx_mesh_load(hxMeshFile);
+	fclose(hxMeshFile);
 	OBJData obj = obj_from_hmx(hxMeshData);
 
 	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
 	obj_write(obj, objMeshFile);
 
+	fclose(objMeshFile);
 	return true;
 }
 

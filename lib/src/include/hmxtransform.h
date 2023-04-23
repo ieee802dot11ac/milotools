@@ -6,10 +6,23 @@ extern "C" {
 #endif
 
 #include "hmxcommon.h"
-#include "hmxreference.h"
-#include "hmxenums.h"
+#include "hmxstring.h"
 
+typedef enum
+{
+	kConstraintNone,
+	kConstraintLocalRotate,
+	kConstraintParentWorld,
+	kConstraintLookAtTarget,
+	kConstraintShadowTarget,
+	kConstraintBillboardZ,
+	kConstraintBillboardXZ,
+	kConstraintBillboardXYZ,
+	kConstraintFastBillboardXYZ,
+	CONSTRAINT_ENUM_AMOUNT
+} CONSTRAINT_ENUM;
 
+extern char const *const CONSTRAINT_ENUM_NAME[CONSTRAINT_ENUM_AMOUNT];
 typedef struct {
 	u32 version; // should be 8
 	float localTransMtx[12]; // local transformation matrix
@@ -17,13 +30,13 @@ typedef struct {
 
 	// i don't even know but trans so based
 	u32 transCount;
-	HX_REFERENCE *transObjects; // ????? completely optional but if it's there i don't want this thing choking and dying
+	HX_STRING *transObjects; // ????? completely optional but if it's there i don't want this thing choking and dying
 
 	// parent mesh stuff
 	CONSTRAINT_ENUM constraint;
-	HX_REFERENCE targetRef;
+	HX_STRING targetRef;
 	bool preserveScale;
-	HX_REFERENCE parentRef;
+	HX_STRING parentRef;
 } HX_TRANSFORM;
 
 

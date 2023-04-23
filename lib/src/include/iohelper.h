@@ -18,6 +18,11 @@ INLINE u32 iohelper_readu32(FILE *fp)
 	BASIC_READ(u32);
 }
 
+INLINE u16 iohelper_readu16(FILE *fp)
+{
+	BASIC_READ(u16);
+}
+
 INLINE u8 iohelper_readu8(FILE *fp)
 {
 	BASIC_READ(u8);
