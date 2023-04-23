@@ -43,6 +43,15 @@ typedef enum
 
 #define MUTABLE_ENUM_AMOUNT 4
 
+typedef enum
+{
+    kLightPoint,
+    kLightDirectional,
+    kLightFakeSpot,
+    kLightFloorSpot,
+    kLightShadowRef
+} LIGHT_TYPE_ENUM;
+
 extern char const *const MUTABLE_ENUM_NAME[MUTABLE_ENUM_AMOUNT];
 
 
