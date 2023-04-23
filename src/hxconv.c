@@ -11,9 +11,9 @@
 #include "hmxreference.h"
 #include "hmx.h"
 #include "hmxobj.h"
-#include "mconv.h"
+#include "hxconv.h"
 
-#define PROGRAM_NAME "HMXOBJConverter"
+#define PROGRAM_NAME "HXConverter"
 #define PROGRAM_VERSION "v0.1.0"
 
 
@@ -123,7 +123,7 @@ ACCEPT_PATHS:
 	}
 
 	if (inputFileType == IFILETYPE_HX_MESH && outputFileType == OFILETYPE_WAVEFRONT_OBJ) {
-		if (!conv_hmx_to_obj(inputPath, outputPath))
+		if (!conv_hxmesh_to_obj(inputPath, outputPath))
 			goto EXIT_FAILED;
 	}
 
@@ -184,7 +184,7 @@ bool is_conversion_supported(SUPPORTED_INPUT_FILETYPE in, SUPPORTED_OUTPUT_FILET
 	// return (in & TYPE_MASK) == (out & TYPE_MASK);
 }
 
-bool conv_hmx_to_obj(char const *const hxFilePath, char const *const objFilePath)
+bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath)
 {
 	FILE *hxMeshFile = fopen(hxFilePath, "r");
 	FILE *objMeshFile = fopen(objFilePath, "w");
@@ -202,7 +202,7 @@ bool conv_hmx_to_obj(char const *const hxFilePath, char const *const objFilePath
 	HX_MESH_FILE_GH hxMeshData = hmx_mesh_load(hxMeshFile);
 	OBJData obj = obj_from_hmx(hxMeshData);
 
-	fputs("# Generated using " PROGRAM_NAME PROGRAM_VERSION "\n", objMeshFile);
+	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
 	obj_write(obj, objMeshFile);
 
 	return true;

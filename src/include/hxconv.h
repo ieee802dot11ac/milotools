@@ -1,6 +1,6 @@
-// mconv.h - Mesh converter (main) header file
-#ifndef MCONV_H
-#define MCONV_H
+// hxconv.h - Harmonix converter (main) header file
+#ifndef HXCONV_H
+#define HXCONV_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,7 +44,7 @@ typedef enum {
 size_t fsize(FILE *file);
 void print_entire_file(FILE *file);
 void print_help(char const *const fileName, FILE *const writeTo);
-bool conv_hmx_to_obj(char const *const hxFilePath, char const *const objFilePath);
+bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath);
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg);
 SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg);

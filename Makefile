@@ -28,8 +28,8 @@ cleanBuild: clean all
 cleanRun: clean run
 
 genclang: mkdirs
-	bear -- clang -c $(CCARGS) $(SRCDIR)/mconv.c -o $(OBJDIR)/mconv.c.o
-	rm $(OBJDIR)/mconv.c.o
+	bear -- clang -c $(CCARGS) $(SRCDIR)/hxconv.c -o $(OBJDIR)/hxconv.c.o
+	rm $(OBJDIR)/hxconv.c.o
 
 $(OBJDIR)/%.c.o: $(SRCDIR)/%.c
 	mkdir -p "$(dir $@)"
@@ -39,9 +39,9 @@ $(LIBOBJDIR)/%.c.o: $(LIBSRCDIR)/%.c
 	mkdir -p "$(dir $@)"
 	$(CC) -c -fPIC $(CCARGS) $< -o $@
 
-binary: $(BINDIR)/mconv
+binary: $(BINDIR)/hxconv
 
-$(BINDIR)/mconv: $(OBJECTS)
+$(BINDIR)/hxconv: $(OBJECTS)
 	mkdir -p "$(dir $@)"
 	echo "Using compiler $(CC) $(CCARGS)"
 	echo "Using linker $(LD) $(LDARGS)"
@@ -57,8 +57,8 @@ $(LIBBINDIR)/libhmxobj.a: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
 	$(AR) $(ARARGS) r $@ $^
 
-run: $(BINDIR)/mconv Box01.hxmesh
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/mconv Box01.hxmesh Box01.obj
+run: $(BINDIR)/hxconv Box01.hxmesh
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv Box01.hxmesh Box01.obj
 
 clean:
 	rm -fr $(BINDIR)/ $(OBJDIR)/
