@@ -8,3 +8,6 @@ vgcore.*
 # Clang compile commands
 compile_commands.json
 .cache/
+
+# we don't want extracted stuff getting into the repo (aside from basement but shhh)
+_*/

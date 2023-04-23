@@ -28,8 +28,8 @@ cleanBuild: clean all
 cleanRun: clean run
 
 genclang: mkdirs
-	bear -- clang -c $(CCARGS) $(SRCDIR)/meshconverter.c -o $(OBJDIR)/meshconverter.c.o
-	rm $(OBJDIR)/meshconverter.c.o
+	bear -- clang -c $(CCARGS) $(SRCDIR)/mconv.c -o $(OBJDIR)/mconv.c.o
+	rm $(OBJDIR)/mconv.c.o
 
 $(OBJDIR)/%.c.o: $(SRCDIR)/%.c
 	mkdir -p "$(dir $@)"
