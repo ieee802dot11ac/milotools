@@ -6,6 +6,8 @@ extern "C" {
 #endif
 
 #include "hmxtexture.h"
+#include "hmxlight.h"
+#include "hmxanim.h"
 #include "hmxbitmap.h"
 #include "hmxobj.h"
 #include "hmxdraw.h"
