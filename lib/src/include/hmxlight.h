@@ -18,13 +18,17 @@ typedef enum {
 } LIGHT_TYPE_ENUM;
 
 typedef struct {
-	uint32_t version; // should be 3
+	u32 version; // should be 3
 	HX_TRANSFORM trans;
 	HX_COLOR_3F color;
 	float intensity;
 	float range;
 	LIGHT_TYPE_ENUM type;
 } HX_LIGHT;
+
+
+HX_LIGHT hmx_light_load(FILE *file);
+void hmx_light_print(HX_LIGHT light);
 
 #ifdef __cplusplus
 } /* extern "C" */

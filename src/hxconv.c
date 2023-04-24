@@ -1,4 +1,5 @@
 #include "hmxbitmap.h"
+#include "hmxlight.h"
 #include "hmxtexture.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -131,6 +132,10 @@ ACCEPT_PATHS:
 	} else if (inputFileType == IFILETYPE_HX_TEX && outputFileType == OFILETYPE_NETPBM_PAM) {
 		if (!conv_hxtex_to_pam(inputPath, outputPath))
 			goto EXIT_FAILED;
+	} else if (inputFileType == IFILETYPE_HX_LIGHT) {
+		HX_LIGHT light = hmx_light_load(fopen(inputPath, "r"));
+		hmx_light_print(light);
+		goto EXIT_FAILED;
 	}
 
 EXIT_SUCCEED:
@@ -142,10 +147,12 @@ EXIT_FAILED:
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 {
-	if (streq(arg, "hxmesh") || streq(arg, "hxm")) {
+	if (streq(arg, "hmxmesh") || streq(arg, "hxm")) {
 		return IFILETYPE_HX_MESH;
-	} else if (streq(arg, "hxtex") || streq(arg, "hxt")) {
+	} else if (streq(arg, "hmxtex") || streq(arg, "hxt")) {
 		return IFILETYPE_HX_TEX;
+	} else if (streq(arg, "lit") || streq(arg, "hxl")) {
+		return IFILETYPE_HX_LIGHT;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -162,10 +169,12 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 {
-	if (streq(ext, "hxmesh") || streq(ext, "hxm")) {
+	if (streq(ext, "mesh") || streq(ext, "hxm")) {
 		return IFILETYPE_HX_MESH;
-	} else if (streq(ext, "hxtex") || streq(ext, "hxt")) {
+	} else if (streq(ext, "tex") || streq(ext, "hxt")) {
 		return IFILETYPE_HX_TEX;
+	} else if (streq(ext, "lit") || streq(ext, "hxl")) {
+		return IFILETYPE_HX_LIGHT;
 	}
 	return IFILETYPE_UNKNOWN;
 }
