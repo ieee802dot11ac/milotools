@@ -16,7 +16,7 @@ CC := gcc
 CCARGS := -g -O3 -Wall -Wextra -Wpedantic -I$(SRCDIR)/include/ -I$(LIBSRCDIR)/include/
 
 LD := gcc
-LDARGS := 
+LDARGS := -lspng
 
 AR := ar
 ARARGS := 
@@ -57,10 +57,11 @@ $(LIBBINDIR)/libhmxobj.a: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
 	$(AR) $(ARARGS) r $@ $^
 
-run: binary _input/Box01.hxm _input/particle_board_mip.hxt _input/main01.hxl
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/Box01.hxm _output/Box01.obj
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/particle_board_mip.hxt _output/particle_board_mip.pam
-	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/main01.hxl _output/main01.obj # placeholder .obj because idk what format a light source is.
+run: binary _input/Box01.hxmesh _input/particle_board_mip.hxtex _input/main01.hxlight _input/particle_board\ .hxmat
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/Box01.hxmesh _output/Box01.obj
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/particle_board_mip.hxtex _output/particle_board_mip.png
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/main01.hxlight _output/main01.obj # placeholder .obj because idk what format a light source is.
+	LD_LIBRARY_PATH=$(LIBBINDIR)/ ./$(BINDIR)/hxconv _input/particle_board\ .hxmat _output/particle_board\ .mtl
 
 clean:
 	rm -f vgcore*

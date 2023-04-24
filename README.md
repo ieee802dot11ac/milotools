@@ -5,6 +5,9 @@ formats found inside Guitar Hero 1's `.rnd_ps2` and `.gh` files (usually referre
 to as "milo" files due to their similarities to the newer `.milo_platform` files)
 into more standard filetypes, such as `.obj` and `.png`.
 
+### Dependencies
+- [spng](https://libspng.org/)
+
 ### Supported Conversions
 
 |   Source      |   Destination |   Status                      |

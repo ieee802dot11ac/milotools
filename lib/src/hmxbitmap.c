@@ -8,18 +8,18 @@
 HX_BITMAP hmx_bitmap_load(FILE *file)
 {
 	HX_BITMAP bmp;
-	bmp.version = iohelper_readu8(file);
+	bmp.version = iohelper_read_u8(file);
 
-	bmp.bpp = iohelper_readu8(file);
-	bmp.encoding = iohelper_readu32(file);
+	bmp.bpp = iohelper_read_u8(file);
+	bmp.encoding = iohelper_read_u32(file);
 	if (bmp.encoding != RGBA) {
 		fprintf(stderr, "Can only handle RGBA encoding for texture bitmaps currently, sorry!\n");
 	}
 
-	bmp.mipmapLevels = iohelper_readu8(file);
-	bmp.width = iohelper_readu16(file);
-	bmp.height = iohelper_readu16(file);
-	bmp.bytesPerLine = iohelper_readu16(file);
+	bmp.mipmapLevels = iohelper_read_u8(file);
+	bmp.width = iohelper_read_u16(file);
+	bmp.height = iohelper_read_u16(file);
+	bmp.bytesPerLine = iohelper_read_u16(file);
 
 	fread(bmp.padding, 1, 19, file);
 

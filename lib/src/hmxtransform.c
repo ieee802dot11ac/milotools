@@ -9,21 +9,21 @@
 HX_TRANSFORM hmx_transform_load(FILE *file)
 {
 	HX_TRANSFORM transform;
-	transform.version = iohelper_readu32(file);
+	transform.version = iohelper_read_u32(file);
 
 	fread(&transform.localTransMtx, sizeof(float), 12, file);
 	fread(&transform.worldTransMtx, sizeof(float), 12, file);
 
-	transform.transCount = iohelper_readu32(file);
+	transform.transCount = iohelper_read_u32(file);
 	transform.transObjects = malloc(transform.transCount * sizeof(HX_STRING));
 	for (u32 i = 0; i < transform.transCount; ++i)
 		transform.transObjects[i] = hmx_string_load(file);
 
-	transform.constraint = iohelper_readu32(file);
+	transform.constraint = iohelper_read_u32(file);
 
 	transform.targetRef = hmx_string_load(file);
 
-	transform.preserveScale = (iohelper_readu8(file) != 0);
+	transform.preserveScale = (iohelper_read_u8(file) != 0);
 
 	transform.parentRef = hmx_string_load(file);
 

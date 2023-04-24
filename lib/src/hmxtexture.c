@@ -7,18 +7,18 @@
 HX_TEXTURE hmx_texture_load(FILE *file)
 {
 	HX_TEXTURE tex;
-	tex.version = iohelper_readu32(file);
+	tex.version = iohelper_read_u32(file);
 
-	tex.width = iohelper_readu32(file);
-	tex.height = iohelper_readu32(file);
-	tex.bpp = iohelper_readu32(file);
+	tex.width = iohelper_read_u32(file);
+	tex.height = iohelper_read_u32(file);
+	tex.bpp = iohelper_read_u32(file);
 
 	tex.bmpName = hmx_string_load(file);
 
-	tex.index_f = iohelper_readf(file);
-	tex.index = iohelper_readu32(file);
+	tex.index_f = iohelper_read_f32(file);
+	tex.index = iohelper_read_u32(file);
 
-	tex.useExtPath = (iohelper_readu8(file) != 0);
+	tex.useExtPath = (iohelper_read_u8(file) != 0);
 
 	tex.bmp = hmx_bitmap_load(file);
 	return tex;

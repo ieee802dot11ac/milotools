@@ -3,6 +3,7 @@
 #include "hmxcam.h"
 #include "hmxmesh.h"
 #include "hmxtexture.h"
+#include "hmxmaterial.h"
 #include <stdbool.h>
 #include <stddef.h>
 #define _GNU_SOURCE // For fcloseall()
@@ -14,10 +15,12 @@
 #include <string.h>
 #include "hmxcommon.h"
 #include "hmxstring.h"
+#include "spngwrapper.h"
 #include "hmx.h"
 #include "hmxobj.h"
 #include "hxconv.h"
 #include "hmxcolor.h"
+#include <spng.h>
 
 #define PROGRAM_NAME "HXConverter"
 #define PROGRAM_VERSION "v0.1.1"
@@ -136,18 +139,23 @@ ACCEPT_PATHS:
 	} else if (inputFileType == IFILETYPE_HX_TEX && outputFileType == OFILETYPE_NETPBM_PAM) {
 		if (!conv_hxtex_to_pam(inputPath, outputPath))
 			goto EXIT_FAILED;
+	} else if (inputFileType == IFILETYPE_HX_TEX && outputFileType == OFILETYPE_PNG) {
+		if (!conv_hxtex_to_png(inputPath, outputPath))
+			goto EXIT_FAILED;
 	} else if (inputFileType == IFILETYPE_HX_LIGHT) {
 		HX_LIGHT light = hmx_light_load(fopen(inputPath, "r"));
 		hmx_light_print(light);
-		goto EXIT_SUCCEED;
 	} else if (inputFileType == IFILETYPE_HX_CAM) {
 		HX_CAM cam = hmx_cam_load(fopen(inputPath, "r"));
 		hmx_cam_print(cam);
-		goto EXIT_SUCCEED;
+	} else if (inputFileType == IFILETYPE_HX_MAT && outputFileType == OFILETYPE_WAVEFRONT_MTL) {
+		HX_MATERIAL mat = hmx_material_load(fopen(inputPath, "r"));
+		hmx_material_print(mat);
 	}
 
 EXIT_SUCCEED:
 	exitCode = EXIT_SUCCESS;
+
 EXIT_FAILED:
 	fcloseall();
 	return exitCode;
@@ -163,6 +171,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_LIGHT;
 	} else if (streq(arg, "hmxcam") || streq(arg, "hxc")) {
 		return IFILETYPE_HX_CAM;
+	} else if (streq(arg, "mat") || streq(arg, "hxmat")) {
+		return IFILETYPE_HX_MAT;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -173,20 +183,26 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 		return OFILETYPE_WAVEFRONT_OBJ;
 	} else if (streq(arg, "pam")) {
 		return OFILETYPE_NETPBM_PAM;
+	} else if (streq(arg, "png")) {
+		return OFILETYPE_PNG;
+	} else if (streq(arg, "mtl")) {
+		return OFILETYPE_WAVEFRONT_MTL;
 	}
 	return OFILETYPE_UNKNOWN;
 }
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 {
-	if (streq(ext, "mesh") || streq(ext, "hxm")) {
+	if (streq(ext, "mesh") || streq(ext, "hxmesh")) {
 		return IFILETYPE_HX_MESH;
-	} else if (streq(ext, "tex") || streq(ext, "hxt")) {
+	} else if (streq(ext, "tex") || streq(ext, "hxtex")) {
 		return IFILETYPE_HX_TEX;
-	} else if (streq(ext, "lit") || streq(ext, "hxl")) {
+	} else if (streq(ext, "lit") || streq(ext, "hxlight")) {
 		return IFILETYPE_HX_LIGHT;
 	} else if (streq(ext, "cam") || streq(ext, "hxc")) {
 		return IFILETYPE_HX_CAM;
+	} else if (streq(ext, "mat") || streq(ext, "hxmat")) {
+		return IFILETYPE_HX_MAT;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -197,6 +213,10 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_ext(char const *const ext)
 		return OFILETYPE_WAVEFRONT_OBJ;
 	} else if (streq(ext, "pam")) {
 		return OFILETYPE_NETPBM_PAM;
+	} else if (streq(ext, "png")) {
+		return OFILETYPE_PNG;
+	} else if (streq(ext, "mtl")) {
+		return OFILETYPE_WAVEFRONT_MTL;
 	}
 	return OFILETYPE_UNKNOWN;
 }
@@ -221,6 +241,54 @@ bool is_conversion_supported(SUPPORTED_INPUT_FILETYPE in, SUPPORTED_OUTPUT_FILET
 	 * WILL work even if you uncomment it now.
 	 */
 	// return (in & TYPE_MASK) == (out & TYPE_MASK);
+}
+
+bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePath)
+{
+	FILE *hxTexFile = fopen(hxFilePath, "r");
+	bool ret = true;
+
+	if (hxTexFile == NULL) {
+		fprintf(stderr, "Failed to open file `%s` for reading: %s\n",
+				hxFilePath, strerror(errno));
+		return false;
+	}
+
+	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
+	HX_BITMAP hxBmp = hxTexData.bmp;
+
+	HX_COLOR_8888 *pixels = malloc(sizeof(HX_COLOR_8888) * hxBmp.width * hxBmp.height);
+
+	for (int y = 0; y < hxBmp.height; ++y) {
+		for (int x = 0; x < hxBmp.width; ++x) {
+			u8 pixel;
+			if (hxBmp.bpp == 8) {
+				pixel = hxBmp.texData[x + y * hxBmp.width];
+			} else if (hxBmp.bpp == 4) {
+				size_t addr = (x / 2) + y * (hxBmp.width / 2);
+				u8 shift = (x & 1) << 2;
+				u8 mask = 0xF << shift;
+				pixel = (hxBmp.texData[addr] & mask) >> shift;
+			} else {
+				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file `%s`",
+						hxBmp.bpp,
+						hxFilePath);
+				goto CLEAN_UP_FAILURE;
+			}
+			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
+			color = hmx_color_8888_fix_alpha(color);
+			pixels[x + y * hxBmp.height] = color;
+		}
+	}
+	export_png(pngFilePath, hxBmp.width, hxBmp.height, pixels);
+
+	goto CLEAN_UP_SUCCESS;
+CLEAN_UP_FAILURE:
+	ret = false;
+CLEAN_UP_SUCCESS:
+	free(pixels);
+	fclose(hxTexFile);
+	return ret;
 }
 
 bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePath)

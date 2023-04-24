@@ -31,6 +31,9 @@ typedef int32_t i32;
 typedef int64_t i64;
 typedef ssize_t  is;
 
+typedef float  f32;
+typedef double f64;
+
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -18,42 +18,42 @@
 HX_MESH hmx_mesh_load(FILE *file)
 {
 	HX_MESH mesh;
-	mesh.version = iohelper_readu32(file);
+	mesh.version = iohelper_read_u32(file);
 	mesh.transform = hmx_transform_load(file);
 	mesh.draw = hmx_draw_load(file);
 
 	mesh.matName = hmx_string_load(file);
 	mesh.geometryOwner = hmx_string_load(file);
 
-	mesh.mutableParts = iohelper_readu32(file);
-	mesh.volume = iohelper_readu32(file);
+	mesh.mutableParts = iohelper_read_u32(file);
+	mesh.volume = iohelper_read_u32(file);
 
-	mesh.bsp = iohelper_readu8(file);
+	mesh.bsp = iohelper_read_u8(file);
 
-	mesh.vertCount = iohelper_readu32(file);
+	mesh.vertCount = iohelper_read_u32(file);
 	mesh.vertTable = malloc(sizeof(HX_VERTEX) * mesh.vertCount);
 	assert (mesh.vertTable != NULL);
 	for (u32 i = 0; i < mesh.vertCount; ++i)
 		mesh.vertTable[i] = hmx_vertex_load(file);
 
-	mesh.triCount = iohelper_readu32(file);
+	mesh.triCount = iohelper_read_u32(file);
 	mesh.triTable = malloc(sizeof(HX_VERTEX) * mesh.triCount);
 	assert (mesh.triTable != NULL);
 	for (u32 i = 0; i < mesh.triCount; ++i)
 		mesh.triTable[i] = hmx_triangle_load(file);
 
-	mesh.partCount = iohelper_readu32(file);
+	mesh.partCount = iohelper_read_u32(file);
 	mesh.partTriCounts = malloc(sizeof(u8) * mesh.partCount);
 	u32 shouldMatchTris = 0;
 	for (u32 i = 0; i < mesh.partCount; ++i) {
-		mesh.partTriCounts[i] = iohelper_readu8(file);
+		mesh.partTriCounts[i] = iohelper_read_u8(file);
 		shouldMatchTris += mesh.partTriCounts[i];
 	}
 
 	if (shouldMatchTris != mesh.triCount)
 		warn("Group sizes sum does not match # of triangles in mesh!");
 
-	mesh.charCount = iohelper_readu32(file);
+	mesh.charCount = iohelper_read_u32(file);
 	mesh.bones = NULL;
 	mesh.boneTransforms = NULL;
 	if (mesh.charCount != 0) {
@@ -69,16 +69,16 @@ HX_MESH hmx_mesh_load(FILE *file)
 
 	mesh.parts = malloc(sizeof(HX_MESHPART) * mesh.partCount);
 	for (u32 i = 0; i < mesh.partCount; ++i) {
-		mesh.parts[i].faceCount = iohelper_readu32(file);
-		mesh.parts[i].vertexCount = iohelper_readu32(file);
+		mesh.parts[i].faceCount = iohelper_read_u32(file);
+		mesh.parts[i].vertexCount = iohelper_read_u32(file);
 
 		mesh.parts[i].faces = malloc(sizeof(u32) * mesh.parts[i].faceCount);
 		mesh.parts[i].vertices = malloc(sizeof(u16) * mesh.parts[i].vertexCount);
 
 		for (u32 si = 0; si < mesh.parts[i].faceCount; ++si)
-			mesh.parts[i].faces[si] = iohelper_readu32(file);
+			mesh.parts[i].faces[si] = iohelper_read_u32(file);
 		for (u32 vi = 0; vi < mesh.parts[i].vertexCount; ++vi)
-			mesh.parts[i].vertices[vi] = iohelper_readu16(file);
+			mesh.parts[i].vertices[vi] = iohelper_read_u16(file);
 	}
 
 	return mesh;

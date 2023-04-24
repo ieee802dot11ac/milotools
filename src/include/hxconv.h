@@ -38,6 +38,7 @@ typedef enum {
 	IFILETYPE_UNKNOWN	= -1,
 	IFILETYPE_HX_MESH	= TYPE_MESH | FORMAT(0),
 	IFILETYPE_HX_TEX	= TYPE_TEX  | FORMAT(0),
+	IFILETYPE_HX_MAT	= TYPE_MAT  | FORMAT(0),
 	IFILETYPE_HX_LIGHT	= TYPE_LIGHT  | FORMAT(0),
 	IFILETYPE_HX_CAM    = TYPE_CAM  | FORMAT(0),
 } SUPPORTED_INPUT_FILETYPE;
@@ -45,13 +46,16 @@ typedef enum {
 typedef enum {
 	OFILETYPE_UNKNOWN	= -1,
 	OFILETYPE_WAVEFRONT_OBJ	= TYPE_MESH | FORMAT(0),
+	OFILETYPE_WAVEFRONT_MTL	= TYPE_MAT | FORMAT(0),
 	OFILETYPE_NETPBM_PAM	= TYPE_TEX  | FORMAT(0),
+	OFILETYPE_PNG		= TYPE_TEX  | FORMAT(1),
 } SUPPORTED_OUTPUT_FILETYPE;
 
 size_t fsize(FILE *file);
 void print_entire_file(FILE *file);
 void print_help(char const *const fileName, FILE *const writeTo);
 
+bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePath);
 bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePath);
 
 bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath);
