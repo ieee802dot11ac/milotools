@@ -18,3 +18,18 @@ void hmx_primitive_sphere_print(HX_SPHERE sphere)
 							 sphere.y,
 							 sphere.z);
 }
+
+HX_RECT hmx_primitive_rect_load(FILE *file)
+{
+	HX_RECT rect;
+	fread(&rect, 1, sizeof(HX_RECT), file);
+	return rect;
+}
+
+void hmx_primitive_rect_print(HX_RECT sphere)
+{
+	printf("HXRect(pos=(%f,%f), size=(%f,%f))", sphere.x,
+							 sphere.y,
+							 sphere.w,
+							 sphere.h);
+}

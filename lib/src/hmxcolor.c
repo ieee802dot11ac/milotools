@@ -27,3 +27,18 @@ void hmx_color_8888_print(HX_COLOR_8888 color)
 					      color.b,
 					      color.a);
 }
+
+void hmx_color_4f_print(HX_COLOR_4F color)
+{
+	printf("HXColor4F(%f, %f, %f, %f)", color.r,
+					      color.g,
+					      color.b,
+						  color.a);
+}
+
+void hmx_color_3f_print(HX_COLOR_3F color)
+{
+	printf("HXColor3F(%f, %f, %f)", color.r,
+					      color.g,
+					      color.b);
+}

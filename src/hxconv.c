@@ -1,5 +1,6 @@
 #include "hmxbitmap.h"
 #include "hmxlight.h"
+#include "hmxcam.h"
 #include "hmxmesh.h"
 #include "hmxtexture.h"
 #include <stdbool.h>
@@ -19,7 +20,7 @@
 #include "hmxcolor.h"
 
 #define PROGRAM_NAME "HXConverter"
-#define PROGRAM_VERSION "v0.1.0"
+#define PROGRAM_VERSION "v0.1.1"
 
 
 int main(int const argc, char const *const *const argv)
@@ -139,6 +140,10 @@ ACCEPT_PATHS:
 		HX_LIGHT light = hmx_light_load(fopen(inputPath, "r"));
 		hmx_light_print(light);
 		goto EXIT_SUCCEED;
+	} else if (inputFileType == IFILETYPE_HX_CAM) {
+		HX_CAM cam = hmx_cam_load(fopen(inputPath, "r"));
+		hmx_cam_print(cam);
+		goto EXIT_SUCCEED;
 	}
 
 EXIT_SUCCEED:
@@ -154,8 +159,10 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_MESH;
 	} else if (streq(arg, "hmxtex") || streq(arg, "hxt")) {
 		return IFILETYPE_HX_TEX;
-	} else if (streq(arg, "lit") || streq(arg, "hxl")) {
+	} else if (streq(arg, "hmxlit") || streq(arg, "hxl")) {
 		return IFILETYPE_HX_LIGHT;
+	} else if (streq(arg, "hmxcam") || streq(arg, "hxc")) {
+		return IFILETYPE_HX_CAM;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -178,6 +185,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_TEX;
 	} else if (streq(ext, "lit") || streq(ext, "hxl")) {
 		return IFILETYPE_HX_LIGHT;
+	} else if (streq(ext, "cam") || streq(ext, "hxc")) {
+		return IFILETYPE_HX_CAM;
 	}
 	return IFILETYPE_UNKNOWN;
 }
