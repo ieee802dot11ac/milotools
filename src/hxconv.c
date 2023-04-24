@@ -56,7 +56,7 @@ int main(int const argc, char const *const *const argv)
 					goto EXIT_FAILED;
 				}
 				skipArgs = 1;
-			} else if (streq(arg, "--input") || streq(arg, "-i")) {
+			} else if (streq(arg, "--output") || streq(arg, "-o")) {
 				if (i == argc - 1) {
 					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
 					goto EXIT_FAILED;
