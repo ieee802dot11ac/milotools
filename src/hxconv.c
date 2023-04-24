@@ -135,7 +135,7 @@ ACCEPT_PATHS:
 	} else if (inputFileType == IFILETYPE_HX_LIGHT) {
 		HX_LIGHT light = hmx_light_load(fopen(inputPath, "r"));
 		hmx_light_print(light);
-		goto EXIT_FAILED;
+		goto EXIT_SUCCEED;
 	}
 
 EXIT_SUCCEED:
