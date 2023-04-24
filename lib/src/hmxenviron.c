@@ -4,8 +4,8 @@
 
 HX_FOG hmx_fog_load(FILE *file) {
     HX_FOG fog;
-    fog.fogStart = iohelper_readf(file);
-    fog.fogEnd = iohelper_readf(file);
+    fog.fogStart = iohelper_read_f32(file);
+    fog.fogEnd = iohelper_read_f32(file);
     fog.fogColor = hmx_color_4f_load(file);
 }
 

@@ -9,12 +9,12 @@
 
 HX_CAM hmx_cam_load(FILE *file) {
     HX_CAM cam;
-    cam.version = iohelper_readu32(file);
+    cam.version = iohelper_read_u32(file);
     cam.trans = hmx_transform_load(file);
     cam.draw = hmx_draw_load(file);
-    cam.near_plane = iohelper_readf(file);
-    cam.far_plane = iohelper_readf(file);
-    cam.y_fov = iohelper_readf(file);
+    cam.near_plane = iohelper_read_f32(file);
+    cam.far_plane = iohelper_read_f32(file);
+    cam.y_fov = iohelper_read_f32(file);
     cam.screen_rect = hmx_primitive_rect_load(file);
     fread(&cam.z_range, sizeof(Vector2f), 1, file);
     cam.target_tex = hmx_string_load(file);
