@@ -1,5 +1,5 @@
 #pragma once
-#include "imhex/patterns/group.hexpat"
+#include "imhex/patterns/facelist.hexpat"
 #include "imhex/patterns/string.hexpat"
 #include "imhex/patterns/transform.hexpat"
 #include "imhex/patterns/vertex.hexpat"
@@ -39,8 +39,8 @@ struct HX_MESH {
 	u32 triCount;
 	HX_TRIANGLE triTable[triCount];
 
-	u32 groupSizesCount; // weight groups?
-	u8 groupSizes[groupSizesCount]; // sum should == triCount
+	u32 partCount;
+	u8 partTriCounts[partCount]; // sum should == total number of triangles(triCount)
 
 	u32 charCount; // no bones if == 0
 	if (charCount > 0) {
@@ -48,5 +48,5 @@ struct HX_MESH {
 		HX_MATRIX boneTransforms[4];
 	}
 
-	HX_GROUP groups[groupSizesCount];
+	HX_FACE_LIST parts[partCount];
 };

@@ -8,7 +8,9 @@ extern "C" {
 #include <stdio.h>
 
 #include "hmxcommon.h"
-
+#include "hmxmeshpart.h"
+#include "hmxmatrix.h"
+#include "hmxdraw.h"
 #include "hmxtransform.h"
 #include "hmxstring.h"
 #include "hmxprimitive.h"
@@ -51,33 +53,35 @@ INLINE char *MUTABLE_ENUM_name(MUTABLE_ENUM mut)
 
 
 typedef struct {
-	// starting stuff
-	u32 version; // should be 25
-	HX_TRANSFORM transform; // love me some 3d environments
-
-	// bounding stuff. textures. fun times!
-	HX_SPHERE bounding;
-
-	u8 _unknown0[9];
+	u32 version;			// should be 25
+	HX_TRANSFORM transform;		// love me some 3d environments
+	HX_DRAW draw;
 
 	HX_STRING matName;
+	HX_STRING geometryOwner;	// "geometry owner" (???????)
 
-	// "geometry owner" (???????)
-	HX_STRING geometryOwner;
 	MUTABLE_ENUM mutableParts;
 	VOLUME_ENUM volume;
-	u8 bsp; // no clue
-	
+	u8 bsp;				// never observed, always 0
+
 	u32 vertCount;
 	HX_VERTEX* vertTable;
+
 	u32 triCount;
 	HX_TRIANGLE* triTable;
 
-	u8 _unknown1[16*4];
-} HX_MESH_FILE_GH;
+	u32 partCount;
+	u8 *partTriCounts;		// sum should == triCount
 
-HX_MESH_FILE_GH hmx_mesh_load(FILE *file);
-void hmx_mesh_print(HX_MESH_FILE_GH meshData);
+	u32 charCount;			// no bones if == 0
+	HX_STRING *bones;		// NULL if charCount == 0, 4 strings if != 0
+	HX_MATRIX *boneTransforms;	// NULL if charCount == 0, 4 matrices if != 0
+
+	HX_MESHPART *parts;
+} HX_MESH;
+
+HX_MESH hmx_mesh_load(FILE *file);
+void hmx_mesh_print(HX_MESH meshData);
 
 #ifdef __cplusplus
 } /* extern "C" */

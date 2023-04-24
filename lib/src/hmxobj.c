@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-OBJData obj_from_hmx(HX_MESH_FILE_GH const hxmesh)
+OBJData obj_from_hmx(HX_MESH const hxmesh)
 {
 	OBJData objmesh = {
 		.vertexCount	= hxmesh.vertCount,

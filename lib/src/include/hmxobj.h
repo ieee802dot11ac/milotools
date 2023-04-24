@@ -74,7 +74,7 @@ typedef struct {
 	OBJFace *faces;
 } OBJData;
 
-OBJData obj_from_hmx(HX_MESH_FILE_GH const hxmesh);
+OBJData obj_from_hmx(HX_MESH const hxmesh);
 void obj_write(OBJData const mesh, FILE *const write);
 void obj_print(OBJData const mesh);
 

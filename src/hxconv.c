@@ -1,5 +1,6 @@
 #include "hmxbitmap.h"
 #include "hmxlight.h"
+#include "hmxmesh.h"
 #include "hmxtexture.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -127,6 +128,8 @@ ACCEPT_PATHS:
 	}
 
 	if (inputFileType == IFILETYPE_HX_MESH && outputFileType == OFILETYPE_WAVEFRONT_OBJ) {
+		HX_MESH mesh = hmx_mesh_load(fopen(inputPath, "r"));
+		hmx_mesh_print(mesh);
 		if (!conv_hxmesh_to_obj(inputPath, outputPath))
 			goto EXIT_FAILED;
 	} else if (inputFileType == IFILETYPE_HX_TEX && outputFileType == OFILETYPE_NETPBM_PAM) {
@@ -286,7 +289,7 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		return false;
 	}
 
-	HX_MESH_FILE_GH hxMeshData = hmx_mesh_load(hxMeshFile);
+	HX_MESH hxMeshData = hmx_mesh_load(hxMeshFile);
 	fclose(hxMeshFile);
 	OBJData obj = obj_from_hmx(hxMeshData);
 

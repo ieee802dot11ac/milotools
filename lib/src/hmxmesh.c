@@ -1,23 +1,26 @@
 #include "hmxmesh.h"
 #include "hmxcommon.h"
+#include "hmxmeshpart.h"
+#include "hmxmatrix.h"
 #include "hmxstring.h"
 #include "hmxtransform.h"
+#include "hmxtriangle.h"
 #include "hmxvertex.h"
 #include "iohelper.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <err.h>
 
-HX_MESH_FILE_GH hmx_mesh_load(FILE *file)
+// #define MESH_VERBOSE_TRIANGLE_PARTS
+// #define MESH_VERBOSE_VERTEX_PARTS
+
+HX_MESH hmx_mesh_load(FILE *file)
 {
-	HX_MESH_FILE_GH mesh;
+	HX_MESH mesh;
 	mesh.version = iohelper_readu32(file);
-
 	mesh.transform = hmx_transform_load(file);
-	mesh.bounding = hmx_primitive_sphere_load(file);
-
-	for (u32 i = 0; i < 9; ++i)
-		mesh._unknown0[i] = iohelper_readu8(file);
+	mesh.draw = hmx_draw_load(file);
 
 	mesh.matName = hmx_string_load(file);
 	mesh.geometryOwner = hmx_string_load(file);
@@ -39,12 +42,49 @@ HX_MESH_FILE_GH hmx_mesh_load(FILE *file)
 	for (u32 i = 0; i < mesh.triCount; ++i)
 		mesh.triTable[i] = hmx_triangle_load(file);
 
-	for (u32 i = 0; i < 16 * 4; ++i)
-		mesh._unknown1[i] = iohelper_readu8(file);
+	mesh.partCount = iohelper_readu32(file);
+	mesh.partTriCounts = malloc(sizeof(u8) * mesh.partCount);
+	u32 shouldMatchTris = 0;
+	for (u32 i = 0; i < mesh.partCount; ++i) {
+		mesh.partTriCounts[i] = iohelper_readu8(file);
+		shouldMatchTris += mesh.partTriCounts[i];
+	}
+
+	if (shouldMatchTris != mesh.triCount)
+		warn("Group sizes sum does not match # of triangles in mesh!");
+
+	mesh.charCount = iohelper_readu32(file);
+	mesh.bones = NULL;
+	mesh.boneTransforms = NULL;
+	if (mesh.charCount != 0) {
+		mesh.bones = malloc(4 * sizeof(HX_STRING));
+		mesh.boneTransforms = malloc(4 * sizeof(HX_MATRIX));
+
+		for (u32 i = 0; i < 4; ++i)
+			mesh.bones[i] = hmx_string_load(file);
+
+		for (u32 i = 0; i < 4; ++i)
+			mesh.boneTransforms[i] = hmx_matrix_load(file);
+	}
+
+	mesh.parts = malloc(sizeof(HX_MESHPART) * mesh.partCount);
+	for (u32 i = 0; i < mesh.partCount; ++i) {
+		mesh.parts[i].faceCount = iohelper_readu32(file);
+		mesh.parts[i].vertexCount = iohelper_readu32(file);
+
+		mesh.parts[i].faces = malloc(sizeof(u32) * mesh.parts[i].faceCount);
+		mesh.parts[i].vertices = malloc(sizeof(u16) * mesh.parts[i].vertexCount);
+
+		for (u32 si = 0; si < mesh.parts[i].faceCount; ++si)
+			mesh.parts[i].faces[si] = iohelper_readu32(file);
+		for (u32 vi = 0; vi < mesh.parts[i].vertexCount; ++vi)
+			mesh.parts[i].vertices[vi] = iohelper_readu16(file);
+	}
+
 	return mesh;
 }
 
-void hmx_mesh_print(HX_MESH_FILE_GH mesh)
+void hmx_mesh_print(HX_MESH mesh)
 {
 	printf("VERSION: %u\n", mesh.version);
 
@@ -52,16 +92,8 @@ void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 	hmx_transform_print(mesh.transform);
 	puts("}");
 
-	fputs("BOUNDING: ", stdout);
-	hmx_primitive_sphere_print(mesh.bounding);
-
-	fputs("_unknown0: [", stdout);
-	for (u32 i = 0; i < 9; ++i) {
-		printf("%u", mesh._unknown0[i]);
-		if (i != 8)
-			fputs(", ", stdout);
-	}
-	puts("]");
+	fputs("DRAW: ", stdout);
+	hmx_draw_print(mesh.draw);
 
 	fputs("MATERIAL: ", stdout);
 	hmx_string_print(mesh.matName);
@@ -92,13 +124,70 @@ void hmx_mesh_print(HX_MESH_FILE_GH mesh)
 	}
 	puts("]");
 
-	fputs("_unknown1: [", stdout);
-	for (u32 i = 0; i < 16*4; ++i) {
-		printf("%u", mesh._unknown1[i]);
-		if (i != 16*4-1)
+	// Just guessing how this is structured
+	puts("MESH_PARTS: [");
+	HX_TRIANGLE *triStart = mesh.triTable;
+	for (u32 i = 0; i < mesh.partCount; ++i) {
+		HX_TRIANGLE *triEnd = triStart + mesh.partTriCounts[i];
+		fputs("\tMeshPart(triangles=[", stdout);
+		for (; triStart < triEnd; ++triStart) {
+			assert (triStart < mesh.triTable + mesh.triCount);
+
+#ifndef MESH_VERBOSE_TRIANGLE_PARTS
+			printf("%lu", (triStart - mesh.triTable));
+#else
+			HX_TRIANGLE tri = *triStart;
+			hmx_triangle_print(tri);
+#endif
+			if (triStart != triEnd - 1)
+				fputs(", ", stdout);
+		}
+		fputs("], faces=[", stdout);
+		HX_MESHPART group = mesh.parts[i];
+		u16 *vertStart = group.vertices;
+		u32 prevfaces = 0;
+		for (u32 si = 0; si < group.faceCount; ++si) {
+			u16 *vertEnd = vertStart + group.faces[si] - prevfaces;
+			prevfaces = group.faces[si];
+			fputs("Section([", stdout);
+			for (; vertStart < vertEnd; ++vertStart) {
+				u16 vertId = *vertStart;
+				assert (vertId < mesh.vertCount);
+
+#ifndef MESH_VERBOSE_VERTEX_PARTS
+				printf("%u", vertId);
+#else
+				HX_VERTEX vert = mesh.vertTable[vertId];
+				hmx_vertex_print(vert);
+#endif
+				if (vertStart != vertEnd - 1)
+					fputs(", ", stdout);
+			}
+			fputs("])", stdout);
+			if (si != group.faceCount - 1)
+				fputs(", ", stdout);
+		}
+		fputs("])", stdout);
+		if (i != mesh.partCount - 1)
 			fputs(", ", stdout);
+		putchar('\n');
 	}
 	puts("]");
+	if (mesh.charCount == 0) {
+		puts("BONES: NONE");
+	} else {
+		fputs("BONES: [", stdout);
+		for (u32 i = 0; i < 4; ++i) {
+			fputs("Bone(refId=", stdout);
+			hmx_string_print(mesh.bones[i]);
+			fputs(", transform=", stdout);
+			hmx_matrix_print(mesh.boneTransforms[i]);
+			putchar(')');
+			if (i != 3)
+				fputs(", ", stdout);
+		}
+		puts("]");
+	}
 }
 
 char const *const VOLUME_ENUM_NAME[VOLUME_ENUM_AMOUNT] = {
