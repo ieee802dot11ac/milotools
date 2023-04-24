@@ -15,7 +15,7 @@ typedef enum {
 	kLightFakeSpot,
 	kLightFloorSpot,
 	kLightShadowRef
-} LIGHT_TYPE_ENUM;
+} HX_LIGHT_TYPE;
 
 typedef struct {
 	u32 version; // should be 3
@@ -23,7 +23,7 @@ typedef struct {
 	HX_COLOR_3F color;
 	float intensity;
 	float range;
-	LIGHT_TYPE_ENUM type;
+	HX_LIGHT_TYPE type;
 } HX_LIGHT;
 
 

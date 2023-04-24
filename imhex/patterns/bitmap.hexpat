@@ -1,6 +1,7 @@
+#pragma once
 #include "imhex/patterns/color.hexpat"
 
-enum BITMAP_ENCODING : u32 {
+enum HX_BITMAP_ENCODING : u32 {
 	RGBA = 3,
 	DXT1_BC1 = 8,
 	DXT5_BC3 = 24,
@@ -21,7 +22,7 @@ fn mipmapped_pixel_count(u32 width, u32 height, u8 mipmapLevels)
 struct HX_BITMAP {
 	u8 version;
 	u8 bpp;
-	BITMAP_ENCODING encoding;
+	HX_BITMAP_ENCODING encoding;
 	u8 mipmapLevels;
 	u16 width;
 	u16 height;
@@ -31,7 +32,7 @@ struct HX_BITMAP {
 
 	HX_COLOR_8888 colorPalette[1 << bpp];
 
-	if (encoding == BITMAP_ENCODING::RGBA) {
+	if (encoding == HX_BITMAP_ENCODING::RGBA) {
 		u64 pixelCount = mipmapped_pixel_count(width, height, mipmapLevels);
 		if (bpp == 4) {
 			HX_PALCOLOR_BPP4_RGBA texData[pixelCount / 2]; // 2 pixels per palcolor

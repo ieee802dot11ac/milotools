@@ -1,6 +1,6 @@
 #pragma once
 
-struct HX_FACE_LIST {
+struct HX_MESHPART {
 	u32 faceCount;
 	u32 vertexCount;
 	u32 faces[faceCount];		// list of offsets from this.vertices,
@@ -20,4 +20,4 @@ struct HX_FACE_LIST {
 	// prevFaceValue = (i == 0 ? 0 : faces[i - 1])
 	// realFace[i].length = faces[i] - prevFaceValue
 	// realFace[i].start = &vertices[prevFaceValue];
-}
+};

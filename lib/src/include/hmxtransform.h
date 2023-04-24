@@ -19,10 +19,10 @@ typedef enum
 	kConstraintBillboardXZ,
 	kConstraintBillboardXYZ,
 	kConstraintFastBillboardXYZ,
-	CONSTRAINT_ENUM_AMOUNT
-} CONSTRAINT_ENUM;
+	HX_TRANSFORM_CONSTRAINT_AMOUNT
+} HX_TRANSFORM_CONSTRAINT;
 
-extern char const *const CONSTRAINT_ENUM_NAME[CONSTRAINT_ENUM_AMOUNT];
+extern char const *const HX_TRANSFORM_CONSTRAINT_NAME[HX_TRANSFORM_CONSTRAINT_AMOUNT];
 typedef struct {
 	u32 version; // should be 8
 	float localTransMtx[12]; // local transformation matrix
@@ -33,7 +33,7 @@ typedef struct {
 	HX_STRING *transObjects; // ????? completely optional but if it's there i don't want this thing choking and dying
 
 	// parent mesh stuff
-	CONSTRAINT_ENUM constraint;
+	HX_TRANSFORM_CONSTRAINT constraint;
 	HX_STRING targetRef;
 	bool preserveScale;
 	HX_STRING parentRef;

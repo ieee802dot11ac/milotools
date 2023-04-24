@@ -23,19 +23,19 @@ typedef enum {
 	kVolumeTriangles,
 	kVolumeBSP,
 	kVolumeBox,
-	VOLUME_ENUM_AMOUNT
-} VOLUME_ENUM;
+	HX_VOLUME_TYPE_AMOUNT
+} HX_VOLUME_TYPE;
 
-extern char const *const VOLUME_ENUM_NAME[VOLUME_ENUM_AMOUNT];
+extern char const *const HX_VOLUME_TYPE_NAME[HX_VOLUME_TYPE_AMOUNT];
 
 typedef enum {
 	kMutableNone = 0,
 	kMutableVerts = 31,
 	kMutableFaces = 32,
 	kMutableAll = 63,
-} MUTABLE_ENUM;
+} HX_MUTABLE_TYPE;
 
-INLINE char *MUTABLE_ENUM_name(MUTABLE_ENUM mut)
+INLINE char *HX_MUTABLE_TYPE_name(HX_MUTABLE_TYPE mut)
 {
 	switch (mut) {
 	case kMutableNone:
@@ -60,8 +60,8 @@ typedef struct {
 	HX_STRING matName;
 	HX_STRING geometryOwner;	// "geometry owner" (???????)
 
-	MUTABLE_ENUM mutableParts;
-	VOLUME_ENUM volume;
+	HX_MUTABLE_TYPE mutableParts;
+	HX_VOLUME_TYPE volume;
 	u8 bsp;				// never observed, always 0
 
 	u32 vertCount;

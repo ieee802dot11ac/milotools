@@ -60,7 +60,7 @@ void hmx_transform_print(HX_TRANSFORM transform)
 	}
 
 	fputs("CONSTRAINT: ", stdout);
-	puts(CONSTRAINT_ENUM_NAME[transform.constraint]);
+	puts(HX_TRANSFORM_CONSTRAINT_NAME[transform.constraint]);
 
 	fputs("TARGET_REFERENCE: ", stdout);
 	hmx_string_print(transform.targetRef);
@@ -76,7 +76,7 @@ void hmx_transform_print(HX_TRANSFORM transform)
 	putchar('\n');
 }
 
-char const *const CONSTRAINT_ENUM_NAME[CONSTRAINT_ENUM_AMOUNT] = {
+char const *const HX_TRANSFORM_CONSTRAINT_NAME[HX_TRANSFORM_CONSTRAINT_AMOUNT] = {
 	"ConstraintNone",
 	"ConstraintLocalRotate",
 	"ConstraintParentWorld",

@@ -36,7 +36,7 @@ void hmx_bitmap_print(HX_BITMAP bmp)
 	printf("VERSION: %u\n", bmp.version);
 
 	printf("BPP: %u\n", bmp.bpp);
-	printf("ENCODING: %s\n", BITMAP_ENCODING_ENUM_name(bmp.encoding));
+	printf("ENCODING: %s\n", HX_BITMAP_ENCODING_name(bmp.encoding));
 	printf("WIDTH: %u\n", bmp.width);
 	printf("HEIGHT: %u\n", bmp.height);
 	printf("BYTES_PER_LINE: %u\n", bmp.bytesPerLine);

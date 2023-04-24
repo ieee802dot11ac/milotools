@@ -17,9 +17,9 @@ typedef enum {
 	ATI2_BC5 = 32,
 	TPL_CMP = 72,
 	TPL_CMP_ALPHA = 328
-} BITMAP_ENCODING;
+} HX_BITMAP_ENCODING;
 
-INLINE char *BITMAP_ENCODING_ENUM_name(BITMAP_ENCODING encoding)
+INLINE char *HX_BITMAP_ENCODING_name(HX_BITMAP_ENCODING encoding)
 {
 	switch (encoding) {
 	case RGBA:
@@ -41,7 +41,7 @@ INLINE char *BITMAP_ENCODING_ENUM_name(BITMAP_ENCODING encoding)
 typedef struct {
 	u8 version;
 	u8 bpp;
-	BITMAP_ENCODING encoding;
+	HX_BITMAP_ENCODING encoding;
 	u8 mipmapLevels;
 	u16 width;
 	u16 height;

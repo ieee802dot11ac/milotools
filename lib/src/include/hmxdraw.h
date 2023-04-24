@@ -21,6 +21,7 @@ typedef struct {
 } HX_DRAW;
 
 HX_DRAW hmx_draw_load(FILE *file);
+void hmx_draw_print(HX_DRAW draw);
 
 #ifdef __cplusplus
 } /* extern "C" */
