@@ -1,5 +1,6 @@
-#include "string.hexpat"
-#include "bitmap.hexpat"
+#pragma once
+#include "imhex/patterns/string.hexpat"
+#include "imhex/patterns/bitmap.hexpat"
 
 struct HX_TEXTURE {
 	u32 version;

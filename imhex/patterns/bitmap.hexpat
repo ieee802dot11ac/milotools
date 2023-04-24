@@ -1,4 +1,4 @@
-#include "color.hexpat"
+#include "imhex/patterns/color.hexpat"
 
 enum BITMAP_ENCODING : u32 {
 	RGBA = 3,
