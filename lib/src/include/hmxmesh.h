@@ -39,13 +39,13 @@ INLINE char *HX_MUTABLE_TYPE_name(HX_MUTABLE_TYPE mut)
 {
 	switch (mut) {
 	case kMutableNone:
-		return "MutableNone";
+		return "kMutableNone";
 	case kMutableVerts:
-		return "MutableVerts";
+		return "kMutableVerts";
 	case kMutableFaces:
-		return "MutableFaces";
+		return "kMutableFaces";
 	case kMutableAll:
-		return "MutableAll";
+		return "kMutableAll";
 	}
 	return "UNKNOWN";
 }

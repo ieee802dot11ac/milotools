@@ -85,6 +85,7 @@ INLINE HX_COLOR_3F hmx_color_3f_from_color_4f(HX_COLOR_4F inColor)
 }
 
 void hmx_color_8888_print(HX_COLOR_8888 color);
+HX_COLOR_3F hmx_color_3f_load(FILE* file);
 
 #ifdef __cplusplus
 } /* extern "C" */

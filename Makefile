@@ -21,7 +21,7 @@ LDARGS :=
 AR := ar
 ARARGS := 
 
-.PHONY: all cleanRun genclang run clean mkdirs library binary
+.PHONY: all cleanRun genclang run clean mkdirs library binary install
 
 all: mkdirs library binary
 cleanBuild: clean all
@@ -66,3 +66,7 @@ clean:
 	rm -f vgcore*
 	rm -fr $(BINDIR)/ $(OBJDIR)/
 	rm -fr $(LIBBINDIR)/ $(LIBOBJDIR)/
+
+install:
+	cp lib/bin/libhmxobj.so /usr/lib
+	cp bin/hxconv /usr/bin
