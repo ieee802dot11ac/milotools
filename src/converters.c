@@ -11,6 +11,7 @@
 #include "hmxlight.h"
 #include "hmxmaterial.h"
 #include "hmxcamera.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -27,14 +28,26 @@ int convert(HXConverterArgs args)
 		if (!conv_hxtex_to_png(args.inputPath, args.outputPath))
 			return EXIT_FAILURE;
 	} else if (args.inputFileType == IFILETYPE_HX_LIT) {
-		HX_LIGHT light = hmx_light_load(fopen(args.inputPath, "r"));
+		FILE *file = fopen(args.inputPath, "r");
+		HX_LIGHT light = hmx_light_load(file);
+		fclose(file);
+
 		hmx_light_print(light);
+		hmx_light_cleanup(light);
 	} else if (args.inputFileType == IFILETYPE_HX_CAM) {
-		HX_CAMERA camera = hmx_cam_load(fopen(args.inputPath, "r"));
-		hmx_cam_print(camera);
+		FILE *file = fopen(args.inputPath, "r");
+		HX_CAMERA camera = hmx_camera_load(file);
+		fclose(file);
+
+		hmx_camera_print(camera);
+		hmx_camera_cleanup(camera);
 	} else if (args.inputFileType == IFILETYPE_HX_MAT && args.outputFileType == OFILETYPE_WAVEFRONT_MTL) {
-		HX_MATERIAL mat = hmx_material_load(fopen(args.inputPath, "r"));
+		FILE *file = fopen(args.inputPath, "r");
+		HX_MATERIAL mat = hmx_material_load(file);
+		fclose(file);
+
 		hmx_material_print(mat);
+		hmx_material_cleanup(mat);
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}
@@ -85,6 +98,7 @@ bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePa
 CLEAN_UP_FAILURE:
 	ret = false;
 CLEAN_UP_SUCCESS:
+	hmx_texture_cleanup(hxTexData);
 	free(pixels);
 	fclose(hxTexFile);
 	return ret;
@@ -145,6 +159,7 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 CLEAN_UP_FAILURE:
 	ret = false;
 CLEAN_UP_SUCCESS:
+	hmx_texture_cleanup(hxTexData);
 	fclose(hxTexFile);
 	fclose(pamFile);
 	return ret;
@@ -168,9 +183,11 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 	HX_MESH hxMeshData = hmx_mesh_load(hxMeshFile);
 	fclose(hxMeshFile);
 	OBJData obj = obj_from_hmx(hxMeshData);
+	hmx_mesh_cleanup(hxMeshData);
 
 	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
 	obj_write(obj, objMeshFile);
+	obj_cleanup(obj);
 
 	fclose(objMeshFile);
 	return true;

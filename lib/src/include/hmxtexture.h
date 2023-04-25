@@ -23,6 +23,7 @@ typedef struct {
 } HX_TEXTURE;
 
 HX_TEXTURE hmx_texture_load(FILE *file);
+void hmx_texture_cleanup(HX_TEXTURE tex);
 void hmx_texture_print(HX_TEXTURE tex);
 
 #ifdef __cplusplus

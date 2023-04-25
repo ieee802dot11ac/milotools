@@ -41,6 +41,7 @@ typedef struct {
 
 
 HX_TRANSFORM hmx_transform_load(FILE *file);
+void hmx_transform_cleanup(HX_TRANSFORM transform);
 void hmx_transform_print(HX_TRANSFORM transform);
 
 

@@ -1,5 +1,6 @@
 #include "hmxmesh.h"
 #include "hmxcommon.h"
+#include "hmxdraw.h"
 #include "hmxmeshpart.h"
 #include "hmxmatrix.h"
 #include "hmxstring.h"
@@ -54,17 +55,18 @@ HX_MESH hmx_mesh_load(FILE *file)
 		warn("Group sizes sum does not match # of triangles in mesh!");
 
 	mesh.charCount = iohelper_read_u32(file);
-	mesh.bones = NULL;
-	mesh.boneTransforms = NULL;
 	if (mesh.charCount != 0) {
-		mesh.bones = malloc(4 * sizeof(HX_STRING));
-		mesh.boneTransforms = malloc(4 * sizeof(HX_MATRIX));
-
 		for (u32 i = 0; i < 4; ++i)
 			mesh.bones[i] = hmx_string_load(file);
 
 		for (u32 i = 0; i < 4; ++i)
 			mesh.boneTransforms[i] = hmx_matrix_load(file);
+	} else {
+		for (u32 i = 0; i < 4; ++i) {
+			mesh.bones[i] = (HX_STRING) { .value = NULL, .length = 0 };
+			mesh.boneTransforms[i] = (HX_MATRIX) { 0 };
+		}
+
 	}
 
 	mesh.parts = malloc(sizeof(HX_MESHPART) * mesh.partCount);
@@ -73,7 +75,9 @@ HX_MESH hmx_mesh_load(FILE *file)
 		mesh.parts[i].vertexCount = iohelper_read_u32(file);
 
 		mesh.parts[i].faces = malloc(sizeof(u32) * mesh.parts[i].faceCount);
+		assert(mesh.parts[i].faces != NULL);
 		mesh.parts[i].vertices = malloc(sizeof(u16) * mesh.parts[i].vertexCount);
+		assert(mesh.parts[i].vertices != NULL);
 
 		for (u32 si = 0; si < mesh.parts[i].faceCount; ++si)
 			mesh.parts[i].faces[si] = iohelper_read_u32(file);
@@ -82,6 +86,29 @@ HX_MESH hmx_mesh_load(FILE *file)
 	}
 
 	return mesh;
+}
+
+void hmx_mesh_cleanup(HX_MESH mesh)
+{
+	hmx_transform_cleanup(mesh.transform);
+	hmx_draw_cleanup(mesh.draw);
+	hmx_string_cleanup(mesh.matName);
+	hmx_string_cleanup(mesh.geometryOwner);
+
+	free(mesh.vertTable);
+	free(mesh.triTable);
+	free(mesh.partTriCounts);
+
+	if (mesh.charCount != 0) {
+		for (u32 i = 0; i < 4; ++i)
+			hmx_string_cleanup(mesh.bones[i]);
+	}
+
+	for (u32 i = 0; i < mesh.partCount; ++i) {
+		free(mesh.parts[i].faces);
+		free(mesh.parts[i].vertices);
+	}
+	free(mesh.parts);
 }
 
 void hmx_mesh_print(HX_MESH mesh)

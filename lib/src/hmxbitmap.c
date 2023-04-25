@@ -31,6 +31,12 @@ HX_BITMAP hmx_bitmap_load(FILE *file)
 	return bmp;
 }
 
+void hmx_bitmap_cleanup(HX_BITMAP bmp)
+{
+	free(bmp.colorPalette);
+	free(bmp.texData);
+}
+
 void hmx_bitmap_print(HX_BITMAP bmp)
 {
 	printf("VERSION: %u\n", bmp.version);

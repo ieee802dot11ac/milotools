@@ -77,6 +77,7 @@ INLINE size_t hmx_bitmap_len_tex_data(HX_BITMAP bmp)
 }
 
 HX_BITMAP hmx_bitmap_load(FILE *file);
+void hmx_bitmap_cleanup(HX_BITMAP bmp);
 void hmx_bitmap_print(HX_BITMAP bmp);
 
 

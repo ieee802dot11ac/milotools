@@ -19,7 +19,7 @@ typedef enum {
 
 typedef struct {
 	u32 version; // should be 3
-	HX_TRANSFORM trans;
+	HX_TRANSFORM transform;
 	HX_COLOR_3F color;
 	float intensity;
 	float range;
@@ -28,6 +28,7 @@ typedef struct {
 
 
 HX_LIGHT hmx_light_load(FILE *file);
+void hmx_light_cleanup(HX_LIGHT light);
 void hmx_light_print(HX_LIGHT light);
 
 #ifdef __cplusplus

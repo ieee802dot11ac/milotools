@@ -9,12 +9,13 @@ extern "C" {
 #include <stdio.h>
 
 typedef struct {
-    u32 strLen;
-    char *refName;
+    u32 length;
+    char *value;
 } HX_STRING;
 
 HX_STRING hmx_string_load(FILE* file);
-void hmx_string_print(HX_STRING ref);
+void hmx_string_cleanup(HX_STRING string);
+void hmx_string_print(HX_STRING string);
 
 
 #ifdef __cplusplus

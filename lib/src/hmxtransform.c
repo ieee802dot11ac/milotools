@@ -30,6 +30,16 @@ HX_TRANSFORM hmx_transform_load(FILE *file)
 	return transform;
 }
 
+void hmx_transform_cleanup(HX_TRANSFORM transform)
+{
+	for (u32 i = 0; i < transform.transCount; ++i)
+		hmx_string_cleanup(transform.transObjects[i]);
+	free(transform.transObjects);
+
+	hmx_string_cleanup(transform.targetRef);
+	hmx_string_cleanup(transform.parentRef);
+}
+
 void hmx_transform_print(HX_TRANSFORM transform)
 {
 	printf("VERSION: %u\n", transform.version);

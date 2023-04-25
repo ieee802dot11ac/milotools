@@ -74,14 +74,15 @@ typedef struct {
 	u8 *partTriCounts;		// sum should == triCount
 
 	u32 charCount;			// no bones if == 0
-	HX_STRING *bones;		// NULL if charCount == 0, 4 strings if != 0
-	HX_MATRIX *boneTransforms;	// NULL if charCount == 0, 4 matrices if != 0
+	HX_STRING bones[4];		// all NULL if charCount == 0, 4 strings if != 0
+	HX_MATRIX boneTransforms[4];	// all 0 if charCount == 0, 4 matrices if != 0
 
 	HX_MESHPART *parts;
 } HX_MESH;
 
 HX_MESH hmx_mesh_load(FILE *file);
-void hmx_mesh_print(HX_MESH meshData);
+void hmx_mesh_cleanup(HX_MESH mesh);
+void hmx_mesh_print(HX_MESH mesh);
 
 #ifdef __cplusplus
 } /* extern "C" */

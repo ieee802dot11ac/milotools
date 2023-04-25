@@ -75,6 +75,7 @@ typedef struct {
 } OBJData;
 
 OBJData obj_from_hmx(HX_MESH const hxmesh);
+void obj_cleanup(OBJData mesh);
 void obj_write(OBJData const mesh, FILE *const write);
 void obj_print(OBJData const mesh);
 

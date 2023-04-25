@@ -4,30 +4,38 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 HX_STRING hmx_string_load(FILE *file)
 {
 	u32 len;
-	HX_STRING ret;
+	HX_STRING string;
 	fread(&len, 4, 1, file);
 
-	ret.strLen = len;
-	ret.refName = malloc(ret.strLen);
-	assert (ret.refName != NULL);
+	string.length = len;
 
 	if (len != 0) {
-		for (u32 i = 0; i < len; i++)
-			ret.refName[i] = fgetc(file);
+		string.value = malloc(string.length);
+		assert (string.value != NULL);
+		assert(fread(string.value, 1, len, file) == len);
 	} else {
-		ret.refName = (char*)"\0";
+		string.value = NULL;
 	}
-	return ret;
+
+	return string;
 }
 
-void hmx_string_print(HX_STRING ref)
+void hmx_string_cleanup(HX_STRING string)
+{
+	// if the length is 0, the value is NULL, so DO NOT FREE.
+	if (string.length != 0)
+		free(string.value);
+}
+
+void hmx_string_print(HX_STRING string)
 {
 	putchar('"');
-	for (u32 i = 0; i < ref.strLen; ++i)
-		putchar(ref.refName[i]);
+	for (u32 i = 0; i < string.length; ++i)
+		putchar(string.value[i]);
 	putchar('"');
 }

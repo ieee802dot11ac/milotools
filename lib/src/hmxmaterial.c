@@ -30,6 +30,13 @@ HX_MATERIAL hmx_material_load(FILE *file)
 	return mat;
 }
 
+void hmx_material_cleanup(HX_MATERIAL mat)
+{
+	for (u32 i = 0; i < mat.textureCount; ++i)
+		hmx_material_texture_entry_cleanup(mat.textures[i]);
+	free(mat.textures);
+}
+
 void hmx_material_print(HX_MATERIAL mat)
 {
 	printf("VERSION: %u\n", mat.version);
@@ -72,6 +79,11 @@ HX_MATERIAL_TEXTURE_ENTRY hmx_material_texture_entry_load(FILE *file)
 	texEnt.texWrap = iohelper_read_u32(file);
 	texEnt.texName = hmx_string_load(file);
 	return texEnt;
+}
+
+void hmx_material_texture_entry_cleanup(HX_MATERIAL_TEXTURE_ENTRY texEnt)
+{
+	hmx_string_cleanup(texEnt.texName);
 }
 
 char const *const HX_TEXGEN_NAME[HX_TEXGEN_COUNT] = {

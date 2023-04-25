@@ -23,6 +23,13 @@ HX_DRAW hmx_draw_load(FILE *file)
 	return draw;
 }
 
+void hmx_draw_cleanup(HX_DRAW draw)
+{
+	for (u32 i = 0; i < draw.drawableCount; ++i)
+		hmx_string_cleanup(draw.drawables[i]);
+	free(draw.drawables);
+}
+
 void hmx_draw_print(HX_DRAW draw)
 {
 	printf("VERSION: %u\n", draw.version);

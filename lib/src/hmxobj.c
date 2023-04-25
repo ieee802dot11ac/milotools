@@ -67,6 +67,19 @@ OBJData obj_from_hmx(HX_MESH const hxmesh)
 	return objmesh;
 }
 
+void obj_cleanup(OBJData mesh)
+{
+	free(mesh.vertices);
+	free(mesh.normals);
+	free(mesh.texVertices);
+	for (size_t i = 0; i < mesh.faceCount; ++i) {
+		free(mesh.faces[i].vertexIds);
+		free(mesh.faces[i].texVertexIds);
+		free(mesh.faces[i].normalIds);
+	}
+	free(mesh.faces);
+}
+
 void obj_write(OBJData const mesh, FILE *const file)
 {
 	fputs("# Vertices\n", file);

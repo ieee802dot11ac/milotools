@@ -24,6 +24,12 @@ HX_TEXTURE hmx_texture_load(FILE *file)
 	return tex;
 }
 
+void hmx_texture_cleanup(HX_TEXTURE tex)
+{
+	hmx_string_cleanup(tex.bmpName);
+	hmx_bitmap_cleanup(tex.bmp);
+}
+
 void hmx_texture_print(HX_TEXTURE tex)
 {
 	printf("Version: %u\n", tex.version);
