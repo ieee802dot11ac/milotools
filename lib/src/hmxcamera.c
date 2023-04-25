@@ -1,4 +1,4 @@
-#include "hmxcam.h"
+#include "hmxcamera.h"
 #include "hmxdraw.h"
 #include "hmxobj.h"
 #include "hmxprimitive.h"
@@ -7,8 +7,8 @@
 #include "iohelper.h"
 #include <stdio.h>
 
-HX_CAM hmx_cam_load(FILE *file) {
-    HX_CAM cam;
+HX_CAMERA hmx_cam_load(FILE *file) {
+    HX_CAMERA cam;
     cam.version = iohelper_read_u32(file);
     cam.trans = hmx_transform_load(file);
     cam.draw = hmx_draw_load(file);
@@ -20,7 +20,7 @@ HX_CAM hmx_cam_load(FILE *file) {
     cam.target_tex = hmx_string_load(file);
     return cam;
 }
-void hmx_cam_print(HX_CAM cam) {
+void hmx_cam_print(HX_CAMERA cam) {
     printf("VERSION: %i\n", cam.version);
     printf("BEGIN TRANS\n"); hmx_transform_print(cam.trans); printf("END TRANS\n");
     printf("BEGIN DRAW\n"); hmx_draw_print(cam.draw); printf("\nEND DRAW\n");

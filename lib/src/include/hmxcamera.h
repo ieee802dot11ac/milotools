@@ -37,11 +37,11 @@ typedef struct {
     Vector2f z_range;
 
     HX_STRING target_tex; // RndTex (not sure of exact field name)
-} HX_CAM;
+} HX_CAMERA;
 
 
-HX_CAM hmx_cam_load(FILE *file);
-void hmx_cam_print(HX_CAM cam);
+HX_CAMERA hmx_cam_load(FILE *file);
+void hmx_cam_print(HX_CAMERA cam);
 
 #ifdef __cplusplus
 } /* extern "C" */
