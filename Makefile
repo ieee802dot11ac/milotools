@@ -16,7 +16,7 @@ CC := gcc
 CCARGS := -g -O3 -Wall -Wextra -Wpedantic -I$(SRCDIR)/include/ -I$(LIBSRCDIR)/include/
 
 LD := gcc
-LDARGS := -lspng
+LDARGS :=
 
 AR := ar
 ARARGS := 
@@ -51,7 +51,7 @@ library: $(LIBBINDIR)/libhmxobj.so $(LIBBINDIR)/libhmxobj.a
 
 $(LIBBINDIR)/libhmxobj.so: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
-	$(LD) $(LDARGS) -shared $^ -o $@
+	$(LD) $(LDARGS) -shared $^ -o $@ -lspng
 
 $(LIBBINDIR)/libhmxobj.a: $(LIBOBJECTS)
 	mkdir -p "$(dir $@)"
