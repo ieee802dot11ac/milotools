@@ -31,7 +31,7 @@ void hmx_camera_cleanup(HX_CAMERA camera)
 void hmx_camera_print(HX_CAMERA camera)
 {
     printf("VERSION: %i\n", camera.version);
-    printf("BEGIN TRANSFORM\n"); hmx_transform_print(camera.transform); printf("END transform\n");
+    printf("BEGIN TRANSFORM\n"); hmx_transform_print(camera.transform); printf("END TRANSFORM\n");
     printf("BEGIN DRAW\n"); hmx_draw_print(camera.draw); printf("\nEND DRAW\n");
     printf("NEAR PLANE: %f\n", camera.near_plane);
     printf("FAR PLANE: %f\n", camera.far_plane);
