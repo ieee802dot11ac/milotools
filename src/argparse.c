@@ -2,12 +2,14 @@
 #include "converters.h"
 #include "filetypes.h"
 #include "programinfo.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 int parse_args(int const argc, char const *const *const argv, HXConverterArgs *result)
 {
 	result->inputPath = NULL;
 	result->outputPath = NULL;
+	result->recursePath = NULL;
 	result->inputFileType = IFILETYPE_UNKNOWN;
 	result->outputFileType = OFILETYPE_UNKNOWN;
 
@@ -26,6 +28,13 @@ int parse_args(int const argc, char const *const *const argv, HXConverterArgs *r
 			} else if (streq(arg, "--help") || streq(arg, "-h")) {
 				print_help(argv[0], stdout);
 				return EXIT_SUCCESS;
+			} else if (streq(arg, "--root") || streq(arg, "--recursive") || streq(arg, "-r")) {
+				if (i == argc - 1) {
+					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
+					return EXIT_FAILURE;
+				}
+				result->recursePath = argv[i + 1];
+				skipArgs = 1;
 			} else if (streq(arg, "--input") || streq(arg, "-i")) {
 				if (i == argc - 1) {
 					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
@@ -190,7 +199,10 @@ void print_help(char const *const fileName, FILE *const writeTo)
 	fputs(PROGRAM_NAME PROGRAM_VERSION"\n", writeTo);
 
 	fprintf(writeTo, "%s [-h | --help]: Show this help text.\n", fileName);
-	fprintf(writeTo, "%s [-i | --input <inputtype>] [-o | --output <outputtype>] <input> <output>: Convert files. If -i or -o aren't provided, guess corresponding file type from extension.\n", fileName);
+	fprintf(writeTo, "%s <inputpath> <outputpath>: Convert file. If -i or -o aren't provided, guesses corresponding file type from extension.\n", fileName);
+	fprintf(writeTo, "[-i | --input] <filetype>: Force a filetype for the input.\n");
+	fprintf(writeTo, "[-o | --output] <filetype>: Force a filetype for the output.\n");
+	fprintf(writeTo, "[-r | --root | --recursive] <path>: Recursively converts resources linked inside the input file, using `path` as the root directory for where additional assets are to be loaded from.\n");
 }
 
 size_t fsize(FILE *file)

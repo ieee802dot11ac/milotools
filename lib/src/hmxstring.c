@@ -25,6 +25,14 @@ HX_STRING hmx_string_load(FILE *file)
 	return string;
 }
 
+char *hmx_string_cstring(HX_STRING string)
+{
+	char *const str = malloc(string.length + 1);
+	str[string.length] = 0;
+	memcpy(str, string.value, string.length);
+	return str;
+}
+
 void hmx_string_cleanup(HX_STRING string)
 {
 	// if the length is 0, the value is NULL, so DO NOT FREE.

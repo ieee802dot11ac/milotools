@@ -57,7 +57,7 @@ typedef struct {
 	HX_TRANSFORM transform;		// love me some 3d environments
 	HX_DRAW draw;
 
-	HX_STRING matName;
+	HX_STRING matPath;
 	HX_STRING geometryOwner;	// "geometry owner" (???????)
 
 	HX_MUTABLE_TYPE mutableParts;

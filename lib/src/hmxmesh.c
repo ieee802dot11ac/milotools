@@ -23,7 +23,7 @@ HX_MESH hmx_mesh_load(FILE *file)
 	mesh.transform = hmx_transform_load(file);
 	mesh.draw = hmx_draw_load(file);
 
-	mesh.matName = hmx_string_load(file);
+	mesh.matPath = hmx_string_load(file);
 	mesh.geometryOwner = hmx_string_load(file);
 
 	mesh.mutableParts = iohelper_read_u32(file);
@@ -92,7 +92,7 @@ void hmx_mesh_cleanup(HX_MESH mesh)
 {
 	hmx_transform_cleanup(mesh.transform);
 	hmx_draw_cleanup(mesh.draw);
-	hmx_string_cleanup(mesh.matName);
+	hmx_string_cleanup(mesh.matPath);
 	hmx_string_cleanup(mesh.geometryOwner);
 
 	free(mesh.vertTable);
@@ -123,7 +123,7 @@ void hmx_mesh_print(HX_MESH mesh)
 	hmx_draw_print(mesh.draw);
 
 	fputs("MATERIAL: ", stdout);
-	hmx_string_print(mesh.matName);
+	hmx_string_print(mesh.matPath);
 	putchar('\n');
 
 	fputs("GEOMETRY_OWNER: ", stdout);

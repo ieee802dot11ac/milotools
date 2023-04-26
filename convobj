@@ -1,0 +1,7 @@
+#!/bin/env sh
+
+
+
+OBJNAME="$(echo "$1" | sed "s/\.mesh/\.obj/;s/_basement\//_output\//")"
+echo "$1 -> $OBJNAME"
+LD_LIBRARY_PATH=./lib/bin/ ./bin/hxconv -r _basement/ "$1" "$OBJNAME"

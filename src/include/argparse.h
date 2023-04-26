@@ -12,6 +12,7 @@ extern "C" {
 typedef struct {
 	char const *inputPath;
 	char const *outputPath;
+	char const *recursePath;
 	SUPPORTED_INPUT_FILETYPE inputFileType;
 	SUPPORTED_OUTPUT_FILETYPE outputFileType;
 } HXConverterArgs;

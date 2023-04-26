@@ -18,7 +18,7 @@ bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePa
 bool conv_hxbmp_to_pam(HX_BITMAP hxBmp, char const *const pamFilePath);
 bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePath);
 
-bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath);
+bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath, char const *const recursePath);
 
 
 #ifdef __cplusplus

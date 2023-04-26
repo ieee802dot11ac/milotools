@@ -14,6 +14,7 @@ typedef struct {
 } HX_STRING;
 
 HX_STRING hmx_string_load(FILE* file);
+char *hmx_string_cstring(HX_STRING string);
 void hmx_string_cleanup(HX_STRING string);
 void hmx_string_print(HX_STRING string);
 

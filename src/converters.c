@@ -1,8 +1,10 @@
 #include "converters.h"
 #include "argparse.h"
 #include "hmxenviron.h"
+#include "filetypes.h"
+#include "hmxstring.h"
 #include "programinfo.h"
-
+#include "err.h"
 #include "hmxcolor.h"
 #include "hmxtexture.h"
 #include "hmxbitmap.h"
@@ -20,7 +22,7 @@
 int convert(HXConverterArgs args)
 {
 	if (args.inputFileType == IFILETYPE_HX_MESH && args.outputFileType == OFILETYPE_WAVEFRONT_OBJ) {
-		if (!conv_hxmesh_to_obj(args.inputPath, args.outputPath))
+		if (!conv_hxmesh_to_obj(args.inputPath, args.outputPath, args.recursePath))
 			return EXIT_FAILURE;
 	} else if (args.inputFileType == IFILETYPE_HX_TEX && args.outputFileType == OFILETYPE_NETPBM_PAM) {
 		if (!conv_hxtex_to_pam(args.inputPath, args.outputPath))
@@ -197,27 +199,135 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 	return ret;
 }
 
-bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath)
+bool conv_hxmat_to_mtl(char const *const hxFilePath, char const *const outFilePath, char const *const recursePath)
+{
+	FILE *hxMatFile = fopen(hxFilePath, "r");
+	FILE *mtlMatFile = fopen(outFilePath, "w");
+
+	if (hxMatFile == NULL) {
+		warn("Failed to open file `%s` for reading", hxFilePath);
+		return false;
+	} else if (mtlMatFile == NULL) {
+		warn("Failed to open file `%s` for writing", outFilePath);
+		return false;
+	}
+
+	HX_MATERIAL hxMat = hmx_material_load(hxMatFile);
+	fclose(hxMatFile);
+	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", mtlMatFile);
+	fputs("newmtl DEFAULT\n", mtlMatFile);
+	fprintf(mtlMatFile, "Ka %f %f %f\n", hxMat.color.r, hxMat.color.g, hxMat.color.b);
+	fprintf(mtlMatFile, "Ka %f %f %f\n", hxMat.color.r, hxMat.color.g, hxMat.color.b);
+	fprintf(mtlMatFile, "Tr %f\n", 1.0 - hxMat.color.a); // ?
+	fprintf(mtlMatFile, "Tf %f %f %f\n", hxMat.color.r, hxMat.color.g, hxMat.color.b);
+	if (hxMat.textureCount != 0 && recursePath != NULL) {
+		char *const texPath = hmx_string_cstring(hxMat.textures[0].texName);
+		char *const resourcePath = malloc(strlen(texPath) + strlen(recursePath) + 16);
+		strcpy(resourcePath, recursePath);
+		if (recursePath[strlen(recursePath) - 1] != '/') {
+			resourcePath[strlen(recursePath)] = '/';
+			resourcePath[strlen(recursePath) + 1] = 0;
+		}
+		strcat(resourcePath, texPath);
+		// jank -> png
+		char *const resourceOutPath = malloc(strlen(outFilePath) + strlen(texPath) + 16);
+		strcpy(resourceOutPath, outFilePath);
+		// find and remove the filename from the objFilePath
+		for (char *c = &resourceOutPath[strlen(outFilePath)], *pc=c; c > resourceOutPath; --c) {
+			if (*c == '/') {
+				*pc = 0;
+				break;
+			}
+			pc = c;
+		}
+		strcat(resourceOutPath, texPath);
+		// png file extension
+		resourceOutPath[strlen(resourceOutPath) - 1] = 'g';
+		resourceOutPath[strlen(resourceOutPath) - 2] = 'n';
+		resourceOutPath[strlen(resourceOutPath) - 3] = 'p';
+		texPath[strlen(texPath) - 1] = 'g';
+		texPath[strlen(texPath) - 2] = 'n';
+		texPath[strlen(texPath) - 3] = 'p';
+
+		printf("%s -> %s\n", resourcePath, resourceOutPath);
+		if (conv_hxtex_to_png(resourcePath, resourceOutPath)) {
+			fprintf(mtlMatFile, "map_Ka %s\nmap_Kd %s\n", texPath, texPath);
+		} else {
+			fprintf(stderr, "Failed to load texture file `%s`\n", resourcePath);
+		}
+		free(texPath);
+		free(resourcePath);
+		free(resourceOutPath);
+	}
+
+	hmx_material_cleanup(hxMat);
+
+	fclose(mtlMatFile);
+	return true;
+}
+
+bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath, char const *const recursePath)
 {
 	FILE *hxMeshFile = fopen(hxFilePath, "r");
 	FILE *objMeshFile = fopen(objFilePath, "w");
 
 	if (hxMeshFile == NULL) {
-		fprintf(stderr, "Failed to open file `%s` for reading: %s\n",
-				hxFilePath, strerror(errno));
+		warn("Failed to open file `%s` for reading", hxFilePath);
 		return false;
 	} else if (objMeshFile == NULL) {
-		fprintf(stderr, "Failed to open file `%s` for writing: %s\n",
-				objFilePath, strerror(errno));
+		warn("Failed to open file `%s` for writing", objFilePath);
 		return false;
 	}
 
 	HX_MESH hxMeshData = hmx_mesh_load(hxMeshFile);
 	fclose(hxMeshFile);
 	OBJData obj = obj_from_hmx(hxMeshData);
+	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
+
+	if (recursePath != NULL) {
+		char *const matPath = hmx_string_cstring(hxMeshData.matPath);
+		char *const resourcePath = malloc(strlen(matPath) + strlen(recursePath) + 16);
+
+		strcpy(resourcePath, recursePath);
+		if (recursePath[strlen(recursePath) - 1] != '/') {
+			resourcePath[strlen(recursePath)] = '/';
+			resourcePath[strlen(recursePath)+1] = 0;
+		}
+		strcat(resourcePath, matPath);
+
+		// jank -> mtl
+		char *const resourceOutPath = malloc(strlen(objFilePath) + strlen(matPath) + 16);
+		strcpy(resourceOutPath, objFilePath);
+		// find and remove the filename from the objFilePath
+		for (char *c = &resourceOutPath[strlen(objFilePath)], *pc=c; c > resourceOutPath; --c) {
+			if (*c == '/') {
+				*pc = 0;
+				break;
+			}
+			pc = c;
+		}
+		strcat(resourceOutPath, matPath);
+		// mtl file extension
+		resourceOutPath[strlen(resourceOutPath) - 1] = 'l';
+		resourceOutPath[strlen(resourceOutPath) - 2] = 't';
+		resourceOutPath[strlen(resourceOutPath) - 3] = 'm';
+		matPath[strlen(matPath) - 1] = 'l';
+		matPath[strlen(matPath) - 2] = 't';
+		matPath[strlen(matPath) - 3] = 'm';
+
+		printf("%s -> %s\n", resourcePath, resourceOutPath);
+		if (conv_hxmat_to_mtl(resourcePath, resourceOutPath, recursePath)) {
+			fprintf(objMeshFile, "mtllib %s\n", matPath);
+			fputs("usemtl DEFAULT\n", objMeshFile);
+		} else {
+			fprintf(stderr, "Failed to load material file `%s`\n", resourcePath);
+		}
+		free(matPath);
+		free(resourcePath);
+		free(resourceOutPath);
+	}
 	hmx_mesh_cleanup(hxMeshData);
 
-	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
 	obj_write(obj, objMeshFile);
 	obj_cleanup(obj);
 
