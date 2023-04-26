@@ -12,6 +12,7 @@ HX_BITMAP hmx_bitmap_load(FILE *file)
 
 	bmp.bpp = iohelper_read_u8(file);
 	bmp.encoding = iohelper_read_u32(file);
+	printf("%u %u %u\n", bmp.version, bmp.bpp, bmp.encoding);
 	if (bmp.encoding != RGBA) {
 		fprintf(stderr, "Can only handle RGBA encoding for texture bitmaps currently, sorry!\n");
 	}
