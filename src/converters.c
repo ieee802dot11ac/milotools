@@ -28,8 +28,6 @@ int convert(HXConverterArgs args)
 		if (!conv_hxtex_to_pam(args.inputPath, args.outputPath))
 			return EXIT_FAILURE;
 	} else if (args.inputFileType == IFILETYPE_HX_BMP && args.outputFileType == OFILETYPE_NETPBM_PAM) {
-		printf("%s\n", args.inputPath);
-		fflush(stdout);
 		FILE* hxBmpFile = fopen(args.inputPath, "r");
 		HX_BITMAP hxBmpData = hmx_bitmap_load(hxBmpFile);
 		fclose(hxBmpFile);
@@ -39,8 +37,6 @@ int convert(HXConverterArgs args)
 		if (!conv_hxtex_to_png(args.inputPath, args.outputPath))
 			return EXIT_FAILURE;
 	} else if (args.inputFileType == IFILETYPE_HX_BMP && args.outputFileType == OFILETYPE_PNG) {
-		printf("%s\n", args.inputPath);
-		fflush(stdout);
 		FILE* hxBmpFile = fopen(args.inputPath, "r");
 		HX_BITMAP hxBmpData = hmx_bitmap_load(hxBmpFile);
 		fclose(hxBmpFile);
