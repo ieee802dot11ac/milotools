@@ -1,5 +1,6 @@
 #include "converters.h"
 #include "argparse.h"
+#include "hmxenviron.h"
 #include "programinfo.h"
 
 #include "hmxcolor.h"
@@ -48,6 +49,13 @@ int convert(HXConverterArgs args)
 
 		hmx_material_print(mat);
 		hmx_material_cleanup(mat);
+	} else if (args.inputFileType == IFILETYPE_HX_ENVIRON) {
+		FILE *file = fopen(args.inputPath, "r");
+		HX_ENVIRON environ = hmx_environ_load(file);
+		fclose(file);
+
+		hmx_environ_print(environ);
+		hmx_environ_cleanup(environ);
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}

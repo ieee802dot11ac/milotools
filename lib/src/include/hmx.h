@@ -7,7 +7,8 @@ extern "C" {
 
 #include "hmxtexture.h"
 #include "hmxlight.h"
-#include "hmxcam.h"
+#include "hmxcamera.h"
+#include "hmxenviron.h"
 #include "hmxanim.h"
 #include "hmxbitmap.h"
 #include "hmxobj.h"

@@ -1,5 +1,6 @@
 #include "argparse.h"
 #include "converters.h"
+#include "filetypes.h"
 #include "programinfo.h"
 #include <stdlib.h>
 
@@ -122,11 +123,15 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_MESH;
 	} else if (streq(arg, "hmxtex") || streq(arg, "hxt")) {
 		return IFILETYPE_HX_TEX;
+	} else if (streq(arg, "hmxbitmap") || streq(arg, "hxbmp")) {
+		return IFILETYPE_HX_BMP;
 	} else if (streq(arg, "hmxlit") || streq(arg, "hxl")) {
 		return IFILETYPE_HX_LIT;
 	} else if (streq(arg, "hmxcam") || streq(arg, "hxc")) {
 		return IFILETYPE_HX_CAM;
-	} else if (streq(arg, "mat") || streq(arg, "hxmat")) {
+	} else if (streq(arg, "hmxmat") || streq(arg, "hxmat")) {
+		return IFILETYPE_HX_MAT;
+	} else if (streq(arg, "hmxenvironment") || streq(arg, "hxenv")) {
 		return IFILETYPE_HX_MAT;
 	}
 	return IFILETYPE_UNKNOWN;
@@ -152,12 +157,16 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_MESH;
 	} else if (streq(ext, "tex") || streq(ext, "hxtex")) {
 		return IFILETYPE_HX_TEX;
+	} else if (streq(ext, "bmp_ps2") || streq(ext, "hxbmp")) {
+		return IFILETYPE_HX_BMP;
 	} else if (streq(ext, "lit") || streq(ext, "hxlight")) {
 		return IFILETYPE_HX_LIT;
 	} else if (streq(ext, "cam") || streq(ext, "hxc")) {
 		return IFILETYPE_HX_CAM;
 	} else if (streq(ext, "mat") || streq(ext, "hxmat")) {
 		return IFILETYPE_HX_MAT;
+	} else if (streq(ext, "env") || streq(ext, "hxenviron")) {
+		return IFILETYPE_HX_ENVIRON;
 	}
 	return IFILETYPE_UNKNOWN;
 }
