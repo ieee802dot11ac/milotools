@@ -17,6 +17,7 @@ extern "C" {
 #include "hmxmatrix.h"
 #include "hmxmesh.h"
 #include "hmxmeshpart.h"
+#include "hmxmilo.h"
 #include "hmxobj.h"
 #include "hmxprimitive.h"
 #include "hmxstring.h"
@@ -24,6 +25,7 @@ extern "C" {
 #include "hmxtransform.h"
 #include "hmxtriangle.h"
 #include "hmxvertex.h"
+#include "hmxvgs.h"
 #include "iohelper.h"
 #include "spngwrapper.h"
 

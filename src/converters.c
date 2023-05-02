@@ -31,7 +31,7 @@ int convert(HXConverterArgs args)
 		FILE* hxBmpFile = fopen(args.inputPath, "r");
 		HX_BITMAP hxBmpData = hmx_bitmap_load(hxBmpFile);
 		fclose(hxBmpFile);
-		if (!conv_hxbmp_to_pam(hxBmpData, args.outputPath))
+		if (!conv_hxbmp_to_pam(&hxBmpData, args.outputPath))
 			return EXIT_FAILURE;
 	} else if (args.inputFileType == IFILETYPE_HX_TEX && args.outputFileType == OFILETYPE_PNG) {
 		if (!conv_hxtex_to_png(args.inputPath, args.outputPath))
@@ -131,7 +131,7 @@ bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePa
 	return ret;
 }
 
-bool conv_hxbmp_to_pam (HX_BITMAP hxBmp, char const *const pamFilePath) 
+bool conv_hxbmp_to_pam (HX_BITMAP *hxBmp, char const *const pamFilePath) 
 {
 	FILE *pamFile = fopen(pamFilePath, "w");
 	bool ret = true;
@@ -144,29 +144,29 @@ bool conv_hxbmp_to_pam (HX_BITMAP hxBmp, char const *const pamFilePath)
 	
 	// PAM SHIT STARTS HERE
 	fputs("P7\n", pamFile);
-	fprintf(pamFile, "WIDTH %u\n", hxBmp.width);
-	fprintf(pamFile, "HEIGHT %u\n", hxBmp.height);
+	fprintf(pamFile, "WIDTH %u\n", hxBmp->width);
+	fprintf(pamFile, "HEIGHT %u\n", hxBmp->height);
 	fputs("DEPTH 4\n", pamFile);
 	fputs("MAXVAL 255\n", pamFile);
 	fputs("TUPLTYPE RGB_ALPHA\n", pamFile);
 	fputs("ENDHDR\n", pamFile);
 
-	for (int y = 0; y < hxBmp.height; ++y) {
-		for (int x = 0; x < hxBmp.width; ++x) {
+	for (int y = 0; y < hxBmp->height; ++y) {
+		for (int x = 0; x < hxBmp->width; ++x) {
 			u8 pixel;
-			if (hxBmp.bpp == 8) {
-				pixel = hxBmp.texData[x + y * hxBmp.width];
-			} else if (hxBmp.bpp == 4) {
-				size_t addr = (x / 2) + y * (hxBmp.width / 2);
+			if (hxBmp->bpp == 8) {
+				pixel = hxBmp->texData[x + y * hxBmp->width];
+			} else if (hxBmp->bpp == 4) {
+				size_t addr = (x / 2) + y * (hxBmp->width / 2);
 				u8 shift = (x & 1) << 2;
 				u8 mask = 0xF << shift;
-				pixel = (hxBmp.texData[addr] & mask) >> shift;
+				pixel = (hxBmp->texData[addr] & mask) >> shift;
 			} else {
 				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
-						hxBmp.bpp);
+						hxBmp->bpp);
 				goto CLEAN_UP_FAILURE;
 			}
-			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
+			HX_COLOR_8888 color = hxBmp->colorPalette[pixel];
 			color = hmx_color_8888_fix_alpha(color);
 			fprintf(pamFile, "%c%c%c%c", color.r,
 						     color.g,
@@ -195,7 +195,7 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 
 	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
 	HX_BITMAP hxBmp = hxTexData.bmp;
-	ret = conv_hxbmp_to_pam(hxBmp, pamFilePath);
+	ret = conv_hxbmp_to_pam(&hxBmp, pamFilePath);
 	hmx_texture_cleanup(hxTexData);
 	fclose(hxTexFile);
 	return ret;
