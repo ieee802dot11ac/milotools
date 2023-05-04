@@ -15,4 +15,7 @@ bool export_png(char const *const expPath,
 	        unsigned int const width, unsigned int const height,
 	        HX_COLOR_8888 const *const pixels);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

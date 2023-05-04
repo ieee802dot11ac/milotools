@@ -55,7 +55,7 @@ typedef struct {
 	HX_COLOR_8888 *colorPalette;
 
 	u8 *texData;
-} HX_BITMAP;
+} HX_BITMAP; // should be 32 + (hmx_bitmap_len_color_palette) + (hmx_bitmap_len_tex_data)
 
 
 INLINE size_t hmx_bitmap_len_color_palette(HX_BITMAP bmp)
