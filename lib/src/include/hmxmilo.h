@@ -1,9 +1,6 @@
 // hmxmilo.h - Harmonix milo "scene"s
 #ifndef HMXMILO_H
 #define HMXMILO_H
-#include "hmxenviron.h"
-#include "hmxtexture.h"
-#include "hmxtransform.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

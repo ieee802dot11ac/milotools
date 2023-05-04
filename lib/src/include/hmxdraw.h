@@ -20,9 +20,9 @@ typedef struct {
     HX_SPHERE bounding;
 } HX_DRAW;
 
-HX_DRAW hmx_draw_load(FILE *file);
-void hmx_draw_cleanup(HX_DRAW draw);
-void hmx_draw_print(HX_DRAW draw);
+extern HX_DRAW hmx_draw_load(FILE *file);
+extern void hmx_draw_cleanup(HX_DRAW draw);
+extern void hmx_draw_print(HX_DRAW draw);
 
 #ifdef __cplusplus
 } /* extern "C" */

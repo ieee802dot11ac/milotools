@@ -84,12 +84,12 @@ INLINE HX_COLOR_3F hmx_color_3f_from_color_4f(HX_COLOR_4F inColor)
 	};
 }
 
-HX_COLOR_8888 hmx_color_8888_load(FILE* file);
-HX_COLOR_4F hmx_color_4f_load(FILE* file);
-HX_COLOR_3F hmx_color_3f_load(FILE* file);
-void hmx_color_8888_print(HX_COLOR_8888 color);
-void hmx_color_4f_print(HX_COLOR_4F color);
-void hmx_color_3f_print(HX_COLOR_3F color);
+extern HX_COLOR_8888 hmx_color_8888_load(FILE* file);
+extern HX_COLOR_4F hmx_color_4f_load(FILE* file);
+extern HX_COLOR_3F hmx_color_3f_load(FILE* file);
+extern void hmx_color_8888_print(HX_COLOR_8888 color);
+extern void hmx_color_4f_print(HX_COLOR_4F color);
+extern void hmx_color_3f_print(HX_COLOR_3F color);
 
 #ifdef __cplusplus
 } /* extern "C" */

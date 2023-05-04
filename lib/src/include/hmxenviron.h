@@ -28,12 +28,12 @@ typedef struct {
     u8 fogEnable;
 } HX_ENVIRON;
 
-HX_FOG hmx_fog_load(FILE *file);
-void hmx_fog_print(HX_FOG fog);
+extern HX_FOG hmx_fog_load(FILE *file);
+extern void hmx_fog_print(HX_FOG fog);
 
-HX_ENVIRON hmx_environ_load(FILE *file);
-void hmx_environ_cleanup(HX_ENVIRON environ);
-void hmx_environ_print(HX_ENVIRON environ);
+extern HX_ENVIRON hmx_environ_load(FILE *file);
+extern void hmx_environ_cleanup(HX_ENVIRON environ);
+extern void hmx_environ_print(HX_ENVIRON environ);
 
 #ifdef __cplusplus
 }
