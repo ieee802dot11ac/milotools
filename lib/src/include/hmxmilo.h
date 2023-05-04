@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "hmx.h"
+#include "hmxtexture.h"
 
 typedef struct {
 	char* class_name;

@@ -99,7 +99,7 @@ bool conv_hxbmp_to_png(HX_BITMAP hxBmp, char const *const pngFilePath) {
 			}
 			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
 			color = hmx_color_8888_fix_alpha(color);
-			pixels[x + y * hxBmp.height] = color;
+			pixels[x + y * hxBmp.width] = color;
 		}
 	}
 	export_png(pngFilePath, hxBmp.width, hxBmp.height, pixels);
