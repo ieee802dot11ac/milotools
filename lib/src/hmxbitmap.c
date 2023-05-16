@@ -9,25 +9,44 @@ HX_BITMAP hmx_bitmap_load(FILE *file)
 {
 	HX_BITMAP bmp;
 	bmp.version = iohelper_read_u8(file);
-
 	bmp.bpp = iohelper_read_u8(file);
-	bmp.encoding = iohelper_read_u32(file);
-	printf("%u %u %u\n", bmp.version, bmp.bpp, bmp.encoding);
-	if (bmp.encoding != RGBA) {
-		fprintf(stderr, "Can only handle RGBA encoding for texture bitmaps currently, sorry!\n");
+	if (bmp.version == 1) {
+		bmp.encoding = iohelper_read_u32(file);
+		printf("%u %u %u\n", bmp.version, bmp.bpp, bmp.encoding);
+		if (bmp.encoding != RGBA) {
+			fprintf(stderr, "Can only handle RGBA encoding for texture bitmaps currently, sorry!\n");
+		}
+
+		bmp.mipmapLevels = iohelper_read_u8(file);
+		bmp.width = iohelper_read_u16(file);
+		bmp.height = iohelper_read_u16(file);
+		bmp.bytesPerLine = iohelper_read_u16(file);
+
+		fread(bmp.padding, 1, 19, file);
+
+		bmp.colorPalette = malloc(sizeof(HX_COLOR_8888) * hmx_bitmap_len_color_palette(bmp));
+		fread(bmp.colorPalette, sizeof(HX_COLOR_8888), hmx_bitmap_len_color_palette(bmp), file);
+		bmp.texData = malloc(sizeof(u8) * hmx_bitmap_len_tex_data(bmp));
+		fread(bmp.texData, sizeof(u8), hmx_bitmap_len_tex_data(bmp), file);
+	} else if (bmp.version == 0) {
+		bmp.encoding = iohelper_read_u16(file);
+		
+		printf("%u %u %u\n", bmp.version, bmp.bpp, bmp.encoding);
+		if (bmp.encoding != RGBA) {
+			fprintf(stderr, "Can only handle RGBA encoding for texture bitmaps currently, sorry!\n");
+		}
+
+		bmp.width = iohelper_read_u16(file);
+		bmp.height = iohelper_read_u16(file);
+		bmp.bytesPerLine = iohelper_read_u16(file);
+
+		fread(bmp.padding, 1, 7, file);
+
+		bmp.colorPalette = malloc(sizeof(HX_COLOR_8888) * hmx_bitmap_len_color_palette(bmp));
+		fread(bmp.colorPalette, sizeof(HX_COLOR_8888), hmx_bitmap_len_color_palette(bmp), file);
+		bmp.texData = malloc(sizeof(u8) * hmx_bitmap_len_tex_data(bmp));
+		fread(bmp.texData, sizeof(u8), hmx_bitmap_len_tex_data(bmp), file);
 	}
-
-	bmp.mipmapLevels = iohelper_read_u8(file);
-	bmp.width = iohelper_read_u16(file);
-	bmp.height = iohelper_read_u16(file);
-	bmp.bytesPerLine = iohelper_read_u16(file);
-
-	fread(bmp.padding, 1, 19, file);
-
-	bmp.colorPalette = malloc(sizeof(HX_COLOR_8888) * hmx_bitmap_len_color_palette(bmp));
-	fread(bmp.colorPalette, sizeof(HX_COLOR_8888), hmx_bitmap_len_color_palette(bmp), file);
-	bmp.texData = malloc(sizeof(u8) * hmx_bitmap_len_tex_data(bmp));
-	fread(bmp.texData, sizeof(u8), hmx_bitmap_len_tex_data(bmp), file);
 
 	return bmp;
 }
