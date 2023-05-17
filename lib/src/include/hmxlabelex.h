@@ -34,7 +34,7 @@ typedef struct {
 
 extern HX_LABEL_EX *hmx_labelex_load(FILE *file);
 extern void hmx_labelex_cleanup(HX_LABEL_EX *label);
-extern void hmx_labelex_print(HX_LABEL_EX *label);
+extern void hmx_labelex_print(HX_LABEL_EX *label, char* str);
 
 #ifdef __cplusplus
 } /* extern "C" */

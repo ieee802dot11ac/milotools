@@ -15,6 +15,7 @@ into more standard filetypes, such as `.obj` and `.png`.
 |   HMX .mesh   |   .obj        |   Partially Complete          |
 |   HMX .tex    |   .pam        |   Partially Complete          |
 |   HMX .tex    |   .dds        |   Partially Complete          |
+|   HMX .lbl    |   .txt        |   Not Yet Implemented (soon)
 |   HMX .mat    |   .mtl        |   Not Yet Implemented (soon)  |
 |   HMX .tex    |   .png        |   Not Yet Implemented (soon)  |
 |  .rnd_ps2/.gh |   .gltf       |   Not Yet Implemented         |

@@ -40,10 +40,10 @@ void hmx_string_cleanup(HX_STRING string)
 		free(string.value);
 }
 
-void hmx_string_print(HX_STRING string)
+void hmx_string_print(HX_STRING string, char *str)
 {
-	putchar('"');
+	strcat(str, "\"");
 	for (u32 i = 0; i < string.length; ++i)
-		putchar(string.value[i]);
-	putchar('"');
+		strcat(str, &string.value[i]);
+	strcat(str, "\"");
 }
