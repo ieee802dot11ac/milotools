@@ -26,13 +26,23 @@ typedef struct {
 } StreamInfo;
 
 typedef struct {
+    u32 sample_rate; // always 48k
+    float len;
+} VAGStream;
+
+typedef struct {
     char magic[4]; // VgS!
     int version; // 2 (GH1/GH2), 4 (RB1)
     
     StreamInfo channel_info[MAX_CHANNELS];
+
+    VAGStream stream;
 } VgsFile;
 
-float calculate_position_vag(u32 sample_rate, u32 i);
+INLINE float calculate_position_vag(u32 sample_rate, u32 i)
+{
+    return (float)(i * VAG_SAMPLES_PER_BLOCK) / (float)sample_rate;
+}
 
 #ifdef __cplusplus
 }

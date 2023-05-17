@@ -24,7 +24,7 @@ typedef enum
 
 extern char const *const HX_TRANSFORM_CONSTRAINT_NAME[HX_TRANSFORM_CONSTRAINT_AMOUNT];
 typedef struct {
-	u32 version; // should be 8
+	u32 version; // Amplitude (2003) is 4, Guitar Hero is 8
 	float localTransMtx[12]; // local transformation matrix
 	float worldTransMtx[12]; // world transformation matrix
 

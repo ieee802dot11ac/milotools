@@ -32,7 +32,7 @@ typedef enum {
 	kMutableNone = 0,
 	kMutableVerts = 31,
 	kMutableFaces = 32,
-	kMutableAll = 63,
+	kMutableAll = kMutableVerts | kMutableFaces,
 } HX_MUTABLE_TYPE;
 
 INLINE char *HX_MUTABLE_TYPE_name(HX_MUTABLE_TYPE mut)
@@ -53,7 +53,7 @@ INLINE char *HX_MUTABLE_TYPE_name(HX_MUTABLE_TYPE mut)
 
 
 typedef struct {
-	u32 version;			// should be 25
+	u32 version;			// Amplitude (2003) is 14, Guitar Hero is 25
 	HX_TRANSFORM transform;		// love me some 3d environments
 	HX_DRAW draw;
 
