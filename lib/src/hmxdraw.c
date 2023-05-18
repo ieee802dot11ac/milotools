@@ -30,23 +30,23 @@ void hmx_draw_cleanup(HX_DRAW draw)
 	free(draw.drawables);
 }
 
-void hmx_draw_print(HX_DRAW draw, char* str)
+void hmx_draw_print(HX_DRAW draw)
 {
-	sprintf(str, "VERSION: %u\n", draw.version);
+	printf("VERSION: %u\n", draw.version);
 
 	if (!draw.showing)
-		sprintf(str, "SHOWING: FALSE\n");
+		printf("SHOWING: FALSE\n");
 	else
-		sprintf(str, "SHOWING: TRUE\n");
+		printf("SHOWING: TRUE\n");
 
-	sprintf(str, "DRAWABLES: [");
+	fputs("DRAWABLES: [", stdout);
 	for (u32 i = 0; i < draw.drawableCount; ++i) {
-		strcat(str, hmx_string_cstring(draw.drawables[i]));
+		hmx_string_print(draw.drawables[i]);
 		if (i != draw.drawableCount - 1)
-			sprintf(str, ", ");
+			fputs(", ", stdout);
 	}
-	sprintf(str, "]");
+	puts("]");
 
-	sprintf(str, "BOUNDING: ");
+	fputs("BOUNDING: ", stdout);
 	hmx_primitive_sphere_print(draw.bounding);
 }

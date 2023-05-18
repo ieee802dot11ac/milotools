@@ -22,7 +22,7 @@ typedef struct {
 
 extern HX_DRAW hmx_draw_load(FILE *file);
 extern void hmx_draw_cleanup(HX_DRAW draw);
-extern void hmx_draw_print(HX_DRAW draw, char* str);
+extern void hmx_draw_print(HX_DRAW draw);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -93,14 +93,9 @@ int convert(HXConverterArgs args)
 		
 		FILE *file = fopen(args.inputPath, "r");
 		HX_LABEL_EX *label = hmx_labelex_load(file);
-		char *str = malloc(0xFFFF);
 		fclose(file);
 
-		hmx_labelex_print(label, str);
-		if (args.outputFileType == OFILETYPE_TEXT) {
-			FILE *outFile = fopen(args.outputPath, "r");
-			fprintf(outFile, "%s", str);
-		} else printf("%s", str);
+		hmx_labelex_print(label);
 		hmx_labelex_cleanup(label);
 
 	} else {

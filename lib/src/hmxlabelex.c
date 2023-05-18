@@ -27,18 +27,18 @@ void hmx_labelex_cleanup(HX_LABEL_EX *label) {
     free(label);
     return;
 }
-void hmx_labelex_print(HX_LABEL_EX *label, char* str) {
-    sprintf(str, "VERSION: %d\n", label->version);
-	sprintf(str, "TRANSFORM:\n"); hmx_transform_print(label->trans, str); sprintf(str, "END TRANSFORM\n");
-    sprintf(str, "DRAW:\n"); hmx_draw_print(label->draw, str); sprintf(str, "\nEND DRAW\n");
-    sprintf(str, "SHOWING: %d\n", label->showing);
-    sprintf(str, "POSITION: X %f Y %f Z %f\n", label->position.x, label->position.y, label->position.z);
-    sprintf(str, "SIZE: %d\n", label->size);
-    sprintf(str, "SPHERE: X %f Y %f Z %f R %f\n", label->bounding.x, label->bounding.y, label->bounding.z, label->bounding.r);
-    sprintf(str, "FONT TYPE: %s\n", hmx_string_cstring(label->fontType));
-    sprintf(str, "UNKNOWN BOOL: %d\n", label->always0);
-    sprintf(str, "TEXT: %s\n", hmx_string_cstring(label->text));
-    sprintf(str, "FSIZE: %f\n", label->fSize);
-    sprintf(str, "END LABELEX\n");
+void hmx_labelex_print(HX_LABEL_EX *label) {
+    printf("VERSION: %d\n", label->version);
+	printf("TRANSFORM:\n"); hmx_transform_print(label->trans); printf("END TRANSFORM\n");
+    printf("DRAW:\n"); hmx_draw_print(label->draw); printf("\nEND DRAW\n");
+    printf("SHOWING: %d\n", label->showing);
+    printf("POSITION: X %f Y %f Z %f\n", label->position.x, label->position.y, label->position.z);
+    printf("SIZE: %d\n", label->size);
+    printf("SPHERE: X %f Y %f Z %f R %f\n", label->bounding.x, label->bounding.y, label->bounding.z, label->bounding.r);
+    printf("FONT TYPE: %s\n", hmx_string_cstring(label->fontType));
+    printf("UNKNOWN BOOL: %d\n", label->always0);
+    printf("TEXT: %s\n", hmx_string_cstring(label->text));
+    printf("FSIZE: %f\n", label->fSize);
+    printf("END LABELEX\n");
     return;
 }

@@ -150,9 +150,7 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 
 SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 {
-	if (streq(arg, "txt") || streq(arg, "text")) {
-		return OFILETYPE_TEXT;
-	} else if (streq(arg, "obj") || streq(arg, "wavefront")) {
+	if (streq(arg, "obj") || streq(arg, "wavefront")) {
 		return OFILETYPE_WAVEFRONT_OBJ;
 	} else if (streq(arg, "pam")) {
 		return OFILETYPE_NETPBM_PAM;
@@ -188,9 +186,7 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 
 SUPPORTED_OUTPUT_FILETYPE get_output_filetype_ext(char const *const ext)
 {
-	if (streq(ext, "txt")) {
-		return OFILETYPE_TEXT;
-	} else if (streq(ext, "obj")) {
+	if (streq(ext, "obj")) {
 		return OFILETYPE_WAVEFRONT_OBJ;
 	} else if (streq(ext, "pam")) {
 		return OFILETYPE_NETPBM_PAM;
