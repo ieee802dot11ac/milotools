@@ -1,7 +1,7 @@
 # Binary
+*.o
 */bin/
 */obj/
-*.o
 
 # Valgrind core dumps
 vgcore.*
@@ -10,5 +10,11 @@ vgcore.*
 compile_commands.json
 .cache/
 
-# we don't want extracted stuff getting into the repo (aside from basement but shhh)
+# we don't want extracted/copyrighted stuff getting into the repo
 _*/
+*.vgs
+*_ps2
+*.png
+*.gh
+*.kr
+*.mesh

@@ -142,6 +142,10 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_MAT;
 	} else if (streq(arg, "hmxenvironment") || streq(arg, "hxenv")) {
 		return IFILETYPE_HX_MAT;
+	} else if (streq(arg, "hmxlabel") || streq(arg, "hxlbl")) {
+		return IFILETYPE_HX_LBLX;
+	} else if (streq(arg, "hmxbutton") || streq(arg, "hxbtn")) {
+		return IFILETYPE_HX_LBLX;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -170,12 +174,16 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_BMP;
 	} else if (streq(ext, "lit") || streq(ext, "hxlight")) {
 		return IFILETYPE_HX_LIT;
-	} else if (streq(ext, "cam") || streq(ext, "hxc")) {
+	} else if (streq(ext, "cam") || streq(ext, "hxcam")) {
 		return IFILETYPE_HX_CAM;
 	} else if (streq(ext, "mat") || streq(ext, "hxmat")) {
 		return IFILETYPE_HX_MAT;
 	} else if (streq(ext, "env") || streq(ext, "hxenviron")) {
 		return IFILETYPE_HX_ENVIRON;
+	} else if (streq(ext, "lbl") || streq(ext, "hxlabel")) {
+		return IFILETYPE_HX_LBLX;
+	} else if (streq(ext, "btn") || streq(ext, "hxbutton")) {
+		return IFILETYPE_HX_LBLX;
 	}
 	return IFILETYPE_UNKNOWN;
 }

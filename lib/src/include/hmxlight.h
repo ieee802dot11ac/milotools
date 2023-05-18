@@ -27,9 +27,9 @@ typedef struct {
 } HX_LIGHT;
 
 
-HX_LIGHT hmx_light_load(FILE *file);
-void hmx_light_cleanup(HX_LIGHT light);
-void hmx_light_print(HX_LIGHT light);
+extern HX_LIGHT hmx_light_load(FILE *file);
+extern void hmx_light_cleanup(HX_LIGHT light);
+extern void hmx_light_print(HX_LIGHT light);
 
 #ifdef __cplusplus
 } /* extern "C" */

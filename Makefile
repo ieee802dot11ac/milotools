@@ -69,5 +69,7 @@ clean:
 	rm -fr $(LIBBINDIR)/ $(LIBOBJDIR)/
 
 install:
+	mkdir -p /usr/include/hmxobj
+	cp -r lib/src/include /usr/include/hmxobj
 	cp lib/bin/libhmxobj.so /usr/lib
 	cp bin/hxconv /usr/bin

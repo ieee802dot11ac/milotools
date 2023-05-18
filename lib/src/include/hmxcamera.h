@@ -40,9 +40,9 @@ typedef struct {
 } HX_CAMERA;
 
 
-HX_CAMERA hmx_camera_load(FILE *file);
-void hmx_camera_cleanup(HX_CAMERA camera);
-void hmx_camera_print(HX_CAMERA camera);
+extern HX_CAMERA hmx_camera_load(FILE *file);
+extern void hmx_camera_cleanup(HX_CAMERA camera);
+extern void hmx_camera_print(HX_CAMERA camera);
 
 #ifdef __cplusplus
 } /* extern "C" */

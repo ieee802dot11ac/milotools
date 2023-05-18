@@ -55,7 +55,7 @@ typedef struct {
 	HX_COLOR_8888 *colorPalette;
 
 	u8 *texData;
-} HX_BITMAP;
+} HX_BITMAP; // should be 32 + (hmx_bitmap_len_color_palette) + (hmx_bitmap_len_tex_data)
 
 
 INLINE size_t hmx_bitmap_len_color_palette(HX_BITMAP bmp)
@@ -76,9 +76,9 @@ INLINE size_t hmx_bitmap_len_tex_data(HX_BITMAP bmp)
 	return (pixels * bmp.bpp) / 8;
 }
 
-HX_BITMAP hmx_bitmap_load(FILE *file);
-void hmx_bitmap_cleanup(HX_BITMAP bmp);
-void hmx_bitmap_print(HX_BITMAP bmp);
+extern HX_BITMAP hmx_bitmap_load(FILE *file);
+extern void hmx_bitmap_cleanup(HX_BITMAP bmp);
+extern void hmx_bitmap_print(HX_BITMAP bmp);
 
 
 #ifdef __cplusplus

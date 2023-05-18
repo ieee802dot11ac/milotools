@@ -50,8 +50,8 @@ INLINE HX_COLOR_4F hmx_color_4f_from_color_8888(HX_COLOR_8888 inColor)
 {
 	return (HX_COLOR_4F) {
 		.r = ((float) inColor.r) / 255.0,
-		.b = ((float) inColor.g) / 255.0,
-		.g = ((float) inColor.b) / 255.0,
+		.g = ((float) inColor.g) / 255.0,
+		.b = ((float) inColor.b) / 255.0,
 		.a = ((float) inColor.a) / 128.0, // weird half-alpha stuff with color8888
 	};
 }
@@ -60,8 +60,8 @@ INLINE HX_COLOR_4F hmx_color_4f_from_color_3f(HX_COLOR_3F inColor)
 {
 	return (HX_COLOR_4F) {
 		.r = inColor.r,
-		.b = inColor.g,
-		.g = inColor.b,
+		.g = inColor.g,
+		.b = inColor.b,
 		.a = 1, // weird half-alpha stuff with color8888
 	};
 }
@@ -70,8 +70,8 @@ INLINE HX_COLOR_3F hmx_color_3f_from_color_8888(HX_COLOR_8888 inColor)
 {
 	return (HX_COLOR_3F) {
 		.r = ((float) inColor.r) / 255.0,
-		.b = ((float) inColor.g) / 255.0,
-		.g = ((float) inColor.b) / 255.0
+		.g = ((float) inColor.g) / 255.0,
+		.b = ((float) inColor.b) / 255.0
 	};
 }
 
@@ -79,17 +79,17 @@ INLINE HX_COLOR_3F hmx_color_3f_from_color_4f(HX_COLOR_4F inColor)
 {
 	return (HX_COLOR_3F) {
 		.r = inColor.r,
-		.b = inColor.g,
-		.g = inColor.b,
+		.g = inColor.g,
+		.b = inColor.b,
 	};
 }
 
-HX_COLOR_8888 hmx_color_8888_load(FILE* file);
-HX_COLOR_4F hmx_color_4f_load(FILE* file);
-HX_COLOR_3F hmx_color_3f_load(FILE* file);
-void hmx_color_8888_print(HX_COLOR_8888 color);
-void hmx_color_4f_print(HX_COLOR_4F color);
-void hmx_color_3f_print(HX_COLOR_3F color);
+extern HX_COLOR_8888 hmx_color_8888_load(FILE* file);
+extern HX_COLOR_4F hmx_color_4f_load(FILE* file);
+extern HX_COLOR_3F hmx_color_3f_load(FILE* file);
+extern void hmx_color_8888_print(HX_COLOR_8888 color);
+extern void hmx_color_4f_print(HX_COLOR_4F color);
+extern void hmx_color_3f_print(HX_COLOR_3F color);
 
 #ifdef __cplusplus
 } /* extern "C" */
