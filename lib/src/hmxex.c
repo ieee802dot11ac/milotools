@@ -5,7 +5,7 @@
 #include "hmxstring.h"
 #include "iohelper.h"
 
-extern HX_BUTTON_EX *hmx_buttonex_load(FILE *file) {
+HX_BUTTON_EX *hmx_buttonex_load(FILE *file) {
     HX_BUTTON_EX *button = malloc(sizeof(HX_BUTTON_EX) + 0xFF);
     button->version = iohelper_read_u32(file);
     button->trans = hmx_transform_load(file);
@@ -20,7 +20,7 @@ extern HX_BUTTON_EX *hmx_buttonex_load(FILE *file) {
     button->buttonText = hmx_string_load(file);
     return button;
 }
-extern void hmx_buttonex_cleanup(HX_BUTTON_EX *button) {
+void hmx_buttonex_cleanup(HX_BUTTON_EX *button) {
     hmx_transform_cleanup(button->trans);
     hmx_draw_cleanup(button->draw);
     hmx_string_cleanup(button->textType);
@@ -28,11 +28,11 @@ extern void hmx_buttonex_cleanup(HX_BUTTON_EX *button) {
     free(button);
     return;
 }
-extern void hmx_buttonex_print(HX_BUTTON_EX *button) {
+void hmx_buttonex_print(HX_BUTTON_EX *button) {
     printf("VERSION: %d\n", button->version);
 	printf("TRANSFORM:\n"); hmx_transform_print(button->trans); printf("END TRANSFORM\n");
     printf("DRAW:\n"); hmx_draw_print(button->draw); printf("\nEND DRAW\n");
-    printf("UNKNOWN: %d", button->unknown);
+    printf("UNKNOWN: %d\n", button->unknown);
     printf("VEC3 ALWAYS 0: X %f Y %f Z %f\n", button->always0.x, button->always0.y, button->always0.z);
     printf("TEXT TYPE: %s\n", hmx_string_cstring(button->textType));
     printf("SHOWING: %d\n", button->showing);
@@ -80,5 +80,29 @@ void hmx_labelex_print(HX_LABEL_EX *label) {
     printf("TEXT: %s\n", hmx_string_cstring(label->text));
     printf("FSIZE: %f\n", label->fSize);
     printf("END LABELEX\n");
+    return;
+}
+
+HX_PICTURE_EX *hmx_pictureex_load(FILE *file) {
+    HX_PICTURE_EX *pic = malloc(sizeof(HX_PICTURE_EX) + 0xFF);
+    pic->version = iohelper_read_u32(file);
+    pic->trans = hmx_transform_load(file);
+    pic->draw = hmx_draw_load(file);
+    pic->path = hmx_string_load(file);
+    return pic;
+}
+void hmx_pictureex_cleanup(HX_PICTURE_EX *pic) {
+    hmx_transform_cleanup(pic->trans);
+    hmx_draw_cleanup(pic->draw);
+    hmx_string_cleanup(pic->path);
+    free(pic);
+    return;
+}
+void hmx_pictureex_print(HX_PICTURE_EX *pic) {
+    printf("VERSION: %d\n", pic->version);
+	printf("TRANSFORM:\n"); hmx_transform_print(pic->trans); printf("END TRANSFORM\n");
+    printf("DRAW:\n"); hmx_draw_print(pic->draw); printf("\nEND DRAW\n");
+    printf("PATH: %s\n", hmx_string_cstring(pic->path));
+    printf("END PICTUREEX\n");
     return;
 }

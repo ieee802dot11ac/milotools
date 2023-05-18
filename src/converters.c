@@ -106,6 +106,15 @@ int convert(HXConverterArgs args)
 		hmx_buttonex_print(button);
 		hmx_buttonex_cleanup(button);
 
+	} else if (args.inputFileType == IFILETYPE_HX_PICX) {
+		
+		FILE *file = fopen(args.inputPath, "r");
+		HX_PICTURE_EX *pic = hmx_pictureex_load(file);
+		fclose(file);
+
+		hmx_pictureex_print(pic);
+		hmx_pictureex_cleanup(pic);
+
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}
