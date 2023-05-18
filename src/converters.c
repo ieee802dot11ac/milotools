@@ -2,7 +2,6 @@
 #include "argparse.h"
 #include "hmxenviron.h"
 #include "filetypes.h"
-#include "hmxlabelex.h"
 #include "hmxstring.h"
 #include "programinfo.h"
 #include "err.h"
@@ -97,6 +96,15 @@ int convert(HXConverterArgs args)
 
 		hmx_labelex_print(label);
 		hmx_labelex_cleanup(label);
+
+	} else if (args.inputFileType == IFILETYPE_HX_BTNX) {
+		
+		FILE *file = fopen(args.inputPath, "r");
+		HX_BUTTON_EX *button = hmx_buttonex_load(file);
+		fclose(file);
+
+		hmx_buttonex_print(button);
+		hmx_buttonex_cleanup(button);
 
 	} else {
 		fputs("Unknown conversion!\n", stderr);

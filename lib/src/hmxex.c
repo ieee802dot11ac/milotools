@@ -1,9 +1,49 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "hmxlabelex.h"
+#include "hmxex.h"
 #include "hmx.h"
 #include "hmxstring.h"
 #include "iohelper.h"
+
+extern HX_BUTTON_EX *hmx_buttonex_load(FILE *file) {
+    HX_BUTTON_EX *button = malloc(sizeof(HX_BUTTON_EX) + 0xFF);
+    button->version = iohelper_read_u32(file);
+    button->trans = hmx_transform_load(file);
+    button->draw = hmx_draw_load(file);
+    button->unknown = iohelper_read_u32(file);
+    button->always0.x = iohelper_read_f32(file); button->always0.y = iohelper_read_f32(file); button->always0.z = iohelper_read_f32(file);
+    button->textType = hmx_string_load(file);
+    button->showing = iohelper_read_u8(file);
+    button->enabled = iohelper_read_u8(file);
+    button->hundredSomething = iohelper_read_f32(file);
+    button->tenSomething = iohelper_read_f32(file);
+    button->buttonText = hmx_string_load(file);
+    return button;
+}
+extern void hmx_buttonex_cleanup(HX_BUTTON_EX *button) {
+    hmx_transform_cleanup(button->trans);
+    hmx_draw_cleanup(button->draw);
+    hmx_string_cleanup(button->textType);
+    hmx_string_cleanup(button->buttonText);
+    free(button);
+    return;
+}
+extern void hmx_buttonex_print(HX_BUTTON_EX *button) {
+    printf("VERSION: %d\n", button->version);
+	printf("TRANSFORM:\n"); hmx_transform_print(button->trans); printf("END TRANSFORM\n");
+    printf("DRAW:\n"); hmx_draw_print(button->draw); printf("\nEND DRAW\n");
+    printf("UNKNOWN: %d", button->unknown);
+    printf("VEC3 ALWAYS 0: X %f Y %f Z %f\n", button->always0.x, button->always0.y, button->always0.z);
+    printf("TEXT TYPE: %s\n", hmx_string_cstring(button->textType));
+    printf("SHOWING: %d\n", button->showing);
+    printf("ENABLED: %d\n", button->enabled);
+    printf("HUNDRED SOMETHING: %f\n", button->hundredSomething);
+    printf("TEN SOMETHING: %f\n", button->tenSomething);
+    printf("TEXT: %s\n", hmx_string_cstring(button->buttonText));
+    printf("END BUTTONEX");
+    return;
+}
+
 HX_LABEL_EX *hmx_labelex_load(FILE *file) {
     HX_LABEL_EX *label = malloc(sizeof(HX_LABEL_EX) + 0xFF);
     label->version = iohelper_read_u32(file);

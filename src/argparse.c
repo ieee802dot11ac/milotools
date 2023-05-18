@@ -144,6 +144,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_MAT;
 	} else if (streq(arg, "hmxlabel") || streq(arg, "hxlbl")) {
 		return IFILETYPE_HX_LBLX;
+	} else if (streq(arg, "hmxbutton") || streq(arg, "hxbtn")) {
+		return IFILETYPE_HX_LBLX;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -179,6 +181,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 	} else if (streq(ext, "env") || streq(ext, "hxenviron")) {
 		return IFILETYPE_HX_ENVIRON;
 	} else if (streq(ext, "lbl") || streq(ext, "hxlabel")) {
+		return IFILETYPE_HX_LBLX;
+	} else if (streq(ext, "btn") || streq(ext, "hxbutton")) {
 		return IFILETYPE_HX_LBLX;
 	}
 	return IFILETYPE_UNKNOWN;

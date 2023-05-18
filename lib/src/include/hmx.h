@@ -12,7 +12,7 @@ extern "C" {
 #include "hmxcommon.h"
 #include "hmxdraw.h"
 #include "hmxenviron.h"
-#include "hmxlabelex.h"
+#include "hmxex.h"
 #include "hmxlight.h"
 #include "hmxmaterial.h"
 #include "hmxmatrix.h"

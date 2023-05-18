@@ -1,5 +1,6 @@
 #include "hmxcommon.h"
 #include "hmxstring.h"
+#include "iohelper.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -10,7 +11,7 @@ HX_STRING hmx_string_load(FILE *file)
 {
 	u32 len;
 	HX_STRING string;
-	fread(&len, 4, 1, file);
+	len = iohelper_read_u32(file);
 
 	string.length = len;
 
