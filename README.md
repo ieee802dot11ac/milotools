@@ -19,12 +19,12 @@ into more standard filetypes, such as `.obj` and `.png`.
 |   HMX .tex    |   .png        |   Not Yet Implemented (soon)  |
 |  .rnd_ps2/.gh |   .gltf       |   Not Yet Implemented         |
 
-### Building
+## Building
 
-## Linux/WSL2
+### Linux/WSL2
 
 Make sure you have your distro's version of `spng`, names can be found [here.](https://libspng.org/download/) Then, `make`, `make genclang` if you intend on doing things with the project, and `sudo make install` to install, and do a sanity `hxconv` (name of the program) to make sure everything installed properly.
 
-## Windows (no WSL)
+### Windows (no WSL)
 
 you're on your own lmao

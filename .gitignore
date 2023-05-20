@@ -18,3 +18,8 @@ _*/
 *.gh
 *.kr
 *.mesh
+*.tex
+*.bmp_ps2
+*.mat
+*.obj
+*.mtl
