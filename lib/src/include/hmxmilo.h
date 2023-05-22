@@ -7,6 +7,7 @@ extern "C" {
 
 #include "hmx.h"
 #include "hmxtexture.h"
+#include "hmxtransanim.h"
 
 typedef struct {
 	char* class_name;
@@ -22,6 +23,7 @@ typedef struct {
 		HX_PICTURE_EX picture;
 		HX_TEXTURE texture;
 		HX_TRANSFORM transform;
+		HX_TRANSFORM_ANIM transanim;
 	}; // if you run into more, god help you
 } HX_MILOOBJECT;
 

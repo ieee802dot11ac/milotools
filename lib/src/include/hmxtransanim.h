@@ -21,7 +21,7 @@ typedef struct {
 
 typedef struct {
 	u32 version; // pull requests are great
-	HX_ANIM anim;
+	HX_ANIM *anim;
 	HX_STRING trans_object;
 
 	u32 rot_keys_count;
