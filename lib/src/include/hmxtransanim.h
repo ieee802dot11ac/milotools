@@ -1,6 +1,6 @@
 // hmxtransanim.h - Harmonix animations for transforms
-#ifndef HMXANIM_H
-#define HMXANIM_H
+#ifndef HMXTRANSANIM_H
+#define HMXTRANSANIM_H
 #ifdef __cplusplus
 extern "C" {
 #endif
