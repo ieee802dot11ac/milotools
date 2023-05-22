@@ -24,6 +24,7 @@ extern "C" {
 #include "hmxstring.h"
 #include "hmxtexture.h"
 #include "hmxtransform.h"
+#include "hmxtransanim.h"
 #include "hmxtriangle.h"
 #include "hmxvertex.h"
 #include "hmxvgs.h"

@@ -12,10 +12,14 @@ typedef struct {
 	char* class_name;
 	char* name;
 	union {
+		HX_BUTTON_EX button;
 		HX_CAMERA camera;
 		HX_ENVIRON environment;
+		HX_LABEL_EX label;
+		HX_LIGHT light;
 		HX_MATERIAL material;
 		HX_MESH mesh;
+		HX_PICTURE_EX picture;
 		HX_TEXTURE texture;
 		HX_TRANSFORM transform;
 	}; // if you run into more, god help you

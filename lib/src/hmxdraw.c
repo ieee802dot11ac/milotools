@@ -14,7 +14,7 @@ HX_DRAW hmx_draw_load(FILE *file)
 	draw.showing = iohelper_read_u8(file) != 0;
 
 	draw.drawableCount = iohelper_read_u32(file);
-	draw.drawables = malloc(sizeof(HX_STRING) * draw.drawableCount);
+	draw.drawables = malloc((sizeof(HX_STRING) + 0xFF) * draw.drawableCount);
 	for (u32 i = 0; i < draw.drawableCount; ++i)
 		draw.drawables[i] = hmx_string_load(file);
 
@@ -25,9 +25,10 @@ HX_DRAW hmx_draw_load(FILE *file)
 
 void hmx_draw_cleanup(HX_DRAW draw)
 {
-	for (u32 i = 0; i < draw.drawableCount; ++i)
-		hmx_string_cleanup(draw.drawables[i]);
-	free(draw.drawables);
+	if (draw.drawableCount != 0) {
+		for (u32 i = 0; i < draw.drawableCount; ++i) hmx_string_cleanup(draw.drawables[i]);
+		free(draw.drawables);
+	} else perror("drawables is empty! if it crashes, god help you\n");
 }
 
 void hmx_draw_print(HX_DRAW draw)

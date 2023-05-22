@@ -7,6 +7,7 @@ extern "C" {
 
 #include "hmxcommon.h"
 #include "hmxstring.h"
+#include "hmxmatrix.h"
 
 typedef enum
 {
@@ -25,8 +26,8 @@ typedef enum
 extern char const *const HX_TRANSFORM_CONSTRAINT_NAME[HX_TRANSFORM_CONSTRAINT_AMOUNT];
 typedef struct {
 	u32 version; // Amplitude (2003) is 4, Guitar Hero is 8
-	float localTransMtx[12]; // local transformation matrix
-	float worldTransMtx[12]; // world transformation matrix
+	HX_MATRIX localTransMtx; // local transformation matrix
+	HX_MATRIX worldTransMtx; // world transformation matrix
 
 	// i don't even know but trans so based
 	u32 transCount;
