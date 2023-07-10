@@ -26,6 +26,7 @@ extern "C" {
 #include "hmxtransform.h"
 #include "hmxtransanim.h"
 #include "hmxtriangle.h"
+#include "hmxui.h"
 #include "hmxvertex.h"
 #include "hmxvgs.h"
 #include "hmxxbv.h"

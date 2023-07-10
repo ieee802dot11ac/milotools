@@ -2,6 +2,7 @@
 #include "argparse.h"
 #include "hmxenviron.h"
 #include "filetypes.h"
+#include "hmxmilo.h"
 #include "hmxstring.h"
 #include "programinfo.h"
 #include "err.h"
@@ -115,6 +116,12 @@ int convert(HXConverterArgs args)
 		hmx_pictureex_print(pic);
 		hmx_pictureex_cleanup(pic);
 
+	} else if (args.inputFileType == IFILETYPE_HX_MILO) {
+		FILE *file = fopen(args.inputPath, "r");
+		HX_MILOFILE *milo = hmx_milo_load(file);
+		fclose(file);
+		hmx_milo_print(milo);
+		hmx_milo_cleanup(milo);
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}
