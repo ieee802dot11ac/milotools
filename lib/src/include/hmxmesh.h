@@ -33,22 +33,11 @@ typedef enum {
 	kMutableVerts = 31,
 	kMutableFaces = 32,
 	kMutableAll = kMutableVerts | kMutableFaces,
+	HX_MUTABLE_TYPE_AMOUNT = 4
 } HX_MUTABLE_TYPE;
 
-INLINE char *HX_MUTABLE_TYPE_name(HX_MUTABLE_TYPE mut)
-{
-	switch (mut) {
-	case kMutableNone:
-		return "kMutableNone";
-	case kMutableVerts:
-		return "kMutableVerts";
-	case kMutableFaces:
-		return "kMutableFaces";
-	case kMutableAll:
-		return "kMutableAll";
-	}
-	return "UNKNOWN";
-}
+extern char const *const HX_MUTABLE_TYPE_NAME[HX_MUTABLE_TYPE_AMOUNT];
+
 
 
 
