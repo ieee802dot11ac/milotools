@@ -28,6 +28,7 @@ extern "C" {
 #include "hmxtriangle.h"
 #include "hmxvertex.h"
 #include "hmxvgs.h"
+#include "hmxxbv.h"
 #include "iohelper.h"
 #include "spngwrapper.h"
 

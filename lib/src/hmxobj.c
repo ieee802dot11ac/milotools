@@ -3,6 +3,7 @@
 #include "hmxmesh.h"
 #include "hmxtriangle.h"
 #include "hmxvertex.h"
+#include "hmxcolor.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,7 +33,7 @@ OBJData obj_from_hmx(HX_MESH const hxmesh)
 					  .y = hxvert.normY,
 					  .z = hxvert.normZ };
 
-		Vector4f color =	{ .r = hxvert.r,
+		HX_COLOR_4F color =	{ .r = hxvert.r,
 					  .g = hxvert.g,
 					  .b = hxvert.b,
 					  .a = hxvert.a };

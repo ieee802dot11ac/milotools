@@ -20,8 +20,14 @@ typedef struct {
 } KeyVec3;
 
 typedef struct {
-	u32 version; // pull requests are great
+	u32 version;
 	HX_ANIM *anim;
+
+	i32 version_min;
+	bool unkown; // lol
+	u32 string_count;
+	HX_STRING *strings;
+	i32 num[4]; // why
 	HX_STRING trans_object;
 
 	u32 rot_keys_count;
