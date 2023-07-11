@@ -28,8 +28,10 @@ HX_MILOFILE* hmx_milo_load(FILE* file) {
 		}
 	}
 	if (header->version[3] == 0xCB) {
+		FILE* out = fopen("alterna_dumped.bin", "w");
 		for (int i = 0; i < header->blockCount; i++) {
 			u8 *decompressed = decompress(compressed_data[i],header->sizes[i], false, false, NULL);
+			(void)fwrite(decompressed, 1, header->sizes[i], out);
 		}
 	}
 	return milo;
