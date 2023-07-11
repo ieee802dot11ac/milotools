@@ -10,7 +10,7 @@ extern "C" {
 #include "hmxtexture.h"
 #include "hmxtransanim.h"
 
-typedef enum {
+/*typedef enum {
 	/// <summary>
 	/// Raw data. Uncompressed.
 	/// </summary>
@@ -61,7 +61,7 @@ typedef enum {
 	/// <para>*DC3</para>
 	/// </summary>
 	MILO_D = 0xCD
-} BlockStructure; // hacky workaround: just drop the lower endian bytes that are the same :5head:
+} BlockStructure; */
 
 typedef struct {
 	char* type;
@@ -136,6 +136,7 @@ typedef struct {
 HX_MILOFILE* hmx_milo_load(FILE* file);
 void hmx_milo_cleanup(HX_MILOFILE* milo);
 void hmx_milo_print(HX_MILOFILE* milo);
+u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* fd);
 // for more info on how to read these bastards, https://github.com/hmxmilohax/Mackiloha/blob/master/Src/Core/Mackiloha/Milo2/MiloFile.cs
 
 #ifdef __cplusplus

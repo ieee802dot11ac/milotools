@@ -13,6 +13,25 @@ HX_MILOFILE* hmx_milo_load(FILE* file) {
 	printf("0x%X\n", header->version[3]);
 	header->offset = iohelper_read_u32(file);
 	header->blockCount = iohelper_read_u32(file);
+	header->maxBlockSize = iohelper_read_u32(file); // sets max length. if we exceed this, oh shit
+	header->sizes = malloc(4*header->blockCount);
+	for (int i = 0; i < header->blockCount; i++) {
+		header->sizes[i] = iohelper_read_u32(file);
+	}
+	fseek(file, header->offset, SEEK_SET);
+	u8 *compressed_data[header->blockCount];
+	for (int i = 0; i < header->blockCount; i++) {
+		compressed_data[i] = malloc(header->sizes[i]);
+		bool successful = header->sizes[i] == fread(compressed_data[i], 1, header->sizes[i], file);
+		if (!successful) {
+			perror("bad read!\n");
+		}
+	}
+	if (header->version[3] == 0xCB) {
+		for (int i = 0; i < header->blockCount; i++) {
+			u8 *decompressed = decompress(compressed_data[i],header->sizes[i], false, false, NULL);
+		}
+	}
 	return milo;
 }
 
@@ -48,7 +67,7 @@ u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* fd) { 
 			perror("inflateinit2 died!\n");
 			return NULL;
 		}
-		stream.avail_in = (post2010 ? len-4 : len);
+		stream.avail_in = len;
 		stream.next_in = (post2010 ? in_data+4 : in_data);
 		stream.avail_out = len;
 		stream.next_out = out_data;
