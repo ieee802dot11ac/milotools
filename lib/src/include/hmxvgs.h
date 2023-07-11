@@ -43,6 +43,7 @@ INLINE float calculate_position_vag(u32 sample_rate, u32 i)
 {
     return (float)(i * VAG_SAMPLES_PER_BLOCK) / (float)sample_rate;
 }
+// todo: implement this https://github.com/nothings/stb/blob/master/stb_vorbis.c
 
 #ifdef __cplusplus
 }
