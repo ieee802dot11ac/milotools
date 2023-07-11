@@ -116,12 +116,23 @@ int convert(HXConverterArgs args)
 		hmx_pictureex_print(pic);
 		hmx_pictureex_cleanup(pic);
 
-	} else if (args.inputFileType == IFILETYPE_HX_MILO) {
+	} else if (args.inputFileType == IFILETYPE_HX_MILO && args.outputFileType == OFILETYPE_HX_FLATMILO) {
+		
 		FILE *file = fopen(args.inputPath, "r");
-		HX_MILOFILE *milo = hmx_milo_load(file);
+		HX_MILOFILE *milo = hmx_milo_load(file, args.outputPath, true);
 		fclose(file);
+
+		hmx_milo_cleanup(milo);
+		
+	} else if (args.inputFileType == IFILETYPE_HX_MILO && args.outputFileType == OFILETYPE_DIR) {
+
+		FILE *file = fopen(args.inputPath, "r");
+		HX_MILOFILE *milo = hmx_milo_load(file, args.outputPath, false);
+		fclose(file);
+
 		hmx_milo_print(milo);
 		hmx_milo_cleanup(milo);
+
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}

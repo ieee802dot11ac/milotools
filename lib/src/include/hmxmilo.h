@@ -112,7 +112,7 @@ typedef struct {
 } HX_EXTERNALRESOURCES;
 
 typedef struct {
-	i32 version; // 6 (Freq), 10 (Amp/GH1), 24 (GH2), 25 (GDRB), 28 (DC1), 32 (DC2/DC3)
+	i32 version; // 6 (Freq), 10 (Amp/GH1), 24 (GH2), 25 (GDRB), 28 (RBN/DC1), 32 (DC2/DC3)
 	HX_MILOENTRIES meta;
 
 	// Used in GH1-era games
@@ -133,11 +133,10 @@ typedef struct {
 	u32* sizes; // blockCount wide
 } HX_MILOHEADER;
 
-HX_MILOFILE* hmx_milo_load(FILE* file);
+HX_MILOFILE* hmx_milo_load(FILE* file, const char *outfilename, bool flatten);
 void hmx_milo_cleanup(HX_MILOFILE* milo);
 void hmx_milo_print(HX_MILOFILE* milo);
 u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* fd);
-// for more info on how to read these bastards, https://github.com/hmxmilohax/Mackiloha/blob/master/Src/Core/Mackiloha/Milo2/MiloFile.cs
 
 #ifdef __cplusplus
 } /* extern "C" */

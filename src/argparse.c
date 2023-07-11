@@ -150,7 +150,7 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_PICX;
 	} else if (streq(arg, "hmxmilo") || streq(arg, "hxmilo")) {
 		return IFILETYPE_HX_MILO;
-	}
+	} 
 	return IFILETYPE_UNKNOWN;
 }
 
@@ -164,6 +164,10 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 		return OFILETYPE_PNG;
 	} else if (streq(arg, "mtl")) {
 		return OFILETYPE_WAVEFRONT_MTL;
+	} else if (streq(arg, "flatmilo")) {
+		return OFILETYPE_HX_FLATMILO;
+	} else if (streq(arg, "dir")) {
+		return OFILETYPE_DIR;
 	}
 	return OFILETYPE_UNKNOWN;
 }
@@ -206,6 +210,8 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_ext(char const *const ext)
 		return OFILETYPE_PNG;
 	} else if (streq(ext, "mtl")) {
 		return OFILETYPE_WAVEFRONT_MTL;
+	} else if (streq(ext, "flatmilo")) {
+		return OFILETYPE_HX_FLATMILO;
 	}
 	return OFILETYPE_UNKNOWN;
 }
