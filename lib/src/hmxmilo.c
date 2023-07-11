@@ -39,8 +39,8 @@ u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* fd) { 
 	} else {
 		struct z_stream_s stream;
 		stream.zalloc = Z_NULL;
-    	stream.zfree = Z_NULL;
-    	stream.opaque = Z_NULL;
+		stream.zfree = Z_NULL;
+		stream.opaque = Z_NULL;
 		stream.avail_in = 0;
 		stream.next_in = Z_NULL;
 		int status = inflateInit2(&stream, -15);
@@ -51,7 +51,7 @@ u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* fd) { 
 		stream.avail_in = (post2010 ? len-4 : len);
 		stream.next_in = (post2010 ? in_data+4 : in_data);
 		stream.avail_out = len;
-        stream.next_out = out_data;
+		stream.next_out = out_data;
 		status = inflate(&stream, Z_NO_FLUSH);
 		inflateEnd(&stream);
 		return out_data;
