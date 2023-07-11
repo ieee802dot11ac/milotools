@@ -2,6 +2,7 @@
 *.o
 */bin/
 */obj/
+bin/hxconv
 
 # Valgrind core dumps
 vgcore.*
@@ -24,3 +25,6 @@ _*/
 *.obj
 *.mtl
 *.xbv
+*.ipu
+*.rnd
+*.flatmilo
