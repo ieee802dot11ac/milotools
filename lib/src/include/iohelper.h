@@ -7,6 +7,7 @@ extern "C" {
 
 #include "hmxcommon.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <err.h>
 
 #define BASIC_READ(type) \
@@ -61,6 +62,15 @@ INLINE bool iohelper_write_u16_be(FILE *const file, u16 value)
 {
 	u16 beValue = ((value & 0xFF00) >> 8) | ((value & 0xFF) << 8);
 	return (fwrite(&beValue, sizeof(beValue), 1, file) != 1);
+}
+
+INLINE char *iohelper_read_cstring_at(FILE *const file, u32 fpos)
+{
+	char *ret = malloc(1024); u32 prevpos = ftell(file);
+	fseek(file, fpos, SEEK_SET);
+    fgets(ret, 1024, file); 
+    fseek(file, prevpos, SEEK_SET);
+	return ret;
 }
 
 #undef BASIC_READ

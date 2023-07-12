@@ -1,5 +1,6 @@
 #include "converters.h"
 #include "argparse.h"
+#include "hmxark.h"
 #include "hmxenviron.h"
 #include "filetypes.h"
 #include "hmxmilo.h"
@@ -53,6 +54,33 @@ int convert(HXConverterArgs args)
 		if (!conv_hxbmp_to_png(hxBmpData, args.outputPath))
 			return EXIT_FAILURE;
 
+	} else if (args.inputFileType == IFILETYPE_HX_MAT && args.outputFileType == OFILETYPE_WAVEFRONT_MTL) {
+
+		FILE *file = fopen(args.inputPath, "r");
+		HX_MATERIAL mat = hmx_material_load(file);
+		fclose(file);
+
+		hmx_material_print(mat);
+		hmx_material_cleanup(mat);
+
+	} else if (args.inputFileType == IFILETYPE_HX_MILO && args.outputFileType == OFILETYPE_HX_RAWMILO) {
+		
+		FILE *file = fopen(args.inputPath, "r");
+		int status = hmx_milo_decompress(file, args.outputPath);
+		if (status != 0) {
+			printf("decompression error! error: %d", status);
+		}
+		fclose(file);
+		
+	} else if (args.inputFileType == IFILETYPE_HX_RAWMILO && args.outputFileType == OFILETYPE_DIR) {
+
+		FILE *file = fopen(args.inputPath, "r");
+		HX_MILOFILE *milo = hmx_milo_load(file); // TODO implement this
+		fclose(file);
+
+		hmx_milo_print(milo);
+		hmx_milo_cleanup(milo);
+
 	} else if (args.inputFileType == IFILETYPE_HX_LIT) {
 
 		FILE *file = fopen(args.inputPath, "r");
@@ -70,15 +98,6 @@ int convert(HXConverterArgs args)
 
 		hmx_camera_print(camera);
 		hmx_camera_cleanup(camera);
-
-	} else if (args.inputFileType == IFILETYPE_HX_MAT && args.outputFileType == OFILETYPE_WAVEFRONT_MTL) {
-
-		FILE *file = fopen(args.inputPath, "r");
-		HX_MATERIAL mat = hmx_material_load(file);
-		fclose(file);
-
-		hmx_material_print(mat);
-		hmx_material_cleanup(mat);
 
 	} else if (args.inputFileType == IFILETYPE_HX_ENVIRON) {
 
@@ -116,22 +135,12 @@ int convert(HXConverterArgs args)
 		hmx_pictureex_print(pic);
 		hmx_pictureex_cleanup(pic);
 
-	} else if (args.inputFileType == IFILETYPE_HX_MILO && args.outputFileType == OFILETYPE_HX_FLATMILO) {
+	} else if (args.inputFileType == IFILETYPE_HX_ARK) {
 		
 		FILE *file = fopen(args.inputPath, "r");
-		HX_MILOFILE *milo = hmx_milo_load(file, args.outputPath, true);
+		HX_FREQARK *ark = hmx_freq_ark_load(file, NULL);
 		fclose(file);
-
-		hmx_milo_cleanup(milo);
-		
-	} else if (args.inputFileType == IFILETYPE_HX_MILO && args.outputFileType == OFILETYPE_DIR) {
-
-		FILE *file = fopen(args.inputPath, "r");
-		HX_MILOFILE *milo = hmx_milo_load(file, args.outputPath, false);
-		fclose(file);
-
-		hmx_milo_print(milo);
-		hmx_milo_cleanup(milo);
+		hmx_freq_ark_cleanup(ark);
 
 	} else {
 		fputs("Unknown conversion!\n", stderr);

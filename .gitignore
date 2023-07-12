@@ -14,7 +14,6 @@ compile_commands.json
 # we don't want extracted/copyrighted stuff getting into the repo
 _*/
 *.vgs
-*_ps2
 *.png
 *.gh
 *.kr
@@ -26,5 +25,6 @@ _*/
 *.mtl
 *.xbv
 *.ipu
-*.rnd
+*.rnd*
 *.flatmilo
+*.milo*

@@ -133,10 +133,10 @@ typedef struct {
 	u32* sizes; // blockCount wide
 } HX_MILOHEADER;
 
-HX_MILOFILE* hmx_milo_load(FILE* file, const char *outfilename, bool flatten);
+int hmx_milo_decompress(FILE* file, char *outfilename);
+HX_MILOFILE *hmx_milo_load (FILE *file);
 void hmx_milo_cleanup(HX_MILOFILE* milo);
 void hmx_milo_print(HX_MILOFILE* milo);
-u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* fd);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -27,7 +27,7 @@ int parse_args(int const argc, char const *const *const argv, HXConverterArgs *r
 				acceptPosixArgs = false;
 			} else if (streq(arg, "--help") || streq(arg, "-h")) {
 				print_help(argv[0], stdout);
-				return EXIT_SUCCESS;
+				return EXIT_FAILURE;
 			} else if (streq(arg, "--root") || streq(arg, "--recursive") || streq(arg, "-r")) {
 				if (i == argc - 1) {
 					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
@@ -128,6 +128,7 @@ int guess_filetypes_if_unknown(HXConverterArgs *result)
 
 SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 {
+	
 	if (streq(arg, "hmxmesh") || streq(arg, "hxm")) {
 		return IFILETYPE_HX_MESH;
 	} else if (streq(arg, "hmxtex") || streq(arg, "hxt")) {
@@ -141,7 +142,7 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 	} else if (streq(arg, "hmxmat") || streq(arg, "hxmat")) {
 		return IFILETYPE_HX_MAT;
 	} else if (streq(arg, "hmxenvironment") || streq(arg, "hxenv")) {
-		return IFILETYPE_HX_MAT;
+		return IFILETYPE_HX_ENVIRON;
 	} else if (streq(arg, "hmxlabel") || streq(arg, "hxlbl")) {
 		return IFILETYPE_HX_LBLX;
 	} else if (streq(arg, "hmxbutton") || streq(arg, "hxbtn")) {
@@ -150,6 +151,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_PICX;
 	} else if (streq(arg, "hmxmilo") || streq(arg, "hxmilo")) {
 		return IFILETYPE_HX_MILO;
+	} else if (streq(arg, "hmxark") || streq(arg, "hxark")) {
+		return IFILETYPE_HX_ARK;
 	} 
 	return IFILETYPE_UNKNOWN;
 }
@@ -164,8 +167,8 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 		return OFILETYPE_PNG;
 	} else if (streq(arg, "mtl")) {
 		return OFILETYPE_WAVEFRONT_MTL;
-	} else if (streq(arg, "flatmilo")) {
-		return OFILETYPE_HX_FLATMILO;
+	} else if (streq(arg, "rnd")) {
+		return OFILETYPE_HX_RAWMILO;
 	} else if (streq(arg, "dir")) {
 		return OFILETYPE_DIR;
 	}
@@ -196,6 +199,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_PICX;
 	} else if (streq(ext,"rnd") || streq(ext, "rnd_ps2") || streq(ext, "gh")) {
 		return IFILETYPE_HX_MILO;
+	} else if (streq(ext,"ark") || streq(ext, "hdr") || streq(ext,"ARK") || streq(ext, "HDR")) {
+		return IFILETYPE_HX_ARK;
 	}
 	return IFILETYPE_UNKNOWN;
 }
@@ -210,8 +215,8 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_ext(char const *const ext)
 		return OFILETYPE_PNG;
 	} else if (streq(ext, "mtl")) {
 		return OFILETYPE_WAVEFRONT_MTL;
-	} else if (streq(ext, "flatmilo")) {
-		return OFILETYPE_HX_FLATMILO;
+	} else if (streq(ext, "rnd")) {
+		return OFILETYPE_HX_RAWMILO;
 	}
 	return OFILETYPE_UNKNOWN;
 }
@@ -225,6 +230,9 @@ void print_help(char const *const fileName, FILE *const writeTo)
 	fprintf(writeTo, "[-i | --input] <filetype>: Force a filetype for the input.\n");
 	fprintf(writeTo, "[-o | --output] <filetype>: Force a filetype for the output.\n");
 	fprintf(writeTo, "[-r | --root | --recursive] <path>: Recursively converts resources linked inside the input file, using `path` as the root directory for where additional assets are to be loaded from.\n");
+	fprintf(writeTo, "NOTE: currently, you have to unpack milos and extract them as separate stages.\n");
+
+	return;
 }
 
 size_t fsize(FILE *file)
