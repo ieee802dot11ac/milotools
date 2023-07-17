@@ -215,7 +215,7 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_ext(char const *const ext)
 		return OFILETYPE_PNG;
 	} else if (streq(ext, "mtl")) {
 		return OFILETYPE_WAVEFRONT_MTL;
-	} else if (streq(ext, "rnd")) {
+	} else if (streq(ext, "rnd") || streq(ext, "flatmilo")) {
 		return OFILETYPE_HX_RAWMILO;
 	}
 	return OFILETYPE_UNKNOWN;

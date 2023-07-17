@@ -33,13 +33,10 @@ typedef enum {
 	kMutableVerts = 31,
 	kMutableFaces = 32,
 	kMutableAll = kMutableVerts | kMutableFaces,
-	HX_MUTABLE_TYPE_AMOUNT = 4
+	HX_MUTABLE_TYPE_AMOUNT,
 } HX_MUTABLE_TYPE;
 
 extern char const *const HX_MUTABLE_TYPE_NAME[HX_MUTABLE_TYPE_AMOUNT];
-
-
-
 
 typedef struct {
 	u32 version;			// Amplitude (2003) is 14, Guitar Hero is 25

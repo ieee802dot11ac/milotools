@@ -10,16 +10,17 @@ vgcore.*
 # Clang compile commands
 compile_commands.json
 .cache/
+.vscode/
 
 # we don't want extracted/copyrighted stuff getting into the repo
 _*/
 *.vgs
-*.png
+*.png*
 *.gh
 *.kr
 *.mesh
 *.tex
-*.bmp_ps2
+*.bmp*
 *.mat
 *.obj
 *.mtl
@@ -28,3 +29,4 @@ _*/
 *.rnd*
 *.flatmilo
 *.milo*
+*.ARK

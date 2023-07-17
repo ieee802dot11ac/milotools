@@ -130,7 +130,7 @@ void hmx_mesh_print(HX_MESH mesh)
 	hmx_string_print(mesh.geometryOwner);
 	putchar('\n');
 
-	printf("MUTABLE_PARTS: %s\n", HX_MUTABLE_TYPE_name(mesh.mutableParts));
+	printf("MUTABLE_PARTS: %s\n", HX_MUTABLE_TYPE_NAME[mesh.mutableParts]);
 	printf("VOLUME: %s\n", HX_VOLUME_TYPE_NAME[mesh.volume]);
 
 	printf("BSP: %u\n", mesh.bsp);
@@ -222,4 +222,11 @@ char const *const HX_VOLUME_TYPE_NAME[HX_VOLUME_TYPE_AMOUNT] = {
 	"VolumeTriangles",
 	"VolumeBSP",
 	"VolumeBox",
+};
+
+char const *const HX_MUTABLE_TYPE_NAME[HX_MUTABLE_TYPE_AMOUNT] = {
+	"kMutableNone",
+	[31]="kMutableVerts",
+	"kMutableFaces",
+	[63]="kMutableAll",
 };

@@ -1,5 +1,6 @@
 #include "hmxtransform.h"
 #include "hmxcommon.h"
+#include "hmxmatrix.h"
 #include "hmxstring.h"
 #include "iohelper.h"
 #include <stdio.h>
@@ -11,8 +12,8 @@ HX_TRANSFORM hmx_transform_load(FILE *file)
 	HX_TRANSFORM transform;
 	transform.version = iohelper_read_u32(file);
 
-	fread(&transform.localTransMtx, sizeof(float), 12, file);
-	fread(&transform.worldTransMtx, sizeof(float), 12, file);
+	transform.localTransMtx = hmx_matrix_load(file);
+	transform.worldTransMtx = hmx_matrix_load(file);
 
 	transform.transCount = iohelper_read_u32(file);
 	transform.transObjects = malloc(transform.transCount * sizeof(HX_STRING));
@@ -44,20 +45,10 @@ void hmx_transform_print(HX_TRANSFORM transform)
 {
 	printf("VERSION: %u\n", transform.version);
 
-	fputs("LOCAL_MATRIX: [", stdout);
-	for (u32 i = 0; i < 12; ++i) {
-		printf("%f", transform.localTransMtx[i]);
-		if (i != 11)
-			fputs(", ", stdout);
-	}
-	puts("]");
-	fputs("WORLD_MATRIX: [", stdout);
-	for (u32 i = 0; i < 12; ++i) {
-		printf("%f", transform.worldTransMtx[i]);
-		if (i != 11)
-			fputs(", ", stdout);
-	}
-	puts("]");
+	fputs("LOCAL_MATRIX: ", stdout);
+	hmx_matrix_print(transform.localTransMtx);
+	fputs("WORLD_MATRIX: ", stdout);
+	hmx_matrix_print(transform.worldTransMtx);
 
 	if (transform.transCount != 0) {
 		puts("TRANS_OBJECTS:");

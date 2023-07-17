@@ -139,7 +139,8 @@ int convert(HXConverterArgs args)
 		
 		FILE *file = fopen(args.inputPath, "r");
 		HX_FREQARK *ark = hmx_freq_ark_load(file, NULL);
-		fclose(file);
+		// fclose(file); // apparently this makes it crash. oops
+		hmx_freq_ark_print(ark);
 		hmx_freq_ark_cleanup(ark);
 
 	} else {

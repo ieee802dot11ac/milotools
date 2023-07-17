@@ -5,7 +5,7 @@
 #include "iohelper.h"
 #include "hmxmaterial.h"
 
-HX_MATERIAL hmx_material_load(FILE *file)
+HX_MATERIAL hmx_material_load(FILE *file) // currently for gh1
 {
 	HX_MATERIAL mat;
 	mat.version = iohelper_read_u32(file);
@@ -13,7 +13,7 @@ HX_MATERIAL hmx_material_load(FILE *file)
 	mat.textures = malloc(mat.textureCount * sizeof(HX_MATERIAL_TEXTURE_ENTRY));
 	for (u32 i = 0; i < mat.textureCount; ++i)
 		mat.textures[i] = hmx_material_texture_entry_load(file);
-	mat.always3 = iohelper_read_u32(file);
+	mat.blend = iohelper_read_u32(file);
 	mat.color.r = iohelper_read_f32(file);
 	mat.color.g = iohelper_read_f32(file);
 	mat.color.b = iohelper_read_f32(file);
@@ -24,7 +24,7 @@ HX_MATERIAL hmx_material_load(FILE *file)
 	mat.always1_2 = iohelper_read_u32(file);
 	mat.always0_2 = iohelper_read_u16(file);
 
-	mat.blend = iohelper_read_u32(file);
+	mat.blend2 = iohelper_read_u32(file);
 	mat.always0_3 = iohelper_read_u16(file);
 
 	return mat;
@@ -47,13 +47,13 @@ void hmx_material_print(HX_MATERIAL mat)
 			fputs(", ", stdout);
 	}
 	puts("]");
-	printf("ALWAYS3: %u\n", mat.always3);
+	printf("BLEND 1: %s\n", HX_BLEND_NAME[mat.blend]);
 	printf("ALWAYS1(1): %u\n", mat.always1_1);
 	printf("ALWAYS0(1): %u\n", mat.always0_1);
 	printf("ALWAYS1(2): %u\n", mat.always1_2);
 	printf("ALWAYS0(2): %u\n", mat.always0_2);
 
-	printf("BLEND: %s\n", HX_BLEND_NAME[mat.blend]);
+	printf("BLEND 2: %s\n", HX_BLEND_NAME[mat.blend2]);
 	printf("ALWAYS0(3): %u\n", mat.always0_3);
 }
 

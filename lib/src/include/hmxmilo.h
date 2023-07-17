@@ -1,4 +1,4 @@
-// hmxmilo.h - Harmonix Milo "scene"s
+// hmxmilo.h - Harmonix Milo "scene"s (officially ObjectDirs but that's a boring name)
 #ifndef HMXMILO_H
 #define HMXMILO_H
 #ifdef __cplusplus
