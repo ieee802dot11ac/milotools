@@ -153,6 +153,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_MILO;
 	} else if (streq(arg, "hmxark") || streq(arg, "hxark")) {
 		return IFILETYPE_HX_ARK;
+	} else if (streq(arg, "hmxtransanim") || streq(arg, "hxtnm")) {
+		return IFILETYPE_HX_ARK;
 	} 
 	return IFILETYPE_UNKNOWN;
 }
@@ -201,6 +203,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_MILO;
 	} else if (streq(ext,"ark") || streq(ext, "hdr") || streq(ext,"ARK") || streq(ext, "HDR")) {
 		return IFILETYPE_HX_ARK;
+	} else if (streq(ext, "tnm") || streq(ext, "hxtransanim")) {
+		return IFILETYPE_HX_TNM;
 	}
 	return IFILETYPE_UNKNOWN;
 }

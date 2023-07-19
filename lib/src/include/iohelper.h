@@ -14,8 +14,11 @@ extern "C" {
 INLINE type iohelper_read_##type(FILE *const file) \
 { \
 	type ret; \
-	if (fread(&ret, sizeof(type), 1, file) != 1) \
+	if (fread(&ret, sizeof(type), 1, file) != 1) { \
+		if (ferror(file)) {warn("FILE ERROR %d\n", ferror(file));}\
 		warn("Short read of type " #type "!");\
+		if (feof(file)) {fprintf(stderr, "EOF REACHED\n"); abort();}\
+	}\
 	return ret; \
 }
 

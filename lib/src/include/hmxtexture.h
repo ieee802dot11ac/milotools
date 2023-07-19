@@ -11,7 +11,7 @@ extern "C" {
 #include "hmxstring.h"
 
 typedef struct {
-	u32 version;
+	u32 version; // 5 (Amp Demo/Amp), 7 (AntiGrav), 8 (KRPAI/GH1), 10 (GH2/GH2 4-song/GH2 360/RB1/TBRB), 11 (GDRB/RB3)
 	u32 width;
 	u32 height;
 	u32 bpp;

@@ -8,47 +8,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdio.h>
 #include "hmxmesh.h"
-
-
-typedef struct {
-	// Union-izing these allows you to access like:
-	// (Vector2f.x, Vector2f.y) AKA (x, y)
-	// (Vector2f.g, Vector2f.a) AKA (g, a)
-	// (Vector2f.u, Vector2f.v) AKA (u, v)
-	union {
-		float x, g, u; // x, grayscale, u
-	};
-	union {
-		float y, a, v; // y, alpha, v
-	};
-} Vector2f;
-
-typedef struct {
-	union {
-		float x, r;
-	};
-	union {
-		float y, g;
-	};
-	union {
-		float z, b;
-	};
-} Vector3f;
-
-typedef struct {
-	union {
-		float x, r;
-	};
-	union {
-		float y, g;
-	};
-	union {
-		float z, b;
-	};
-	union {
-		float w, a;
-	};
-} Vector4f;
+#include "hmxcommon.h"
 
 typedef struct {
 	// NEGATIVE values in lists represent

@@ -8,11 +8,14 @@
 
 HX_TRANSFORM_ANIM *hmx_transanim_load(FILE *file) {
 	HX_TRANSFORM_ANIM *tnm = malloc(sizeof(HX_TRANSFORM_ANIM));
+	char *dbg = malloc(4);
 	tnm->version = iohelper_read_u32(file);
 	tnm->anim = hmx_anim_load(file);
 	tnm->trans_object = hmx_string_load(file);
 	tnm->rot_keys_count = iohelper_read_u32(file);
 	if (tnm->rot_keys_count > 0) {
+		sprintf(dbg, "rot keys: %d\n", tnm->rot_keys_count);
+		perror(dbg);
 		for (u32 i = 0; i < tnm->rot_keys_count; i++) {
 			tnm->rot_keys[i].quat.w = iohelper_read_f32(file);
 			tnm->rot_keys[i].quat.x = iohelper_read_f32(file);

@@ -5,6 +5,7 @@
 #include "filetypes.h"
 #include "hmxmilo.h"
 #include "hmxstring.h"
+#include "hmxtransanim.h"
 #include "programinfo.h"
 #include "err.h"
 #include "hmxcolor.h"
@@ -143,6 +144,12 @@ int convert(HXConverterArgs args)
 		hmx_freq_ark_print(ark);
 		hmx_freq_ark_cleanup(ark);
 
+	/*} else if (args.inputFileType == IFILETYPE_HX_TNM) { // straight borked rn, so we're gonna ignore that
+		
+		FILE *file = fopen(args.inputPath, "r");
+		HX_TRANSFORM_ANIM *tnm = hmx_transanim_load(file);
+		hmx_transanim_print(tnm);
+		hmx_transanim_cleanup(tnm);*/	
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}

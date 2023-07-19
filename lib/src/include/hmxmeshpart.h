@@ -22,9 +22,9 @@ typedef struct {
 			// notice how the length of each face entry
 			// is the current value of faces[i], minus
 			// the previous
-} HX_MESHPART;
+} HX_GROUPSECTION;
 
-void hmx_meshpart_print(HX_MESHPART group);
+void hmx_meshpart_print(HX_GROUPSECTION group);
 
 #ifdef __cplusplus
 } /* extern "C" */

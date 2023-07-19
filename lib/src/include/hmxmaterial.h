@@ -83,12 +83,19 @@ typedef enum
     kShaderVariationHair
 } SHADERVARIATION_ENUM;
 
+typedef enum {
+    kDiffuse,
+    kEnviron = 2,
+} TEXMAP_ENUM;
+
 typedef struct
 {
     // 2 - Emissive?
+    // 3 - Transparent (i.e. glass)?
     // 4 - Diffuse
     // 5 - Environ
-    i32 map_type;
+    // 6 - ???
+    i32 map_type; // Might actually be used for pass order
 
     HX_MATRIX tex_xfm;
 
@@ -102,7 +109,9 @@ typedef struct {
 	// 2-2: Shiny - torsoenv
 	// 3-2: Shiny - enviro, shinplates
 	u32 unknown1;		// 1-4
-	HX_TEXGEN texGen;	// 0,1,2,5
+	// HX_TEXGEN texGen;	// 0,1,2,5
+	TEXMAP_ENUM map_type;
+
 	HX_MATRIX matx;		// "Transform for coordinate generation" ?
 	HX_TEXWRAP texWrap;	// 0-1
 	HX_STRING texName;	// diffuse texture

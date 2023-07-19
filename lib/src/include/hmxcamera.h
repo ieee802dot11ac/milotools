@@ -1,8 +1,6 @@
 // hmxcamera.h - Harmonix cameras
 #ifndef HMXCAMERA_H
 #define HMXCAMERA_H
-#include "hmxobj.h"
-#include "hmxstring.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10,6 +8,8 @@ extern "C" {
 #include <stdint.h>
 #include "hmxtransform.h"
 #include "hmxdraw.h"
+#include "hmxobj.h"
+#include "hmxstring.h"
 
 typedef struct {
 	u32 version; // 9 (GH1, i.e. this), 12 (GH2/TBRB)
@@ -20,9 +20,9 @@ typedef struct {
 	// plane. The near/far ratio is limited to 1:1000 to preserve
 	// Z-buffer resolution. Note that on the PS2, object polys are
 	// culled rather than clipped to the far plane.
-	float near_plane;
-	float far_plane;
-	float y_fov;
+	f32 near_plane;
+	f32 far_plane;
+	f32 y_fov;
 
 	// The area of the screen in normalized coordinates
 	// (0 to 1) to draw into.

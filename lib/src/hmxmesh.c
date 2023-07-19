@@ -29,26 +29,26 @@ HX_MESH hmx_mesh_load(FILE *file)
 	mesh.mutableParts = iohelper_read_u32(file);
 	mesh.volume = iohelper_read_u32(file);
 
-	mesh.bsp = iohelper_read_u8(file);
+	// mesh.bsp = iohelper_read_u8(file);
 
 	mesh.vertCount = iohelper_read_u32(file);
-	mesh.vertTable = malloc(sizeof(HX_VERTEX) * mesh.vertCount);
+	mesh.vertTable = malloc(sizeof(HX_VERTEX_GH) * mesh.vertCount);
 	assert (mesh.vertTable != NULL);
 	for (u32 i = 0; i < mesh.vertCount; ++i)
 		mesh.vertTable[i] = hmx_vertex_load(file);
 
 	mesh.triCount = iohelper_read_u32(file);
-	mesh.triTable = malloc(sizeof(HX_VERTEX) * mesh.triCount);
+	mesh.triTable = malloc(sizeof(HX_VERTEX_GH) * mesh.triCount);
 	assert (mesh.triTable != NULL);
 	for (u32 i = 0; i < mesh.triCount; ++i)
 		mesh.triTable[i] = hmx_triangle_load(file);
 
-	mesh.partCount = iohelper_read_u32(file);
-	mesh.partTriCounts = malloc(sizeof(u8) * mesh.partCount);
+	mesh.groupSizesCount = iohelper_read_u32(file);
+	mesh.groupSizes = malloc(sizeof(u8) * mesh.groupSizesCount);
 	u32 shouldMatchTris = 0;
-	for (u32 i = 0; i < mesh.partCount; ++i) {
-		mesh.partTriCounts[i] = iohelper_read_u8(file);
-		shouldMatchTris += mesh.partTriCounts[i];
+	for (u32 i = 0; i < mesh.groupSizesCount; ++i) {
+		mesh.groupSizes[i] = iohelper_read_u8(file);
+		shouldMatchTris += mesh.groupSizes[i];
 	}
 
 	if (shouldMatchTris != mesh.triCount)
@@ -69,8 +69,8 @@ HX_MESH hmx_mesh_load(FILE *file)
 
 	}
 
-	mesh.parts = malloc(sizeof(HX_MESHPART) * mesh.partCount);
-	for (u32 i = 0; i < mesh.partCount; ++i) {
+	mesh.parts = malloc(sizeof(HX_GROUPSECTION) * mesh.groupSizesCount);
+	for (u32 i = 0; i < mesh.groupSizesCount; ++i) {
 		mesh.parts[i].faceCount = iohelper_read_u32(file);
 		mesh.parts[i].vertexCount = iohelper_read_u32(file);
 
@@ -97,14 +97,14 @@ void hmx_mesh_cleanup(HX_MESH mesh)
 
 	free(mesh.vertTable);
 	free(mesh.triTable);
-	free(mesh.partTriCounts);
+	free(mesh.groupSizes);
 
 	if (mesh.charCount != 0) {
 		for (u32 i = 0; i < 4; ++i)
 			hmx_string_cleanup(mesh.bones[i]);
 	}
 
-	for (u32 i = 0; i < mesh.partCount; ++i) {
+	for (u32 i = 0; i < mesh.groupSizesCount; ++i) {
 		free(mesh.parts[i].faces);
 		free(mesh.parts[i].vertices);
 	}
@@ -133,7 +133,7 @@ void hmx_mesh_print(HX_MESH mesh)
 	printf("MUTABLE_PARTS: %s\n", HX_MUTABLE_TYPE_NAME[mesh.mutableParts]);
 	printf("VOLUME: %s\n", HX_VOLUME_TYPE_NAME[mesh.volume]);
 
-	printf("BSP: %u\n", mesh.bsp);
+	// printf("BSP: %u\n", mesh.bsp);
 
 	fputs("VERTICES: [", stdout);
 	for (u32 i = 0; i < mesh.vertCount; ++i) {
@@ -154,8 +154,8 @@ void hmx_mesh_print(HX_MESH mesh)
 	// Just guessing how this is structured
 	puts("MESH_PARTS: [");
 	HX_TRIANGLE *triStart = mesh.triTable;
-	for (u32 i = 0; i < mesh.partCount; ++i) {
-		HX_TRIANGLE *triEnd = triStart + mesh.partTriCounts[i];
+	for (u32 i = 0; i < mesh.groupSizesCount; ++i) {
+		HX_TRIANGLE *triEnd = triStart + mesh.groupSizes[i];
 		fputs("\tMeshPart(triangles=[", stdout);
 		for (; triStart < triEnd; ++triStart) {
 			assert (triStart < mesh.triTable + mesh.triCount);
@@ -170,7 +170,7 @@ void hmx_mesh_print(HX_MESH mesh)
 				fputs(", ", stdout);
 		}
 		fputs("], faces=[", stdout);
-		HX_MESHPART group = mesh.parts[i];
+		HX_GROUPSECTION group = mesh.parts[i];
 		u16 *vertStart = group.vertices;
 		u32 prevfaces = 0;
 		for (u32 si = 0; si < group.faceCount; ++si) {
@@ -195,7 +195,7 @@ void hmx_mesh_print(HX_MESH mesh)
 				fputs(", ", stdout);
 		}
 		fputs("])", stdout);
-		if (i != mesh.partCount - 1)
+		if (i != mesh.groupSizesCount - 1)
 			fputs(", ", stdout);
 		putchar('\n');
 	}
@@ -204,7 +204,10 @@ void hmx_mesh_print(HX_MESH mesh)
 		puts("BONES: NONE");
 	} else {
 		fputs("BONES: [", stdout);
-		for (u32 i = 0; i < 4; ++i) {
+		u32 max = 0;
+		if (mesh.version < 34) max = 4;
+		else max = mesh.bone_count;
+		for (u32 i = 0; i < max; ++i) {
 			fputs("Bone(refId=", stdout);
 			hmx_string_print(mesh.bones[i]);
 			fputs(", transform=", stdout);

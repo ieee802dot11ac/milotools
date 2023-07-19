@@ -27,10 +27,10 @@ into more standard filetypes, such as `.obj` and `.png`.
 
 Make sure you have your distro's version of `spng` and `zlib`, spng's package names can be found [here,](https://libspng.org/download/) and zlib is either already installed or it's `zlib-devel`. Then, `make`, `make genclang` if you intend on doing things with the project, and `sudo make install` to install, and do a sanity `hxconv` (name of the program) to make sure everything installed properly.
 
-### Windows (no WSL)
+### Native Windows (and, to an extent, MacOS)
 
 you're on your own lmao, theoretically mingw gcc works but i'm not helping you if it dies
-prolly should set up dll autobuilding at some point but eh.
+prolly should set up dll autobuilding at some point but eh. if you want it so bad, make a pr
 
 ### Usage
 
