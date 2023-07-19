@@ -17,7 +17,7 @@ extern "C" {
 #include "hmxmaterial.h"
 #include "hmxmatrix.h"
 #include "hmxmesh.h"
-#include "hmxmeshpart.h"
+#include "hmxgroupsec.h"
 #include "hmxmilo.h"
 #include "hmxobj.h"
 #include "hmxprimitive.h"

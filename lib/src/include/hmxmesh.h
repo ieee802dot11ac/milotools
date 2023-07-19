@@ -8,7 +8,7 @@ extern "C" {
 #include <stdio.h>
 
 #include "hmxcommon.h"
-#include "hmxmeshpart.h"
+#include "hmxgroupsec.h"
 #include "hmxmatrix.h"
 #include "hmxdraw.h"
 #include "hmxtransform.h"
@@ -17,9 +17,7 @@ extern "C" {
 #include "hmxvertex.h"
 #include "hmxtriangle.h"
 
-struct BSPNode;
-
-typedef struct {
+typedef struct BSPNode{
     bool has_value;
     Vector4f vec;
     struct BSPNode* left;
@@ -93,17 +91,22 @@ typedef struct {
 
 	HX_MUTABLE_TYPE mutableParts;
 	HX_VOLUME_TYPE volume; // post-v17
-	BSPNode node; // if this actually has anything, die after this; post-v18
+	BSPNode *node; // if this actually has anything, die after this; post-v18
 
 	bool some_bool3; // v7
 
 	u32 some_number; // pre-v11
 
 	u32 vertCount;
-	bool is_ng; // v36+, denotes whether wii or ps3/360
+	bool is_ng; // v36+, denotes whether ps2/wii or ps3/360
 	i32 vert_size; // only if NG!
     i32 some_type; // only if NG!
-	HX_VERTEX_GH* vertTable;
+	union {
+		HX_VERTEX_FREQ* vertTableFreq; // pre-v11
+		HX_VERTEX_AMP* vertTableAmp; // pre-v23
+		HX_VERTEX_GH* vertTableGH; // weird. don't trust it
+		HX_VERTEX_GH2* vertTableGH2; // pre-v35/wii or ps2
+	};
 
 	u32 triCount;
 	HX_TRIANGLE* triTable;
@@ -130,6 +133,8 @@ typedef struct {
 	HX_GROUPSECTION *parts; // only if all of the 3: groupSizesCount > 0, groupSizes[0] > 0, before v25
 } HX_MESH;
 
+
+BSPNode *bspnode_load(FILE *file);
 HX_MESH hmx_mesh_load(FILE *file);
 void hmx_mesh_cleanup(HX_MESH mesh);
 void hmx_mesh_print(HX_MESH mesh);

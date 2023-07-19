@@ -1,6 +1,6 @@
-// hmxmeshpart.h - List of faces (part?)
-#ifndef HMXMESHPART_H
-#define HMXMESHPART_H
+// hmxgroupsec.h - List of faces (part?)
+#ifndef HMXGROUPSEC_H
+#define HMXGROUPSEC_H
 #ifdef __cplusplus
 extern "C" {
 #endif

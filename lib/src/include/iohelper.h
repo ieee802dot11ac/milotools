@@ -1,14 +1,18 @@
 // iohelper.h - Helpers for FILE IO!
 #ifndef IOHELPER_H
 #define IOHELPER_H
+#include <string.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "hmxcommon.h"
+#include "hmxstring.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <err.h>
+
+#define STRINGBUFFERSIZE 1024
 
 #define BASIC_READ(type) \
 INLINE type iohelper_read_##type(FILE *const file) \
@@ -69,10 +73,17 @@ INLINE bool iohelper_write_u16_be(FILE *const file, u16 value)
 
 INLINE char *iohelper_read_cstring_at(FILE *const file, u32 fpos)
 {
-	char *ret = malloc(1024); u32 prevpos = ftell(file);
+	char *ret = malloc(STRINGBUFFERSIZE); u32 prevpos = ftell(file);
 	fseek(file, fpos, SEEK_SET);
-    fgets(ret, 1024, file); 
+    fgets(ret, STRINGBUFFERSIZE, file); 
     fseek(file, prevpos, SEEK_SET);
+	return ret;
+}
+
+INLINE HX_STRING iohelper_read_cstring_to_hxstring(FILE *const file) {
+	char tmp[STRINGBUFFERSIZE];
+	fgets(tmp, STRINGBUFFERSIZE, file);
+	HX_STRING ret = {strlen(tmp), tmp};
 	return ret;
 }
 

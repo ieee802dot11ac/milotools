@@ -1,8 +1,9 @@
 #include "hmxmesh.h"
 #include "hmxcommon.h"
 #include "hmxdraw.h"
-#include "hmxmeshpart.h"
+#include "hmxgroupsec.h"
 #include "hmxmatrix.h"
+#include "hmxprimitive.h"
 #include "hmxstring.h"
 #include "hmxtransform.h"
 #include "hmxtriangle.h"
@@ -16,27 +17,121 @@
 // #define MESH_VERBOSE_TRIANGLE_PARTS
 // #define MESH_VERBOSE_VERTEX_PARTS
 
+BSPNode *bspnode_load(FILE *file) {
+	BSPNode *node = malloc(sizeof(BSPNode));
+	node->has_value = iohelper_read_u8(file);
+	if (node->has_value) {
+		fread(&node->vec, sizeof(Vector4f), 1, file);
+		node->left = bspnode_load(file);
+		node->right = bspnode_load(file);
+	} else {
+		node->vec = (Vector4f){{0.0f},{0.0f},{0.0f},{0.0f}};
+		node->left = NULL;
+		node->right = NULL;
+	}
+	return node;
+}
+
 HX_MESH hmx_mesh_load(FILE *file)
 {
 	HX_MESH mesh;
-	mesh.version = iohelper_read_u32(file);
+	bool FREQMESH;
+	mesh.version = iohelper_read_u32(file); if (mesh.version <= 10) FREQMESH = true;
 	mesh.transform = hmx_transform_load(file);
 	mesh.draw = hmx_draw_load(file);
 
-	mesh.matPath = hmx_string_load(file);
-	mesh.geometryOwner = hmx_string_load(file);
+	if (mesh.version < 14) {
+		mesh.always_zero = iohelper_read_u32(file);
+		mesh.ampbones_count = iohelper_read_u32(file);
+		if (FREQMESH) {
+			for (i32 i = 0; i < mesh.ampbones_count; i++) {
+			mesh.ampbones[i] = iohelper_read_cstring_to_hxstring(file);
+			}
+		} else {
+			for (i32 i = 0; i < mesh.ampbones_count; i++) {
+			mesh.ampbones[i] = hmx_string_load(file);
+			}
+		}
+		
+	}
 
-	mesh.mutableParts = iohelper_read_u32(file);
-	mesh.volume = iohelper_read_u32(file);
+	if (mesh.version < 20) {
+		mesh.num_1 = iohelper_read_u32(file);
+		mesh.num_2 = iohelper_read_u32(file);
+	}
 
-	// mesh.bsp = iohelper_read_u8(file);
+	if (mesh.version < 3) {
+		mesh.some_value = hmx_string_load(file);
+	}
+
+	if (FREQMESH) mesh.matPath = iohelper_read_cstring_to_hxstring(file);
+	else mesh.matPath = hmx_string_load(file);
+	if (mesh.version == 27) mesh.mat_2 = hmx_string_load(file);
+	if (FREQMESH) mesh.geometryOwner = iohelper_read_cstring_to_hxstring(file);
+	else mesh.geometryOwner = hmx_string_load(file);
+
+	if (mesh.version < 13) {	
+		if (FREQMESH) mesh.alt_geom_owner = iohelper_read_cstring_to_hxstring(file);
+		else mesh.alt_geom_owner = hmx_string_load(file);
+	}
+
+	if (mesh.version < 15) {	
+		if (FREQMESH) mesh.trans_parent = iohelper_read_cstring_to_hxstring(file);
+		else mesh.trans_parent = hmx_string_load(file);
+	}
+
+	if (mesh.version < 14) {	
+		if (FREQMESH) mesh.trans_1 = iohelper_read_cstring_to_hxstring(file);
+		else mesh.trans_1 = hmx_string_load(file);
+		if (FREQMESH) mesh.trans_2 = iohelper_read_cstring_to_hxstring(file);
+		else mesh.trans_2 = hmx_string_load(file);
+	}
+
+	if (mesh.version < 3) {
+		fread(&mesh.some_vector, sizeof(Vector3f), 1, file);
+	}
+
+	if (mesh.version < 15) {
+		fread(&mesh.sphere, sizeof(HX_SPHERE), 1, file);
+	}
+
+	if (mesh.version < 8) {
+		mesh.some_bool = iohelper_read_u8(file);
+	}
+
+	if (mesh.version < 15) {	
+		if (FREQMESH) mesh.some_string = iohelper_read_cstring_to_hxstring(file);
+		else mesh.some_string = hmx_string_load(file);
+		mesh.some_float = iohelper_read_f32(file);
+	}
+
+
+	if (mesh.version < 16) {
+		if (mesh.version > 11) mesh.some_bool2 = iohelper_read_u8(file);
+	} else mesh.mutableParts = iohelper_read_u32(file);
+	if (mesh.version > 17) mesh.volume = iohelper_read_u32(file);
+
+	mesh.node = bspnode_load(file);
+	if (mesh.node->has_value) return mesh;
+
+	if (mesh.version == 7) mesh.some_bool3 = iohelper_read_u8(file);
+	if (mesh.version < 11) mesh.some_number = iohelper_read_u32(file);
 
 	mesh.vertCount = iohelper_read_u32(file);
-	mesh.vertTable = malloc(sizeof(HX_VERTEX_GH) * mesh.vertCount);
-	assert (mesh.vertTable != NULL);
-	for (u32 i = 0; i < mesh.vertCount; ++i)
-		mesh.vertTable[i] = hmx_vertex_load(file);
 
+	if (mesh.version >= 36) {
+		mesh.is_ng = iohelper_read_u8(file);
+		if (mesh.is_ng) {
+			mesh.vert_size = iohelper_read_u32(file);
+			mesh.some_type = iohelper_read_u32(file);
+		}
+	}
+	/*
+	mesh.vertTableGH = malloc(sizeof(HX_VERTEX_GH) * mesh.vertCount);
+	assert (mesh.vertTableGH != NULL);
+	for (u32 i = 0; i < mesh.vertCount; ++i)
+		mesh.vertTableGH[i] = hmx_vertex_load(file);
+	*/
 	mesh.triCount = iohelper_read_u32(file);
 	mesh.triTable = malloc(sizeof(HX_VERTEX_GH) * mesh.triCount);
 	assert (mesh.triTable != NULL);
@@ -95,7 +190,7 @@ void hmx_mesh_cleanup(HX_MESH mesh)
 	hmx_string_cleanup(mesh.matPath);
 	hmx_string_cleanup(mesh.geometryOwner);
 
-	free(mesh.vertTable);
+	free(mesh.vertTableGH);
 	free(mesh.triTable);
 	free(mesh.groupSizes);
 
@@ -137,7 +232,7 @@ void hmx_mesh_print(HX_MESH mesh)
 
 	fputs("VERTICES: [", stdout);
 	for (u32 i = 0; i < mesh.vertCount; ++i) {
-		hmx_vertex_print(mesh.vertTable[i]);
+		hmx_vertex_print(mesh.vertTableGH[i]);
 		if (i != mesh.vertCount - 1)
 			fputs(", ", stdout);
 	}
