@@ -100,10 +100,10 @@ typedef struct {
 } HX_VERTEX_GH2; // also applies up to rb2, apparently
 
 
-HX_VERTEX_FREQ hmx_freq_vertex_load(FILE *file);
+HX_VERTEX_FREQ hmx_freqvertex_load(FILE *file);
 void hmx_freq_vertex_print(HX_VERTEX_FREQ vertex);
 
-HX_VERTEX_AMP hmx_amp_vertex_load(FILE *file);
+HX_VERTEX_AMP hmx_ampvertex_load(FILE *file);
 void hmx_amp_vertex_print(HX_VERTEX_AMP vertex);
 
 HX_VERTEX_GH hmx_ghvertex_load(FILE *file);

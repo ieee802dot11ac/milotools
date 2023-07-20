@@ -132,11 +132,53 @@ HX_MESH hmx_mesh_load(FILE *file)
 	for (u32 i = 0; i < mesh.vertCount; ++i)
 		mesh.vertTableGH[i] = hmx_vertex_load(file);
 	*/
+
+	if (mesh.version <= 10) {
+		mesh.vertTableFreq = malloc(sizeof(HX_VERTEX_FREQ) * mesh.vertCount);
+		assert (mesh.vertTableFreq != NULL);
+		for (u32 i = 0; i < mesh.vertCount; ++i) mesh.vertTableFreq[i] = hmx_freqvertex_load(file);
+	} else if (mesh.version <= 22) {
+		mesh.vertTableAmp = malloc(sizeof(HX_VERTEX_AMP) * mesh.vertCount);
+		assert (mesh.vertTableAmp != NULL);
+		for (u32 i = 0; i < mesh.vertCount; ++i) mesh.vertTableAmp[i] = hmx_ampvertex_load(file);
+	} else if (mesh.version < 35 || mesh.is_ng == false) {
+		mesh.vertTableGH2 = malloc(sizeof(HX_VERTEX_GH2) * mesh.vertCount);
+		assert (mesh.vertTableGH2 != NULL);
+		for (u32 i = 0; i < mesh.vertCount; ++i) mesh.vertTableGH2[i] = hmx_gh2vertex_load(file);
+	}
+
 	mesh.triCount = iohelper_read_u32(file);
-	mesh.triTable = malloc(sizeof(HX_VERTEX_GH) * mesh.triCount);
+	mesh.triTable = malloc(sizeof(u16) * 3 * mesh.triCount); // why the fuck was it allocating the size of a vert
 	assert (mesh.triTable != NULL);
 	for (u32 i = 0; i < mesh.triCount; ++i)
 		mesh.triTable[i] = hmx_triangle_load(file);
+
+	if (mesh.version < 24) {
+		mesh.short_count = iohelper_read_u32(file);
+		for (u32 i = 0; i < mesh.short_count; i++) {
+			mesh.some_shorts[i] = iohelper_read_u16(file);
+		}
+	}
+
+	if (mesh.version < 24 && mesh.version > 21) {
+		mesh.group_count = iohelper_read_u32(file); // TODO do groups
+		for (u32 i = 0; i < mesh.group_count; i++) {
+			mesh.groups[i].some_number = iohelper_read_u32(file);
+			mesh.groups[i].short_count = iohelper_read_u32(file);
+			for (u32 j = 0; j < mesh.groups[i].short_count; j++) {
+				mesh.groups[i].shorts[j] = iohelper_read_u16(file);
+			}
+			mesh.groups[i].int_count = iohelper_read_u32(file);
+			for (u32 j = 0; j < mesh.groups[i].int_count; j++) {
+				mesh.groups[i].ints[j] = iohelper_read_u32(file);
+			}
+		}
+	}
+
+	if (mesh.version > 13 && mesh.version < 24) {
+		mesh.unknown = iohelper_read_u32(file);
+		return mesh;
+	}
 
 	mesh.groupSizesCount = iohelper_read_u32(file);
 	mesh.groupSizes = malloc(sizeof(u8) * mesh.groupSizesCount);
@@ -232,7 +274,7 @@ void hmx_mesh_print(HX_MESH mesh)
 
 	fputs("VERTICES: [", stdout);
 	for (u32 i = 0; i < mesh.vertCount; ++i) {
-		hmx_vertex_print(mesh.vertTableGH[i]);
+		hmx_ghvertex_print(mesh.vertTableGH[i]);
 		if (i != mesh.vertCount - 1)
 			fputs(", ", stdout);
 	}
@@ -280,7 +322,7 @@ void hmx_mesh_print(HX_MESH mesh)
 				printf("%u", vertId);
 #else
 				HX_VERTEX vert = mesh.vertTable[vertId];
-				hmx_vertex_print(vert);
+				hmx_ghvertex_print(vert);
 #endif
 				if (vertStart != vertEnd - 1)
 					fputs(", ", stdout);

@@ -21,22 +21,18 @@ OBJData obj_from_hmx(HX_MESH const hxmesh)
 		.faceCount	= hxmesh.triCount,
 		.faces		= malloc(hxmesh.triCount * sizeof(OBJFace)),
 	};
-
-	HX_VERTEX *hxverts = hxmesh.vertTable;
-	for (size_t i = 0; i < hxmesh.vertCount; ++i) {
-		HX_VERTEX hxvert = hxverts[i];
+	if (hxmesh.version <= 10) {
+		HX_VERTEX_FREQ *hxverts = hxmesh.vertTableFreq;
+		HX_VERTEX_FREQ hxvert;
+		for (size_t i = 0; i < hxmesh.vertCount; ++i) {
+		hxvert = hxverts[i];
 		Vector3f vertex =	{ .x = hxvert.x,
 					  .y = hxvert.y,
 					  .z = hxvert.z };
 
-		Vector3f normal =	{ .x = hxvert.normX,
-					  .y = hxvert.normY,
-					  .z = hxvert.normZ };
-
-		HX_COLOR_4F color =	{ .r = hxvert.r,
-					  .g = hxvert.g,
-					  .b = hxvert.b,
-					  .a = hxvert.a };
+		Vector3f normal =	{ .x = hxvert.nx,
+					  .y = hxvert.ny,
+					  .z = hxvert.nz };
 
 		Vector2f tex =		{ .u = hxvert.u,
 					  .v = hxvert.v };
@@ -45,6 +41,49 @@ OBJData obj_from_hmx(HX_MESH const hxmesh)
 		objmesh.normals[i] = normal;
 		objmesh.texVertices[i] = tex;
 	}
+	} else if (hxmesh.version <= 22) {
+		HX_VERTEX_AMP *hxverts = hxmesh.vertTableAmp;
+		HX_VERTEX_AMP hxvert;
+		for (size_t i = 0; i < hxmesh.vertCount; ++i) {
+		hxvert = hxverts[i];
+		Vector3f vertex =	{ .x = hxvert.x,
+					  .y = hxvert.y,
+					  .z = hxvert.z };
+
+		Vector3f normal =	{ .x = hxvert.nx,
+					  .y = hxvert.ny,
+					  .z = hxvert.nz };
+
+		Vector2f tex =		{ .u = hxvert.u,
+					  .v = hxvert.v };
+
+		objmesh.vertices[i] = vertex;
+		objmesh.normals[i] = normal;
+		objmesh.texVertices[i] = tex;
+	}
+	} else if (hxmesh.version < 35 || hxmesh.is_ng == false) {
+		HX_VERTEX_GH2 *hxverts = hxmesh.vertTableGH2;
+		HX_VERTEX_GH2 hxvert;
+		for (size_t i = 0; i < hxmesh.vertCount; ++i) {
+		hxvert = hxverts[i];
+		Vector3f vertex =	{ .x = hxvert.x,
+					  .y = hxvert.y,
+					  .z = hxvert.z };
+
+		Vector3f normal =	{ .x = hxvert.nx,
+					  .y = hxvert.ny,
+					  .z = hxvert.nz };
+
+		Vector2f tex =		{ .u = hxvert.u,
+					  .v = hxvert.v };
+
+		objmesh.vertices[i] = vertex;
+		objmesh.normals[i] = normal;
+		objmesh.texVertices[i] = tex;
+	}
+	}
+	
+	
 
 	HX_TRIANGLE *hxtris = hxmesh.triTable;
 	for (size_t i = 0; i < hxmesh.triCount; ++i) {
@@ -59,9 +98,9 @@ OBJData obj_from_hmx(HX_MESH const hxmesh)
 		};
 
 		for (size_t j = 0; j < 3; ++j) {
-			objmesh.faces[i].vertexIds[j] = hxtri.vert[j] + 1;
-			objmesh.faces[i].texVertexIds[j] = hxtri.vert[j] + 1;
-			objmesh.faces[i].normalIds[j] = hxtri.vert[j] + 1;
+			objmesh.faces[i].vertexIds[j] = hxtri.idx[j] + 1;
+			objmesh.faces[i].texVertexIds[j] = hxtri.idx[j] + 1;
+			objmesh.faces[i].normalIds[j] = hxtri.idx[j] + 1;
 		}
 	}
 

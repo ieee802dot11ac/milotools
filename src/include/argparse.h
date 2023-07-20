@@ -15,6 +15,7 @@ typedef struct {
 	char const *recursePath;
 	SUPPORTED_INPUT_FILETYPE inputFileType;
 	SUPPORTED_OUTPUT_FILETYPE outputFileType;
+	int outVersion;
 } HXConverterArgs;
 
 us fsize(FILE *file);

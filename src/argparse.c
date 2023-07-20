@@ -12,6 +12,7 @@ int parse_args(int const argc, char const *const *const argv, HXConverterArgs *r
 	result->recursePath = NULL;
 	result->inputFileType = IFILETYPE_UNKNOWN;
 	result->outputFileType = OFILETYPE_UNKNOWN;
+	result->outVersion = 0;
 
 	bool acceptPosixArgs = true;
 
@@ -53,6 +54,13 @@ int parse_args(int const argc, char const *const *const argv, HXConverterArgs *r
 				if ((result->outputFileType = get_output_filetype_arg(argv[i + 1])) == OFILETYPE_UNKNOWN) {
 					fprintf(stderr, "Unimplemented output filetype: `%s`.\n", arg);
 					return EXIT_FAILURE;
+				} else if (streq(arg, "--outVersion")) {
+					if (i == arg - 1) {
+					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
+					return EXIT_FAILURE;
+					}
+					result->outVersion = (int) strtol(argv[i + 1], NULL, 0);
+					skipArgs = 1;
 				}
 				skipArgs = 1;
 			} else {
