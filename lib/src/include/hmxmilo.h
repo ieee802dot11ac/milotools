@@ -10,7 +10,7 @@ extern "C" {
 #include "hmxtexture.h"
 #include "hmxtransanim.h"
 
-/*typedef enum {
+typedef enum {
 	/// <summary>
 	/// Raw data. Uncompressed.
 	/// </summary>
@@ -61,7 +61,7 @@ extern "C" {
 	/// <para>*DC3</para>
 	/// </summary>
 	MILO_D = 0xCD
-} BlockStructure; */
+} BlockStructure;
 
 typedef struct {
 	char* type;
@@ -134,6 +134,7 @@ typedef struct {
 } HX_MILOHEADER;
 
 int hmx_milo_decompress(FILE* file, char *outfilename);
+int hmx_milo_compress(FILE* file, char *outfilename, BlockStructure mode);
 HX_MILOFILE *hmx_milo_load (FILE *file);
 void hmx_milo_cleanup(HX_MILOFILE* milo);
 void hmx_milo_print(HX_MILOFILE* milo);

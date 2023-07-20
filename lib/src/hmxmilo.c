@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define CUSTOM_MILO_BLOCKSIZE 2048
+
 int hmx_milo_decompress(FILE* file, char *outfilename) {
 	HX_MILOHEADER* header = malloc(sizeof(HX_MILOHEADER));
 	header->version[0] = iohelper_read_u8(file); header->version[1] = iohelper_read_u8(file); header->version[2] = iohelper_read_u8(file); header->version[3] = iohelper_read_u8(file);
@@ -52,6 +54,10 @@ int hmx_milo_decompress(FILE* file, char *outfilename) {
 	fwrite(memMilo, 1, total, out);
 	free(header->sizes);
 	free(header);
+	return 0;
+}
+
+int hmx_milo_compress(FILE* file, char *outfilename, BlockStructure mode) {
 	return 0;
 }
 
