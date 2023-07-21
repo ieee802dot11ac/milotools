@@ -1,0 +1,34 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build_mingw:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Grab latest MinGW and libspng
+        run: curl https://github.com/niXman/mingw-builds-binaries/releases/download/13.1.0-rt_v11-rev1/x86_64-13.1.0-release-win32-seh-msvcrt-rt_v11-rev1.7z >
+
+
+
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: sudo apt-get install -y libspng zlib1g-devel gcc make
+      - name: Build the dingus
+        run: |
+          make
+          mkdir -p out
+          mv bin/hxconv out/
+          mv lib/bin/libhmxobj.so out/
+          echo "#!/usr/bin/sh\
+          mv libhmxobj.so /usr/lib/\
+          mv hxconv /usr/bin" >INSTALL.sh
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: LinuxLatest
+          path: out
