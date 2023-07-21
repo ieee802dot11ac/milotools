@@ -14,7 +14,7 @@ jobs:
       - name: Build libspng
         run: |
           cd libspng
-          cmake
+          cmake --build
   build_linux:
     runs-on: ubuntu-latest
     steps:
