@@ -8,7 +8,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Grab latest MinGW and libspng
-        run: curl https://github.com/niXman/mingw-builds-binaries/releases/download/13.1.0-rt_v11-rev1/x86_64-13.1.0-release-win32-seh-msvcrt-rt_v11-rev1.7z >mingw.7z
+        run: |
+          choco install mingw
+          curl https://github.com/randy408/libspng/archive/v0.7.4.zip >libspng.zip
+
 
 
 
@@ -17,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Dependencies
-        run: sudo apt-get install -y libspng-dev zlib1g-dev gcc make
+        run: sudo apt-get install -y zlib1g-dev gcc make
       - name: Build the dingus
         run: |
           make
