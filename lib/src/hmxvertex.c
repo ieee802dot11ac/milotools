@@ -63,15 +63,15 @@ void hmx_ghvertex_print(HX_VERTEX_GH vertex)
 			vertex.u, vertex.v);
 }
 
-HX_VERTEX_GH2 hmx_gh2vertex_load(FILE *file)
+HX_VERTEX_GH2 hmx_gh2vertex_load(FILE *file, bool xbox)
 {
 	HX_VERTEX_GH2 vertex;
 	vertex.x = iohelper_read_f32(file);	vertex.y = iohelper_read_f32(file);	vertex.z = iohelper_read_f32(file);
-	vertex.nx = iohelper_read_f32(file); vertex.ny = iohelper_read_f32(file); vertex.nz = iohelper_read_f32(file); vertex.nw = iohelper_read_f32(file);
+	vertex.nx = iohelper_read_f32(file); vertex.ny = iohelper_read_f32(file); vertex.nz = iohelper_read_f32(file); if (xbox) vertex.nw = iohelper_read_f32(file);
 	vertex.weight_0 = iohelper_read_f32(file); vertex.weight_1 = iohelper_read_f32(file); vertex.weight_2 = iohelper_read_f32(file); vertex.weight_3 = iohelper_read_f32(file);
 	vertex.u = iohelper_read_f32(file);	vertex.v = iohelper_read_f32(file);
-	vertex.bone_0 = iohelper_read_u16(file); vertex.bone_1 = iohelper_read_u16(file); vertex.bone_2 = iohelper_read_u16(file); vertex.bone_3 = iohelper_read_u16(file);
-	vertex.tangent_0 = iohelper_read_f32(file); vertex.tangent_1 = iohelper_read_f32(file); vertex.tangent_2 = iohelper_read_f32(file); vertex.tangent_3 = iohelper_read_f32(file);
+	// vertex.bone_0 = iohelper_read_u16(file); vertex.bone_1 = iohelper_read_u16(file); vertex.bone_2 = iohelper_read_u16(file); vertex.bone_3 = iohelper_read_u16(file);
+	// vertex.tangent_0 = iohelper_read_f32(file); vertex.tangent_1 = iohelper_read_f32(file); vertex.tangent_2 = iohelper_read_f32(file); vertex.tangent_3 = iohelper_read_f32(file);
 	return vertex;
 }
 
@@ -81,8 +81,9 @@ void hmx_gh2vertex_print(HX_VERTEX_GH2 vertex)
 			vertex.x, vertex.y, vertex.z,
 			vertex.nx, vertex.ny, vertex.nz, vertex.nw,
 			vertex.weight_0, vertex.weight_1, vertex.weight_2, vertex.weight_3,
-			vertex.u, vertex.v,
-			vertex.bone_0,vertex.bone_1,vertex.bone_2,vertex.bone_3,
-			vertex.tangent_0, vertex.tangent_1, vertex.tangent_2, vertex.tangent_3);
+			vertex.u, vertex.v
+			//vertex.bone_0,vertex.bone_1,vertex.bone_2,vertex.bone_3,
+			//vertex.tangent_0, vertex.tangent_1, vertex.tangent_2, vertex.tangent_3
+			);
 			
 }

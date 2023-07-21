@@ -45,42 +45,37 @@ OBJData obj_from_hmx(HX_MESH const hxmesh)
 		HX_VERTEX_AMP *hxverts = hxmesh.vertTableAmp;
 		HX_VERTEX_AMP hxvert;
 		for (size_t i = 0; i < hxmesh.vertCount; ++i) {
-		hxvert = hxverts[i];
-		Vector3f vertex =	{ .x = hxvert.x,
-					  .y = hxvert.y,
-					  .z = hxvert.z };
-
-		Vector3f normal =	{ .x = hxvert.nx,
-					  .y = hxvert.ny,
-					  .z = hxvert.nz };
-
-		Vector2f tex =		{ .u = hxvert.u,
-					  .v = hxvert.v };
-
-		objmesh.vertices[i] = vertex;
-		objmesh.normals[i] = normal;
-		objmesh.texVertices[i] = tex;
-	}
+			hxvert = hxverts[i];
+			Vector3f vertex =	{ .x = hxvert.x,
+						  .y = hxvert.y,
+						  .z = hxvert.z };
+			Vector3f normal =	{ .x = hxvert.nx,
+						  .y = hxvert.ny,
+						  .z = hxvert.nz };
+			Vector2f tex =		{ .u = hxvert.u,
+						  .v = hxvert.v };
+			objmesh.vertices[i] = vertex;
+			objmesh.normals[i] = normal;
+			objmesh.texVertices[i] = tex;
+		}
 	} else if (hxmesh.version < 35 || hxmesh.is_ng == false) {
 		HX_VERTEX_GH2 *hxverts = hxmesh.vertTableGH2;
 		HX_VERTEX_GH2 hxvert;
+		printf("%d\n", hxmesh.vertCount);
 		for (size_t i = 0; i < hxmesh.vertCount; ++i) {
-		hxvert = hxverts[i];
-		Vector3f vertex =	{ .x = hxvert.x,
-					  .y = hxvert.y,
-					  .z = hxvert.z };
-
-		Vector3f normal =	{ .x = hxvert.nx,
-					  .y = hxvert.ny,
-					  .z = hxvert.nz };
-
-		Vector2f tex =		{ .u = hxvert.u,
-					  .v = hxvert.v };
-
-		objmesh.vertices[i] = vertex;
-		objmesh.normals[i] = normal;
-		objmesh.texVertices[i] = tex;
-	}
+			hxvert = hxverts[i];
+			Vector3f vertex =	{ .x = hxvert.x,
+						  .y = hxvert.y,
+						  .z = hxvert.z };
+			Vector3f normal =	{ .x = hxvert.nx,
+						  .y = hxvert.ny,
+						  .z = hxvert.nz };
+			Vector2f tex =		{ .u = hxvert.u,
+						  .v = hxvert.v };
+			objmesh.vertices[i] = vertex;
+			objmesh.normals[i] = normal;
+			objmesh.texVertices[i] = tex;
+		}
 	}
 	
 	

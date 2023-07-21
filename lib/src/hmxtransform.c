@@ -15,18 +15,38 @@ HX_TRANSFORM hmx_transform_load(FILE *file)
 	transform.localTransMtx = hmx_matrix_load(file);
 	transform.worldTransMtx = hmx_matrix_load(file);
 
-	transform.transCount = iohelper_read_u32(file);
-	transform.transObjects = malloc(transform.transCount * sizeof(HX_STRING));
-	for (u32 i = 0; i < transform.transCount; ++i)
-		transform.transObjects[i] = hmx_string_load(file);
+	if (transform.version < 9) {
+		transform.transCount = iohelper_read_u32(file);
+		transform.transObjects = malloc(transform.transCount * sizeof(HX_STRING));
+		for (u32 i = 0; i < transform.transCount; ++i)
+			transform.transObjects[i] = hmx_string_load(file); // these are cstrings in freq but we're just gonna hope we don't have that problem
+	}
 
-	transform.constraint = iohelper_read_u32(file);
+	if (transform.version > 6) transform.constraint = iohelper_read_u32(file);
+	else if (transform.version == 6) transform.constraint2 = iohelper_read_u32(file);
+	else if (transform.version < 3 && transform.version > 0) transform.some_number = iohelper_read_u32(file);
+	else transform.some_flags = iohelper_read_u32(file);
 
-	transform.targetRef = hmx_string_load(file);
+	if (transform.version < 7) {
+		transform.unknown1 = iohelper_read_u32(file);
+		transform.unknown2 = iohelper_read_u32(file);
+		transform.unknown3 = iohelper_read_u32(file);
+	}
 
-	transform.preserveScale = (iohelper_read_u8(file) != 0);
+	if (transform.version < 5) transform.unknown_bool = iohelper_read_u32(file);
 
-	transform.parentRef = hmx_string_load(file);
+	if (transform.version < 2) {
+		transform.unknown_floats.r = iohelper_read_f32(file);
+		transform.unknown_floats.g = iohelper_read_f32(file);
+		transform.unknown_floats.b = iohelper_read_f32(file);
+		transform.unknown_floats.a = iohelper_read_f32(file);
+	}
+	
+	if (transform.version > 5) transform.targetRef = hmx_string_load(file);
+
+	if (transform.version > 6) transform.preserveScale = (iohelper_read_u8(file) != 0);
+
+	transform.parentRef = hmx_string_load(file); // some weird shit going on in the notes. this is basically it, though
 
 	return transform;
 }

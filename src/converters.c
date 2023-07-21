@@ -408,7 +408,7 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		free(resourcePath);
 		free(resourceOutPath);
 	}
-	hmx_mesh_cleanup(hxMeshData);
+	//hmx_mesh_cleanup(hxMeshData);
 
 	obj_write(obj, objMeshFile);
 	obj_cleanup(obj);

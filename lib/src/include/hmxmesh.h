@@ -1,6 +1,7 @@
 // hmxmesh.h - Harmonix mesh structs and functions
 #ifndef HMXMESH_H
 #define HMXMESH_H
+#include "hmxmetadata.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -54,6 +55,7 @@ extern char const *const HX_MUTABLE_TYPE_NAME[HX_MUTABLE_TYPE_AMOUNT];
 
 typedef struct {
 	u32 version; // 10 (Freq), 13 (Amp Demo), 14 (Amp), 22 (AntiGrav), 25 (KRPAI/GH1), 28 (GH2/GH2 4-song), 29, 34 (GH2 360/RB1/RB2), 36 (TBRB), 37 (GDRB), 38 (RB3)
+	HX_METADATA *meta;
 	HX_TRANSFORM transform;		// love me some 3d environments
 	HX_DRAW draw;
 

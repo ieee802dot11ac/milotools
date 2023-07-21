@@ -3,6 +3,7 @@
 #include "hmxdraw.h"
 #include "hmxgroupsec.h"
 #include "hmxmatrix.h"
+#include "hmxmetadata.h"
 #include "hmxprimitive.h"
 #include "hmxstring.h"
 #include "hmxtransform.h"
@@ -35,8 +36,9 @@ BSPNode *bspnode_load(FILE *file) {
 HX_MESH hmx_mesh_load(FILE *file)
 {
 	HX_MESH mesh;
-	bool FREQMESH;
+	bool FREQMESH = false;
 	mesh.version = iohelper_read_u32(file); if (mesh.version <= 10) FREQMESH = true;
+	mesh.meta = hmx_metadata_load(file);
 	mesh.transform = hmx_transform_load(file);
 	mesh.draw = hmx_draw_load(file);
 
@@ -111,7 +113,7 @@ HX_MESH hmx_mesh_load(FILE *file)
 	} else mesh.mutableParts = iohelper_read_u32(file);
 	if (mesh.version > 17) mesh.volume = iohelper_read_u32(file);
 
-	mesh.node = bspnode_load(file);
+	if (mesh.version > 18) mesh.node = bspnode_load(file);
 	if (mesh.node->has_value) return mesh;
 
 	if (mesh.version == 7) mesh.some_bool3 = iohelper_read_u8(file);
@@ -144,7 +146,7 @@ HX_MESH hmx_mesh_load(FILE *file)
 	} else if (mesh.version < 35 || mesh.is_ng == false) {
 		mesh.vertTableGH2 = malloc(sizeof(HX_VERTEX_GH2) * mesh.vertCount);
 		assert (mesh.vertTableGH2 != NULL);
-		for (u32 i = 0; i < mesh.vertCount; ++i) mesh.vertTableGH2[i] = hmx_gh2vertex_load(file);
+		for (u32 i = 0; i < mesh.vertCount; ++i) mesh.vertTableGH2[i] = hmx_gh2vertex_load(file, mesh.version > 28);
 	}
 
 	mesh.triCount = iohelper_read_u32(file);
@@ -161,7 +163,7 @@ HX_MESH hmx_mesh_load(FILE *file)
 	}
 
 	if (mesh.version < 24 && mesh.version > 21) {
-		mesh.group_count = iohelper_read_u32(file); // TODO do groups
+		mesh.group_count = iohelper_read_u32(file);
 		for (u32 i = 0; i < mesh.group_count; i++) {
 			mesh.groups[i].some_number = iohelper_read_u32(file);
 			mesh.groups[i].short_count = iohelper_read_u32(file);
@@ -192,6 +194,10 @@ HX_MESH hmx_mesh_load(FILE *file)
 		warn("Group sizes sum does not match # of triangles in mesh!");
 
 	mesh.charCount = iohelper_read_u32(file);
+	if (mesh.version < 34) {
+		mesh.bones = malloc(sizeof(HX_STRING) * 4);
+		mesh.boneTransforms = malloc(sizeof(HX_MATRIX) * 4);
+	}
 	if (mesh.charCount != 0) {
 		for (u32 i = 0; i < 4; ++i)
 			mesh.bones[i] = hmx_string_load(file);

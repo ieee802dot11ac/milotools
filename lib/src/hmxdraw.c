@@ -9,17 +9,18 @@
 HX_DRAW hmx_draw_load(FILE *file)
 {
 	HX_DRAW draw;
-	draw.version = iohelper_read_u32(file); // should be 1
+	draw.version = iohelper_read_u32(file);
 
 	draw.showing = iohelper_read_u8(file) != 0;
 
-	draw.drawableCount = iohelper_read_u32(file);
-	draw.drawables = malloc(sizeof(HX_STRING) * draw.drawableCount);
-	for (u32 i = 0; i < draw.drawableCount; ++i)
-		draw.drawables[i] = hmx_string_load(file);
-
-	draw.bounding = hmx_primitive_sphere_load(file);
-
+	if (draw.version < 2) {draw.drawableCount = iohelper_read_u32(file);
+		draw.drawables = malloc(sizeof(HX_STRING) * draw.drawableCount);
+		for (u32 i = 0; i < draw.drawableCount; ++i)
+			draw.drawables[i] = hmx_string_load(file);
+	}
+	if (draw.version > 0) draw.bounding = hmx_primitive_sphere_load(file);
+	if (draw.version > 2) draw.draw_order = iohelper_read_f32(file);
+	if (draw.version >= 4) draw.depthpass = iohelper_read_u32(file);
 	return draw;
 }
 

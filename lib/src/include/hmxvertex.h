@@ -87,16 +87,16 @@ typedef struct {
 	// UVs
 	f32 u;
 	f32 v;
-	// Bone indices
-	u16 bone_0;
-	u16 bone_1;
-	u16 bone_2;
-	u16 bone_3;
-	// Tangent? (range: -1 to 1)
-	f32 tangent_0;
-	f32 tangent_1;
-	f32 tangent_2;
-	f32 tangent_3;
+	// // Bone indices // they got commented out for me being stupid and trying to blanket statement shit that doesn't work like that
+	// u16 bone_0;
+	// u16 bone_1;
+	// u16 bone_2;
+	// u16 bone_3;
+	// // Tangent? (range: -1 to 1)
+	// f32 tangent_0;
+	// f32 tangent_1;
+	// f32 tangent_2;
+	// f32 tangent_3; 
 } HX_VERTEX_GH2; // also applies up to rb2, apparently
 
 
@@ -109,7 +109,7 @@ void hmx_amp_vertex_print(HX_VERTEX_AMP vertex);
 HX_VERTEX_GH hmx_ghvertex_load(FILE *file);
 void hmx_ghvertex_print(HX_VERTEX_GH vertex);
 
-HX_VERTEX_GH2 hmx_gh2vertex_load(FILE *file);
+HX_VERTEX_GH2 hmx_gh2vertex_load(FILE *file, bool xbox);
 void hmx_gh2vertex_print(HX_VERTEX_GH2 vertex);
 
 
