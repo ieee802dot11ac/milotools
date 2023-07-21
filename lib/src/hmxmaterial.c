@@ -63,7 +63,7 @@ void hmx_material_texture_entry_print(HX_MATERIAL_TEXTURE_ENTRY texEnt)
 	hmx_string_print(texEnt.texName);
 	putchar('\n');
 	printf("UNKNOWN1: %u\n", texEnt.unknown1);
-	printf("TEXGEN: %s\n", HX_TEXGEN_NAME[texEnt.texGen]);
+	printf("MAPTYPE: %s\n", HX_TEXGEN_NAME[texEnt.map_type]);
 	printf("TEXWRAP: %s\n", HX_TEXWRAP_NAME[texEnt.texWrap]);
 	fputs("MATRIX: ", stdout);
 	hmx_matrix_print(texEnt.matx);
@@ -74,7 +74,7 @@ HX_MATERIAL_TEXTURE_ENTRY hmx_material_texture_entry_load(FILE *file)
 {
 	HX_MATERIAL_TEXTURE_ENTRY texEnt;
 	texEnt.unknown1 = iohelper_read_u32(file);
-	texEnt.texGen = iohelper_read_u32(file);
+	texEnt.map_type = iohelper_read_u32(file);
 	texEnt.matx = hmx_matrix_load(file);
 	texEnt.texWrap = iohelper_read_u32(file);
 	texEnt.texName = hmx_string_load(file);
