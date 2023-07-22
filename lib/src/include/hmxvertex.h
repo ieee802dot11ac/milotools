@@ -101,15 +101,15 @@ typedef struct {
 
 
 HX_VERTEX_FREQ hmx_freqvertex_load(FILE *file);
-void hmx_freq_vertex_print(HX_VERTEX_FREQ vertex);
+void hmx_freqvertex_write(FILE *file, HX_VERTEX_FREQ vertex);
+void hmx_freqvertex_print(HX_VERTEX_FREQ vertex);
 
 HX_VERTEX_AMP hmx_ampvertex_load(FILE *file);
-void hmx_amp_vertex_print(HX_VERTEX_AMP vertex);
-
-HX_VERTEX_GH hmx_ghvertex_load(FILE *file);
-void hmx_ghvertex_print(HX_VERTEX_GH vertex);
+void hmx_ampvertex_write(FILE *file, HX_VERTEX_AMP vertex);
+void hmx_ampvertex_print(HX_VERTEX_AMP vertex);
 
 HX_VERTEX_GH2 hmx_gh2vertex_load(FILE *file, bool xbox);
+void hmx_gh2vertex_write(FILE *file, HX_VERTEX_GH2 vertex, bool xbox);
 void hmx_gh2vertex_print(HX_VERTEX_GH2 vertex);
 
 

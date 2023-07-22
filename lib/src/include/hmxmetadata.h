@@ -16,6 +16,7 @@ typedef struct {
 } HX_METADATA;
 
 HX_METADATA *hmx_metadata_load(FILE *file);
+bool hmx_metadata_write(FILE *file, HX_METADATA *meta);
 void hmx_metadata_print(HX_METADATA *meta);
 void hmx_metadata_cleanup(HX_METADATA *meta);
 

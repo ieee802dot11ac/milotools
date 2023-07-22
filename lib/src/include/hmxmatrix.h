@@ -1,6 +1,7 @@
 // hmxmatrix.h - Harmonix transform matrix
 #ifndef HMXMATRIX_H
 #define HMXMATRIX_H
+#include <stdbool.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,6 +16,7 @@ typedef struct {
 } HX_MATRIX;
 
 HX_MATRIX hmx_matrix_load(FILE *file);
+bool hmx_matrix_write(FILE *file, HX_MATRIX mtx);
 void hmx_matrix_print(HX_MATRIX matx);
 
 #ifdef __cplusplus

@@ -75,9 +75,16 @@ HX_VERTEX_GH2 hmx_gh2vertex_load(FILE *file, bool xbox)
 	return vertex;
 }
 
+void hmx_gh2vertex_write(FILE *file, HX_VERTEX_GH2 vertex, bool xbox) {
+	iohelper_write_f32(file, vertex.x); iohelper_write_f32(file, vertex.y); iohelper_write_f32(file, vertex.z);
+	iohelper_write_f32(file, vertex.nx); iohelper_write_f32(file, vertex.ny); iohelper_write_f32(file, vertex.nz); if (xbox) iohelper_write_f32(file, vertex.nw);
+	iohelper_write_f32(file, vertex.weight_0); iohelper_write_f32(file, vertex.weight_1); iohelper_write_f32(file, vertex.weight_2); iohelper_write_f32(file, vertex.weight_3);
+	iohelper_write_f32(file, vertex.u); iohelper_write_f32(file, vertex.v);
+}
+
 void hmx_gh2vertex_print(HX_VERTEX_GH2 vertex)
 {
-	printf("HXVertexGH2(position=(%f, %f, %f), normal=(%f, %f, %f, %f), weights=(%f, %f, %f, %f), tex=(%f, %f), bones=(%d, %d, %d, %d), tan=(%f, %f, %f, %f))",
+	printf("HXVertexGH2(position=(%f, %f, %f), normal=(%f, %f, %f, %f), weights=(%f, %f, %f, %f), tex=(%f, %f))",
 			vertex.x, vertex.y, vertex.z,
 			vertex.nx, vertex.ny, vertex.nz, vertex.nw,
 			vertex.weight_0, vertex.weight_1, vertex.weight_2, vertex.weight_3,

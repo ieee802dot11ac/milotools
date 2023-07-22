@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #define PROGRAM_NAME "HXConverter"
-#define PROGRAM_VERSION "v0.1.1"
+#define PROGRAM_VERSION "v0.2.0"
 
 #ifdef __cplusplus
 } /* extern "C" */

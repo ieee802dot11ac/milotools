@@ -361,13 +361,13 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		return false;
 	}
 
-	HX_MESH hxMeshData = hmx_mesh_load(hxMeshFile);
+	HX_MESH *hxMeshData = hmx_mesh_load(hxMeshFile);
 	fclose(hxMeshFile);
-	OBJData obj = obj_from_hmx(hxMeshData);
+	OBJData obj = obj_from_hmx(*hxMeshData);
 	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
 
 	if (recursePath != NULL) {
-		char *const matPath = hmx_string_cstring(hxMeshData.matPath);
+		char *const matPath = hmx_string_cstring(hxMeshData->matPath);
 		char *const resourcePath = malloc(strlen(matPath) + strlen(recursePath) + 16);
 
 		strcpy(resourcePath, recursePath);

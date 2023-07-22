@@ -33,7 +33,7 @@ HX_TRANSFORM hmx_transform_load(FILE *file)
 		transform.unknown3 = iohelper_read_u32(file);
 	}
 
-	if (transform.version < 5) transform.unknown_bool = iohelper_read_u32(file);
+	if (transform.version < 5) transform.unknown_bool = iohelper_read_u8(file);
 
 	if (transform.version < 2) {
 		transform.unknown_floats.r = iohelper_read_f32(file);
@@ -51,8 +51,46 @@ HX_TRANSFORM hmx_transform_load(FILE *file)
 	return transform;
 }
 
-void hmx_transform_cleanup(HX_TRANSFORM transform)
-{
+bool hmx_transform_write(FILE *file, HX_TRANSFORM transform) {
+	iohelper_write_u32(file, transform.version);
+	hmx_matrix_write(file, transform.localTransMtx);
+	hmx_matrix_write(file, transform.worldTransMtx);
+	if (transform.version < 9) {
+		iohelper_write_u32(file, transform.transCount);
+		for (u32 i = 0; i < transform.transCount; ++i)
+			hmx_string_write(file, transform.transObjects[i]); // these are cstrings in freq but we're just gonna hope we don't have that problem
+	}
+
+	if (transform.version > 6) iohelper_write_u32(file, transform.constraint);
+	else if (transform.version == 6) iohelper_write_u32(file, transform.constraint2);
+	else if (transform.version < 3 && transform.version > 0) iohelper_write_u32(file, transform.some_number);
+	else iohelper_write_u32(file, transform.some_flags);
+
+	if (transform.version < 7) {
+		iohelper_write_u32(file, transform.unknown1);
+		iohelper_write_u32(file, transform.unknown2);
+		iohelper_write_u32(file, transform.unknown3);
+	}
+
+	if (transform.version < 5) iohelper_write_u8(file, transform.unknown_bool);
+
+	if (transform.version < 2) {
+		iohelper_write_f32(file, transform.unknown_floats.r);
+		iohelper_write_f32(file, transform.unknown_floats.g);
+		iohelper_write_f32(file, transform.unknown_floats.b);
+		iohelper_write_f32(file, transform.unknown_floats.a);
+	}
+
+	if (transform.version > 5) hmx_string_write(file, transform.targetRef);
+
+	if (transform.version > 6) iohelper_write_u8(file, transform.preserveScale);
+
+	hmx_string_write(file, transform.parentRef);
+
+	return true;
+}
+
+void hmx_transform_cleanup(HX_TRANSFORM transform) {
 	for (u32 i = 0; i < transform.transCount; ++i)
 		hmx_string_cleanup(transform.transObjects[i]);
 	free(transform.transObjects);
@@ -61,8 +99,7 @@ void hmx_transform_cleanup(HX_TRANSFORM transform)
 	hmx_string_cleanup(transform.parentRef);
 }
 
-void hmx_transform_print(HX_TRANSFORM transform)
-{
+void hmx_transform_print(HX_TRANSFORM transform) {
 	printf("VERSION: %u\n", transform.version);
 
 	fputs("LOCAL_MATRIX: ", stdout);

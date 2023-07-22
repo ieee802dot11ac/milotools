@@ -26,6 +26,14 @@ HX_STRING hmx_string_load(FILE *file)
 	return string;
 }
 
+bool hmx_string_write(FILE* file, HX_STRING string) {
+	iohelper_write_u32(file, string.length);
+	if (string.length != 0) {
+		fwrite(string.value, 1, string.length, file);
+	}
+	return true;
+}
+
 char *hmx_string_cstring(HX_STRING string)
 {
 	char *const str = malloc(string.length + 1);
