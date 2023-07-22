@@ -7,7 +7,7 @@ extern "C" {
 
 #include "hmxstring.h"
 #include "hmxanim.h"
-#include "hmxobj.h"
+#include "objwrapper.h"
 
 typedef struct {
 	Vector4f quat;

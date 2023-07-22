@@ -1,4 +1,4 @@
-// hmxobj.h - Object file format, but more binary
+// objwrapper.h - Object file format, but more binary
 #ifndef HMXOBJ_H
 #define HMXOBJ_H
 #ifdef __cplusplus
@@ -37,6 +37,7 @@ typedef struct {
 OBJData obj_from_hmx(HX_MESH const hxmesh);
 void obj_cleanup(OBJData mesh);
 void obj_write(OBJData const mesh, FILE *const write);
+OBJData obj_read(char *const filename);
 void obj_print(OBJData const mesh);
 
 #ifdef __cplusplus

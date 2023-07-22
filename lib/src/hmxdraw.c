@@ -2,7 +2,6 @@
 #include "hmxstring.h"
 #include "iohelper.h"
 #include "hmxdraw.h"
-#include "programinfo.h"
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -1,4 +1,4 @@
-#include "hmxobj.h"
+#include "objwrapper.h"
 #include "hmxcommon.h"
 #include "hmxmesh.h"
 #include "hmxtriangle.h"
@@ -7,19 +7,21 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "fast_obj.h"
 
 
 OBJData obj_from_hmx(HX_MESH const hxmesh)
 {
 	OBJData objmesh = {
-		.vertexCount	= hxmesh.vertCount,
-		.vertices	= malloc(hxmesh.vertCount * sizeof(Vector3f)),
-		.normalsCount	= hxmesh.vertCount,
-		.normals	= malloc(hxmesh.vertCount * sizeof(Vector3f)),
-		.texVertexCount	= hxmesh.vertCount,
-		.texVertices	= malloc(hxmesh.vertCount * sizeof(Vector2f)),
-		.faceCount	= hxmesh.triCount,
-		.faces		= malloc(hxmesh.triCount * sizeof(OBJFace)),
+		.vertexCount = hxmesh.vertCount,
+		.vertices = malloc(hxmesh.vertCount * sizeof(Vector3f)),
+		.normalsCount = hxmesh.vertCount,
+		.normals = malloc(hxmesh.vertCount * sizeof(Vector3f)),
+		.texVertexCount = hxmesh.vertCount,
+		.texVertices = malloc(hxmesh.vertCount * sizeof(Vector2f)),
+		.faceCount = hxmesh.triCount,
+		.faces = malloc(hxmesh.triCount * sizeof(OBJFace)),
 	};
 	if (hxmesh.version <= 10) {
 		HX_VERTEX_FREQ *hxverts = hxmesh.vertTableFreq;
@@ -61,8 +63,8 @@ OBJData obj_from_hmx(HX_MESH const hxmesh)
 			objmesh.texVertices[i] = tex;
 		}
 	} else if (hxmesh.version < 35 || hxmesh.is_ng == false) {
-		HX_VERTEX_GH2 *hxverts = hxmesh.vertTableGH2;
-		HX_VERTEX_GH2 hxvert;
+		HX_VERTEX_NU *hxverts = hxmesh.vertTableNu;
+		HX_VERTEX_NU hxvert;
 		printf("%d\n", hxmesh.vertCount);
 		for (size_t i = 0; i < hxmesh.vertCount; ++i) {
 			hxvert = hxverts[i];
@@ -115,6 +117,13 @@ void obj_cleanup(OBJData mesh)
 		free(mesh.faces[i].normalIds);
 	}
 	free(mesh.faces);
+}
+
+OBJData obj_read(char *const filename) {
+	OBJData *data = malloc(sizeof(OBJData));
+	fastObjMesh *fastmesh = fast_obj_read(filename);
+	fast_obj_destroy(fastmesh);
+	return *data;
 }
 
 void obj_write(OBJData const mesh, FILE *const file)

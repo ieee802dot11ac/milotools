@@ -9,27 +9,27 @@ extern "C" {
 struct DtxNode;
 
 typedef enum {
-	Int,
-	Float,
-	Variable,
-	Func,
-	Object,
-	Symbol,
-	Unhandled,
-	IfDef,
-	Else,
-	EndIf,
-	Array = 0x10,
-	Command,
-	String,
-	Property,
-	Glob,
-	Define = 0x20,
-	Include,
-	Merge,
-	IfNDef,
-	Autorun,
-	Undef
+	kDataInt,
+	kDataFloat,
+	kDataVariable,
+	kDataFunc,
+	kDataObject,
+	kDataSymbol,
+	kDataUnhandled,
+	kDataIfDef,
+	kDataElse,
+	kDataEndIf,
+	kDataArray = 0x10,
+	kDataCommand,
+	kDataString,
+	kDataProperty,
+	kDataGlob,
+	kDataDefine = 0x20,
+	kDataInclude,
+	kDataMerge,
+	kDataIfNDef,
+	kDataAutorun,
+	kDataUndef
 } DtxNodeType;
 
 typedef struct {

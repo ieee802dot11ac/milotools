@@ -2,7 +2,7 @@
 #include "hmxcommon.h"
 #include <zlib.h>
 #include <stdlib.h>
-u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* gzfd) { // method: 0=zlib 1=gzip post2010: 0=no_offset 1=4offset
+u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* gzfd) { // method: f=zlib t=gzip post2010: f=no_offset t=4offset
 	u8 *out_data = malloc(len);
 	if (method) {
 		gzdopen(fileno(gzfd), "r");
@@ -54,8 +54,8 @@ u8 *recompress(u8 *in_data, size_t len, bool method, bool post2010, size_t chunk
 		stream.next_in = (post2010 ? in_data+4 : in_data);
 		stream.avail_out = len;
 		stream.next_out = out_data;
-		status = inflate(&stream, Z_NO_FLUSH);
-		inflateEnd(&stream);
+		status = deflate(&stream, Z_NO_FLUSH);
+		deflateEnd(&stream);
 		return out_data;
 	}
 }

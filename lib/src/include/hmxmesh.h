@@ -106,8 +106,7 @@ typedef struct {
 	union {
 		HX_VERTEX_FREQ* vertTableFreq; // pre-v11
 		HX_VERTEX_AMP* vertTableAmp; // pre-v23
-		HX_VERTEX_GH* vertTableGH; // weird. don't trust it
-		HX_VERTEX_GH2* vertTableGH2; // pre-v35/wii or ps2
+		HX_VERTEX_NU* vertTableNu; // pre-v35/wii or ps2
 	};
 
 	u32 triCount;

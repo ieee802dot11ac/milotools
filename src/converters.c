@@ -12,7 +12,7 @@
 #include "hmxtexture.h"
 #include "hmxbitmap.h"
 #include "hmxmesh.h"
-#include "hmxobj.h"
+#include "objwrapper.h"
 #include "spngwrapper.h"
 #include "hmxlight.h"
 #include "hmxmaterial.h"
@@ -408,9 +408,34 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		free(resourcePath);
 		free(resourceOutPath);
 	}
-	//hmx_mesh_cleanup(hxMeshData);
+	//hmx_mesh_cleanup(hxMeshData); // makes it crash? no clue why, probably a double free
 
 	obj_write(obj, objMeshFile);
+	obj_cleanup(obj);
+
+	fclose(objMeshFile);
+	return true;
+}
+
+bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFilePath)
+{
+	FILE *objMeshFile = fopen(objFilePath, "r");
+	FILE *hxMeshFile = fopen(hxFilePath, "w");
+
+	if (hxMeshFile == NULL) {
+		warn("Failed to open file `%s` for reading", hxFilePath);
+		return false;
+	} else if (objMeshFile == NULL) {
+		warn("Failed to open file `%s` for writing", objFilePath);
+		return false;
+	}
+
+	HX_MESH *hxMeshData = hmx_mesh_load(hxMeshFile);
+	fclose(objMeshFile);
+	OBJData obj = obj_from_hmx(*hxMeshData);
+	//hmx_mesh_cleanup(hxMeshData); // makes it crash? no clue why, probably a double free
+
+	hmx_mesh_write(hxMeshFile, hxMeshData);
 	obj_cleanup(obj);
 
 	fclose(objMeshFile);

@@ -12,7 +12,7 @@ extern "C" {
 #include "hmxdraw.h"
 #include "hmxstring.h"
 #include "hmxprimitive.h"
-#include "hmxobj.h"
+#include "objwrapper.h"
 
 typedef struct {
     i32 version;

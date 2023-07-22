@@ -141,9 +141,9 @@ HX_MESH *hmx_mesh_load(FILE *file)
 		assert (mesh->vertTableAmp != NULL);
 		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableAmp[i] = hmx_ampvertex_load(file);
 	} else if (mesh->version < 35 || mesh->is_ng == false) {
-		mesh->vertTableGH2 = malloc(sizeof(HX_VERTEX_GH2) * mesh->vertCount);
-		assert (mesh->vertTableGH2 != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableGH2[i] = hmx_gh2vertex_load(file, mesh->version > 28);
+		mesh->vertTableNu = malloc(sizeof(HX_VERTEX_NU) * mesh->vertCount);
+		assert (mesh->vertTableNu != NULL);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableNu[i] = hmx_nu_vertex_load(file, mesh->version > 28);
 	}
 
 	mesh->triCount = iohelper_read_u32(file);
@@ -319,17 +319,11 @@ void hmx_mesh_write(FILE *file, HX_MESH *mesh) {
 	}
 
 	if (mesh->version <= 10) {
-		mesh->vertTableFreq = malloc(sizeof(HX_VERTEX_FREQ) * mesh->vertCount);
-		assert (mesh->vertTableFreq != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableFreq[i] = hmx_freqvertex_load(file);
+		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_freqvertex_write(file, mesh->vertTableFreq[i]);
 	} else if (mesh->version <= 22) {
-		mesh->vertTableAmp = malloc(sizeof(HX_VERTEX_AMP) * mesh->vertCount);
-		assert (mesh->vertTableAmp != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableAmp[i] = hmx_ampvertex_load(file);
+		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_ampvertex_write(file, mesh->vertTableAmp[i]);
 	} else if (mesh->version < 35 || mesh->is_ng == false) {
-		mesh->vertTableGH2 = malloc(sizeof(HX_VERTEX_GH2) * mesh->vertCount);
-		assert (mesh->vertTableGH2 != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableGH2[i] = hmx_gh2vertex_load(file, mesh->version > 28);
+		for (u32 i = 0; i < mesh->vertCount; ++i) hmx_nu_vertex_write(file, mesh->vertTableNu[i], mesh->version);
 	}
 }
 
@@ -340,7 +334,7 @@ void hmx_mesh_cleanup(HX_MESH mesh)
 	hmx_string_cleanup(mesh.matPath);
 	hmx_string_cleanup(mesh.geometryOwner);
 
-	free(mesh.vertTableGH);
+	free(mesh.vertTableNu);
 	free(mesh.triTable);
 	free(mesh.groupSizes);
 
@@ -382,7 +376,7 @@ void hmx_mesh_print(HX_MESH mesh)
 
 	fputs("VERTICES: [", stdout);
 	for (u32 i = 0; i < mesh.vertCount; ++i) {
-		hmx_gh2vertex_print(mesh.vertTableGH2[i]);
+		hmx_nu_vertex_print(mesh.vertTableNu[i]);
 		if (i != mesh.vertCount - 1)
 			fputs(", ", stdout);
 	}

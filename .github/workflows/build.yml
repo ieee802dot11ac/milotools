@@ -16,6 +16,17 @@ jobs:
           cd libspng
           cmake --build .
       - name: Build the dingus
+        run: |
+          cd ..
+          make
+          mkdir -p out
+          mv bin/hxconv.exe out/
+          mv lib/bin/libhmxobj.dll out/
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: Win64Latest
+          path: out
   build_linux:
     runs-on: ubuntu-latest
     steps:

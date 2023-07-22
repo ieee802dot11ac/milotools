@@ -55,30 +55,16 @@ typedef struct {
 	f32 v;
 } HX_VERTEX_AMP; // also antigrav
 
-typedef struct {
-	f32 x; // standard coord system
-	f32 y; // standard coord system
-	f32 z; // standard coord system
-	f32 normX; // normal map coords
-	f32 normY; // normal map coords
-	f32 normZ; // normal map coords
-	f32 r; // 0-1
-	f32 g; // 0-1
-	f32 b; // 0-1
-	f32 a; // 0-1, usually like half cause hmx
-	f32 u; // texture space stuff
-	f32 v; // texture space stuff
-} HX_VERTEX_GH; // this is a now-defunct labeling from cisco's notes. i will only be keeping this cause i'm too lazy to redo it and i'm rushing gh2 meshes lmao
-
-typedef struct {
-	f32 x;
+typedef struct { // both W coordinates are v34 exclusive
+	f32 x; 
 	f32 y;
 	f32 z;
+	f32 w; 
 	// Normals
 	f32 nx;
 	f32 ny;
 	f32 nz;
-	f32 nw; // gh2 360 to rb2 exclusive (apparently also appears in NG beatles?)
+	f32 nw;
 	// Weights
 	f32 weight_0;
 	f32 weight_1;
@@ -87,17 +73,17 @@ typedef struct {
 	// UVs
 	f32 u;
 	f32 v;
-	// // Bone indices // they got commented out for me being stupid and trying to blanket statement shit that doesn't work like that
-	// u16 bone_0;
-	// u16 bone_1;
-	// u16 bone_2;
-	// u16 bone_3;
-	// // Tangent? (range: -1 to 1)
-	// f32 tangent_0;
-	// f32 tangent_1;
-	// f32 tangent_2;
-	// f32 tangent_3; 
-} HX_VERTEX_GH2; // also applies up to rb2, apparently
+	// Bone indices
+	u16 bone_0;
+	u16 bone_1;
+	u16 bone_2;
+	u16 bone_3;
+	// Tangent? (range: -1 to 1)
+	f32 tangent_0;
+	f32 tangent_1;
+	f32 tangent_2;
+	f32 tangent_3; 
+} HX_VERTEX_NU; // also applies up to rb2, apparently
 
 
 HX_VERTEX_FREQ hmx_freqvertex_load(FILE *file);
@@ -108,9 +94,9 @@ HX_VERTEX_AMP hmx_ampvertex_load(FILE *file);
 void hmx_ampvertex_write(FILE *file, HX_VERTEX_AMP vertex);
 void hmx_ampvertex_print(HX_VERTEX_AMP vertex);
 
-HX_VERTEX_GH2 hmx_gh2vertex_load(FILE *file, bool xbox);
-void hmx_gh2vertex_write(FILE *file, HX_VERTEX_GH2 vertex, bool xbox);
-void hmx_gh2vertex_print(HX_VERTEX_GH2 vertex);
+HX_VERTEX_NU hmx_nu_vertex_load(FILE *file, int version);
+void hmx_nu_vertex_write(FILE *file, HX_VERTEX_NU vertex, int version);
+void hmx_nu_vertex_print(HX_VERTEX_NU vertex);
 
 
 #ifdef __cplusplus

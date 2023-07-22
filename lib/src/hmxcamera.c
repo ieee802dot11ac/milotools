@@ -1,6 +1,6 @@
 #include "hmxcamera.h"
 #include "hmxdraw.h"
-#include "hmxobj.h"
+#include "objwrapper.h"
 #include "hmxprimitive.h"
 #include "hmxstring.h"
 #include "hmxtransform.h"

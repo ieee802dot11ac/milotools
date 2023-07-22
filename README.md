@@ -1,9 +1,12 @@
-# Guitar Hero 1 Milo Conversion Tools
+# Milo Engine Conversion Tools
 
 This project intends on converting files from Harmonix's various proprietary
-formats found inside Guitar Hero 1's `.rnd_ps2` and `.gh` files (usually referred
-to as "milo" files due to their similarities to the newer `.milo_platform` files)
-into more standard filetypes, such as `.obj` and `.png`.
+formats found inside their games on the in-house Milo Engine into more standard
+filetypes, such as `.obj` and `.png`.
+
+### Downloads
+
+While yes, there are actions set up, they're currently broken as of writing and I will probably not be fixing them for a while, on account of sheer laziness. Also, i've been having to fight GitHub Actions to get them to work, and nobody wants that
 
 ### Dependencies
 - [spng](https://libspng.org/)
