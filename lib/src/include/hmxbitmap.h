@@ -39,22 +39,31 @@ INLINE char *HX_BITMAP_ENCODING_name(HX_BITMAP_ENCODING encoding)
 }
 
 typedef struct {
+	// 0 = Freq/Amp, 1 = GH/RB
+    // Header is 16 bytes in amp, and 32 bytes for GH/RB
 	u8 version;
+	u16 freqencoding; // either 0xD000 or 0x1500, super fucked up
 	u8 bpp;
 	HX_BITMAP_ENCODING encoding;
 	u8 mipmapLevels;
 	u16 width;
 	u16 height;
+
+	u32 freqalways_0_1;
+    u32 freqimg_data_size;
+    u32 freqalways_0_2;
+
 	u16 bytesPerLine;
 
-	u8 padding[19];
+	u32 freqalways_0_3;
+	u32 freqcolorcount;
 
 	// Neither of these need sizes, since they're calculated from the bpp
 	// and mipmap levels and stuff (see hmx_bitmap_len_color_palette and
 	// hmx_bitmap_len_tex_data).
 	HX_COLOR_8888 *colorPalette;
 
-	u8 *texData;
+	u8 **texData; // in case of... *mip maps!*
 } HX_BITMAP; // should be 32 + (hmx_bitmap_len_color_palette) + (hmx_bitmap_len_tex_data)
 
 
@@ -77,6 +86,7 @@ INLINE size_t hmx_bitmap_len_tex_data(HX_BITMAP bmp)
 }
 
 extern HX_BITMAP hmx_bitmap_load(FILE *file);
+extern void hmx_bitmap_write(FILE *file, HX_BITMAP bmp);
 extern void hmx_bitmap_cleanup(HX_BITMAP bmp);
 extern void hmx_bitmap_print(HX_BITMAP bmp);
 

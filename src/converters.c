@@ -162,24 +162,26 @@ bool conv_hxbmp_to_png(HX_BITMAP hxBmp, char const *const pngFilePath) {
 	HX_COLOR_8888 *pixels = malloc(sizeof(HX_COLOR_8888) * hxBmp.width * hxBmp.height);
 	bool ret = true;
 
-	for (int y = 0; y < hxBmp.height; ++y) {
-		for (int x = 0; x < hxBmp.width; ++x) {
-			u8 pixel;
-			if (hxBmp.bpp == 8) {
-				pixel = hxBmp.texData[x + y * hxBmp.width];
-			} else if (hxBmp.bpp == 4) {
-				size_t addr = (x / 2) + y * (hxBmp.width / 2);
-				u8 shift = (x & 1) << 2;
-				u8 mask = 0xF << shift;
-				pixel = (hxBmp.texData[addr] & mask) >> shift;
-			} else {
-				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
-						hxBmp.bpp);
-				goto CLEAN_UP_FAILURE;
+	for (int mip = 0; mip < hxBmp.mipmapLevels; mip++) {
+		for (int y = 0; y < hxBmp.height; ++y) {
+			for (int x = 0; x < hxBmp.width; ++x) {
+				u8 pixel;
+				if (hxBmp.bpp == 8) {
+					pixel = hxBmp.texData[mip][x + y * hxBmp.width];
+				} else if (hxBmp.bpp == 4) {
+					size_t addr = (x / 2) + y * (hxBmp.width / 2);
+					u8 shift = (x & 1) << 2;
+					u8 mask = 0xF << shift;
+					pixel = (hxBmp.texData[mip][addr] & mask) >> shift;
+				} else {
+					fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
+							hxBmp.bpp);
+					goto CLEAN_UP_FAILURE;
+				}
+				HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
+				color = hmx_color_8888_fix_alpha(color);
+				pixels[x + y * hxBmp.width] = color;
 			}
-			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
-			color = hmx_color_8888_fix_alpha(color);
-			pixels[x + y * hxBmp.width] = color;
 		}
 	}
 	export_png(pngFilePath, hxBmp.width, hxBmp.height, pixels);
@@ -203,7 +205,7 @@ bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePa
 		return false;
 	}
 
-	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
+	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile, false);
 	HX_BITMAP hxBmp = hxTexData.bmp;
 	ret = conv_hxbmp_to_png(hxBmp, pngFilePath);
 	hmx_texture_cleanup(hxTexData);
@@ -230,28 +232,29 @@ bool conv_hxbmp_to_pam (HX_BITMAP *hxBmp, char const *const pamFilePath)
 	fputs("MAXVAL 255\n", pamFile);
 	fputs("TUPLTYPE RGB_ALPHA\n", pamFile);
 	fputs("ENDHDR\n", pamFile);
-
-	for (int y = 0; y < hxBmp->height; ++y) {
-		for (int x = 0; x < hxBmp->width; ++x) {
-			u8 pixel;
-			if (hxBmp->bpp == 8) {
-				pixel = hxBmp->texData[x + y * hxBmp->width];
-			} else if (hxBmp->bpp == 4) {
-				size_t addr = (x / 2) + y * (hxBmp->width / 2);
-				u8 shift = (x & 1) << 2;
-				u8 mask = 0xF << shift;
-				pixel = (hxBmp->texData[addr] & mask) >> shift;
-			} else {
-				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
-						hxBmp->bpp);
-				goto CLEAN_UP_FAILURE;
+	for (int mip = 0; mip < hxBmp->mipmapLevels; mip++) {
+		for (int y = 0; y < hxBmp->height; ++y) {
+			for (int x = 0; x < hxBmp->width; ++x) {
+				u8 pixel;
+				if (hxBmp->bpp == 8) {
+					pixel = hxBmp->texData[mip][x + y * hxBmp->width];
+				} else if (hxBmp->bpp == 4) {
+					size_t addr = (x / 2) + y * (hxBmp->width / 2);
+					u8 shift = (x & 1) << 2;
+					u8 mask = 0xF << shift;
+					pixel = (hxBmp->texData[mip][addr] & mask) >> shift;
+				} else {
+					fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
+							hxBmp->bpp);
+					goto CLEAN_UP_FAILURE;
+				}
+				HX_COLOR_8888 color = hxBmp->colorPalette[pixel];
+				color = hmx_color_8888_fix_alpha(color);
+				fprintf(pamFile, "%c%c%c%c", color.r,
+							     color.g,
+							     color.b,
+							     color.a);
 			}
-			HX_COLOR_8888 color = hxBmp->colorPalette[pixel];
-			color = hmx_color_8888_fix_alpha(color);
-			fprintf(pamFile, "%c%c%c%c", color.r,
-						     color.g,
-						     color.b,
-						     color.a);
 		}
 	}
 	goto CLEAN_UP_SUCCESS;
@@ -273,7 +276,7 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 		return false;
 	}
 
-	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
+	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile, false);
 	HX_BITMAP hxBmp = hxTexData.bmp;
 	ret = conv_hxbmp_to_pam(&hxBmp, pamFilePath);
 	hmx_texture_cleanup(hxTexData);
@@ -431,7 +434,7 @@ bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFile
 	}
 
 	HX_MESH *hxMeshData = hmx_mesh_load(hxMeshFile);
-	fclose(objMeshFile);
+	// fclose(objMeshFile);
 	OBJData obj = obj_from_hmx(*hxMeshData);
 	//hmx_mesh_cleanup(hxMeshData); // makes it crash? no clue why, probably a double free
 

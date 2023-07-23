@@ -8,8 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define FAST_OBJ_IMPLEMENTATION
 #include "fast_obj.h"
-
+#undef FAST_OBJ_IMPLEMENTATION
 
 OBJData obj_from_hmx(HX_MESH const hxmesh)
 {
