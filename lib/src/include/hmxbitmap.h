@@ -63,7 +63,7 @@ typedef struct {
 	// hmx_bitmap_len_tex_data).
 	HX_COLOR_8888 *colorPalette;
 
-	u8 **texData; // in case of... *mip maps!*
+	u8 **texData; // [i][j]; i = mipmap, j = pixel
 } HX_BITMAP; // should be 32 + (hmx_bitmap_len_color_palette) + (hmx_bitmap_len_tex_data)
 
 

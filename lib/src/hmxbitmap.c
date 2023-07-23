@@ -68,6 +68,7 @@ HX_BITMAP hmx_bitmap_load(FILE *file)
 
 	u32 w = bmp.width;
 	u32 h = bmp.height;
+	bmp.texData = malloc(sizeof(u8 *) * (bmp.mipmapLevels + 1));
 	for (u32 i = 0; i <= bmp.mipmapLevels; i++) {
 		u32 data_size = (w * h * bmp.bpp) / 8;
 		bmp.texData[i] = malloc(data_size);

@@ -55,6 +55,7 @@ int parse_args(int const argc, char const *const *const argv, HXConverterArgs *r
 					fprintf(stderr, "Unimplemented output filetype: `%s`.\n", arg);
 					return EXIT_FAILURE;
 				}
+				skipArgs = 1;
 			} else if (streq(arg, "--outVersion")) {
 				if (i == argc - 1) {
 					fprintf(stderr, "Not enough arguments to `%s`.\n", arg);
@@ -190,7 +191,7 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_MESH;
 	} else if (streq(ext, "tex") || streq(ext, "hxtex")) {
 		return IFILETYPE_HX_TEX;
-	} else if (streq(ext, "bmp_ps2") || streq(ext, "hxbmp")) {
+	} else if (streq(ext, "bmp_ps2") || (streq(ext, "bmp_xbox")) || streq(ext, "hxbmp")) {
 		return IFILETYPE_HX_BMP;
 	} else if (streq(ext, "lit") || streq(ext, "hxlight")) {
 		return IFILETYPE_HX_LIT;
