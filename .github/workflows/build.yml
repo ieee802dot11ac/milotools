@@ -14,10 +14,7 @@ jobs:
       - name: Build libspng
         run: |
           cd libspng
-          cmake . build
-          cd build
           make
-          cd ..
       - name: Build the dingus
         run: |
           make
