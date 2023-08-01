@@ -12,7 +12,7 @@
 #include "hmxtexture.h"
 #include "hmxbitmap.h"
 #include "hmxmesh.h"
-#include "objwrapper.h"
+// #include "objwrapper.h" // TODO move to frontend. also make it, yknow, work
 #include "spngwrapper.h"
 #include "hmxlight.h"
 #include "hmxmaterial.h"
@@ -353,7 +353,7 @@ bool conv_hxmat_to_mtl(char const *const hxFilePath, char const *const outFilePa
 
 bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath, char const *const recursePath)
 {
-	FILE *hxMeshFile = fopen(hxFilePath, "r");
+	/*FILE *hxMeshFile = fopen(hxFilePath, "r");
 	FILE *objMeshFile = fopen(objFilePath, "w");
 
 	if (hxMeshFile == NULL) {
@@ -416,13 +416,13 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 	obj_write(obj, objMeshFile);
 	obj_cleanup(obj);
 
-	fclose(objMeshFile);
-	return true;
+	fclose(objMeshFile);*/
+	return false;
 }
 
 bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFilePath)
 {
-	FILE *objMeshFile = fopen(objFilePath, "r");
+	/*FILE *objMeshFile = fopen(objFilePath, "r");
 	FILE *hxMeshFile = fopen(hxFilePath, "w");
 
 	if (hxMeshFile == NULL) {
@@ -441,6 +441,6 @@ bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFile
 	hmx_mesh_write(hxMeshFile, hxMeshData);
 	obj_cleanup(obj);
 
-	fclose(objMeshFile);
-	return true;
+	fclose(objMeshFile);*/
+	return false;
 }

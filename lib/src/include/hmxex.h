@@ -1,4 +1,4 @@
-// hmxex.h - Harmonix UI stuff (only really seen in GH1)
+// hmxex.h - Harmonix UI stuff (only really seen in GH1); not to be confused with hmxxex (nonexistent)
 #ifndef HMXEX_H
 #define HMXEX_H
 #ifdef __cplusplus
@@ -12,7 +12,6 @@ extern "C" {
 #include "hmxdraw.h"
 #include "hmxstring.h"
 #include "hmxprimitive.h"
-#include "objwrapper.h"
 
 typedef struct {
     i32 version;

@@ -19,7 +19,6 @@ extern "C" {
 #include "hmxmesh.h"
 #include "hmxgroupsec.h"
 #include "hmxmilo.h"
-#include "objwrapper.h"
 #include "hmxprimitive.h"
 #include "hmxstring.h"
 #include "hmxtexture.h"

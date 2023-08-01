@@ -8,7 +8,6 @@ extern "C" {
 #include <stdint.h>
 #include "hmxtransform.h"
 #include "hmxdraw.h"
-#include "objwrapper.h"
 #include "hmxstring.h"
 
 typedef struct {
