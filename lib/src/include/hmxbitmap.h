@@ -85,8 +85,8 @@ INLINE size_t hmx_bitmap_len_tex_data(HX_BITMAP bmp)
 	return (pixels * bmp.bpp) / 8;
 }
 
-extern HX_BITMAP hmx_bitmap_load(FILE *file);
-extern void hmx_bitmap_write(FILE *file, HX_BITMAP bmp);
+extern HX_BITMAP hmx_bitmap_load(FILE *file, bool isBigEndian);
+extern void hmx_bitmap_write(FILE *file, HX_BITMAP bmp, bool isBigEndian);
 extern void hmx_bitmap_cleanup(HX_BITMAP bmp);
 extern void hmx_bitmap_print(HX_BITMAP bmp);
 

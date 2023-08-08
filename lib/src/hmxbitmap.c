@@ -5,44 +5,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-HX_BITMAP hmx_bitmap_load(FILE *file)
+HX_BITMAP hmx_bitmap_load(FILE *file, bool isBigEndian)
 {
 	HX_BITMAP bmp;
 	bool freq = 0;
 	bmp.version = iohelper_read_u8(file);
 
 	if (bmp.version == 0) { // header gen
-		if (fseek(file, 3, SEEK_CUR), bmp.freqencoding = iohelper_read_u16(file), bmp.freqencoding == 0xD000 || bmp.freqencoding == 0x1500) { // why is freq like this
+		if (fseek(file, 3, SEEK_CUR), bmp.freqencoding = iohelper_read_u16_ve(file, isBigEndian), bmp.freqencoding == 0xD000 || bmp.freqencoding == 0x1500) { // why is freq like this
 			freq = true;
 
 			bmp.encoding = RGBA; // freq is always rgba!
-			bmp.width = iohelper_read_u16(file);
-			bmp.height = iohelper_read_u16(file);
-			bmp.bytesPerLine = iohelper_read_u16(file);
+			bmp.width = iohelper_read_u16_ve(file, isBigEndian);
+			bmp.height = iohelper_read_u16_ve(file, isBigEndian);
+			bmp.bytesPerLine = iohelper_read_u16_ve(file, isBigEndian);
 
-			bmp.freqalways_0_1 = iohelper_read_u32(file);
-			bmp.freqimg_data_size = iohelper_read_u32(file);
-			bmp.freqalways_0_2 = iohelper_read_u32(file);
+			bmp.freqalways_0_1 = iohelper_read_u32_ve(file, isBigEndian);
+			bmp.freqimg_data_size = iohelper_read_u32_ve(file, isBigEndian);
+			bmp.freqalways_0_2 = iohelper_read_u32_ve(file, isBigEndian);
 
 			bmp.bpp = (bmp.bytesPerLine * 8) / bmp.width; // hacky workaround, necessary cause freq a shit
 			bmp.mipmapLevels = 0;
 		} else { // amp
 			fseek(file, -5, SEEK_CUR); // unfuck that headache
 			bmp.bpp = iohelper_read_u8(file);
-			bmp.encoding = iohelper_read_u16(file); // *should* always be 3
-			bmp.width = iohelper_read_u16(file);
-			bmp.height = iohelper_read_u16(file);
-			bmp.bytesPerLine = iohelper_read_u16(file);
+			bmp.encoding = iohelper_read_u16_ve(file, isBigEndian); // *should* always be 3
+			bmp.width = iohelper_read_u16_ve(file, isBigEndian);
+			bmp.height = iohelper_read_u16_ve(file, isBigEndian);
+			bmp.bytesPerLine = iohelper_read_u16_ve(file, isBigEndian);
 			fseek(file, 6, SEEK_CUR); // cause 1+1+2+2+2+2 is only 10, not 16
 		}
 	} else { // everything else just uses the same header lmao
 		bmp.bpp = iohelper_read_u8(file);
-		bmp.encoding = iohelper_read_u32(file);
+		bmp.encoding = iohelper_read_u32_ve(file, isBigEndian);
 		bmp.mipmapLevels = iohelper_read_u8(file);
 
-		bmp.width = iohelper_read_u16(file);
-		bmp.height = iohelper_read_u16(file);
-		bmp.bytesPerLine = iohelper_read_u16(file);
+		bmp.width = iohelper_read_u16_ve(file, isBigEndian);
+		bmp.height = iohelper_read_u16_ve(file, isBigEndian);
+		bmp.bytesPerLine = iohelper_read_u16_ve(file, isBigEndian);
 		fseek(file, 19, SEEK_CUR);
 	}
 	
@@ -50,13 +50,13 @@ HX_BITMAP hmx_bitmap_load(FILE *file)
 		u32 size = 1 << (bmp.bpp + 2); // loop
 		bmp.colorPalette = malloc(1 << (bmp.bpp + 2));
 		for (u32 i = 0; i < size; i+=4) {
-			bmp.colorPalette[i] = hmx_color_8888_load(file);
+			bmp.colorPalette[i] = hmx_color_8888_load(file, isBigEndian);
 		}
 	} else if (freq) {
 		bmp.colorPalette = malloc(1024); // always 256 colors, insert VGA joke here
-		for (int i = 0; i < 1024; i+=4) bmp.colorPalette[i] = hmx_color_8888_load(file);
-		bmp.freqalways_0_3 = iohelper_read_u32(file);
-		bmp.freqcolorcount = iohelper_read_u32(file);
+		for (int i = 0; i < 1024; i+=4) bmp.colorPalette[i] = hmx_color_8888_load(file, isBigEndian);
+		bmp.freqalways_0_3 = iohelper_read_u32_ve(file, isBigEndian);
+		bmp.freqcolorcount = iohelper_read_u32_ve(file, isBigEndian);
 		if (bmp.freqencoding == 0x1500) {
 			bmp.texData = malloc(bmp.bytesPerLine*bmp.height);
 			for (u32 i = 0; i < bmp.bytesPerLine*bmp.height; i++) {
@@ -82,8 +82,9 @@ HX_BITMAP hmx_bitmap_load(FILE *file)
 	return bmp;
 }
 
-void hmx_bitmap_write(FILE *file, HX_BITMAP bmp) {
-	iohelper_write_u32(file, bmp.version);
+void hmx_bitmap_write(FILE *file, HX_BITMAP bmp, bool isBigEndian) {
+	// uh. who forgor to write this lmao
+	iohelper_write_u32_ve(file, bmp.version, isBigEndian);
 }
 
 void hmx_bitmap_cleanup(HX_BITMAP bmp)

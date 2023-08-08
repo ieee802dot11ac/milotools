@@ -28,10 +28,10 @@ typedef struct {
     u8 fogEnable;
 } HX_ENVIRON;
 
-extern HX_FOG hmx_fog_load(FILE *file);
+extern HX_FOG hmx_fog_load(FILE *file, bool isBigEndian);
 extern void hmx_fog_print(HX_FOG fog);
 
-extern HX_ENVIRON hmx_environ_load(FILE *file);
+extern HX_ENVIRON hmx_environ_load(FILE *file, bool isBigEndian);
 extern void hmx_environ_cleanup(HX_ENVIRON environ);
 extern void hmx_environ_print(HX_ENVIRON environ);
 

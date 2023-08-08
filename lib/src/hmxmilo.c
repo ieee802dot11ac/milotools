@@ -8,18 +8,23 @@
 
 #define CUSTOM_MILO_BLOCKSIZE 2048
 
-int hmx_milo_decompress(FILE* file, char *outfilename) {
+int hmx_milo_decompress(FILE* file, char const *outfilename, bool isBigEndian) {
 	HX_MILOHEADER* header = malloc(sizeof(HX_MILOHEADER));
-	header->version[0] = iohelper_read_u8(file); header->version[1] = iohelper_read_u8(file); header->version[2] = iohelper_read_u8(file); header->version[3] = iohelper_read_u8(file);
+
+	header->version[0] = iohelper_read_u8(file);
+	header->version[1] = iohelper_read_u8(file);
+	header->version[2] = iohelper_read_u8(file);
+	header->version[3] = iohelper_read_u8(file);
+
 	printf("0x%X%X%X%X\n", header->version[3], header->version[2], header->version[1], header->version[0]);
 
-	header->offset = iohelper_read_u32(file);
-	header->blockCount = iohelper_read_u32(file);
-	header->maxBlockSize = iohelper_read_u32(file); // sets max length. if we exceed this, oh shit
+	header->offset = iohelper_read_u32_ve(file, isBigEndian);
+	header->blockCount = iohelper_read_u32_ve(file, isBigEndian);
+	header->maxBlockSize = iohelper_read_u32_ve(file, isBigEndian); // sets max length. if we exceed this, oh shit
 	header->sizes = malloc(4*header->blockCount);
 
 	for (int i = 0; i < header->blockCount; i++) {
-		header->sizes[i] = iohelper_read_u32(file);
+		header->sizes[i] = iohelper_read_u32_ve(file, isBigEndian);
 	}
 	fseek(file, header->offset, SEEK_SET);
 
@@ -42,7 +47,11 @@ int hmx_milo_decompress(FILE* file, char *outfilename) {
 		} else if (header->version[3] == 0xCC) {
 			printf("we can't auto-gunzip this, so you'll have to do it manually, sorry\n");
 			decompressed = compressed_data[i];
-			strcat(outfilename, ".gz");
+			// copy outfilename first, so we don't end up destroying the stack with a strcat
+			us outlen = strlen(outfilename) + 1;
+			char outCopy[outlen + 16];
+			strcpy(outCopy, outfilename);
+			strcat(outCopy, ".gz");
 			// decompress(compressed_data[i],header->sizes[i], true, false, file);
 		} else if (header->version[3] == 0xCD) {
 			decompressed = decompress(compressed_data[i],header->sizes[i], false, true, NULL);
@@ -57,11 +66,11 @@ int hmx_milo_decompress(FILE* file, char *outfilename) {
 	return 0;
 }
 
-int hmx_milo_compress(FILE* file, char *outfilename, BlockStructure mode) {
+int hmx_milo_compress(FILE* file, char const *outfilename, BlockStructure mode, bool isBigEndian) {
 	return 0;
 }
 
-HX_MILOFILE *hmx_milo_load (FILE *file) {
+HX_MILOFILE *hmx_milo_load (FILE *file, bool isBigEndian) {
 	HX_MILOFILE *milo = malloc(sizeof(HX_MILOFILE));
 	return milo;
 }

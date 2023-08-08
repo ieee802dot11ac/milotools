@@ -27,8 +27,8 @@ typedef struct {
 	HX_BITMAP bmp;
 } HX_TEXTURE;
 
-HX_TEXTURE hmx_texture_load(FILE *file, bool gdrb);
-void hmx_texture_write(FILE *file, HX_TEXTURE tex, bool gdrb);
+HX_TEXTURE hmx_texture_load(FILE *file, bool gdrb, bool isBigEndian);
+void hmx_texture_write(FILE *file, HX_TEXTURE tex, bool gdrb, bool isBigEndian);
 void hmx_texture_cleanup(HX_TEXTURE tex);
 void hmx_texture_print(HX_TEXTURE tex);
 

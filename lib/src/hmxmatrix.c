@@ -2,11 +2,17 @@
 #include "iohelper.h"
 #include <stdio.h>
 
-HX_MATRIX hmx_matrix_load(FILE *file)
+HX_MATRIX hmx_matrix_load(FILE *file, bool isBigEndian)
 {
-	HX_MATRIX matx;
-	fread(&matx, sizeof(float), 12, file);
-	return matx;
+	HX_MATRIX mtx;
+	// i'm sorry the code duplication was bothering me, especially with isBigEndian too
+#define _MATREAD(x) mtx.v##x = iohelper_read_f32_ve(file, isBigEndian)
+	_MATREAD(11); _MATREAD(12); _MATREAD(13);
+	_MATREAD(21); _MATREAD(22); _MATREAD(23);
+	_MATREAD(31); _MATREAD(32); _MATREAD(33);
+	_MATREAD(41); _MATREAD(42); _MATREAD(43);
+#undef _MATREAD
+	return mtx;
 }
 
 void hmx_matrix_print(HX_MATRIX mtx)
@@ -21,11 +27,14 @@ void hmx_matrix_print(HX_MATRIX mtx)
 		mtx.v41, mtx.v42, mtx.v43);
 }
 
-bool hmx_matrix_write(FILE *file, HX_MATRIX mtx)
+bool hmx_matrix_write(FILE *file, HX_MATRIX mtx, bool isBigEndian)
 {
-	iohelper_write_f32(file, mtx.v11); iohelper_write_f32(file, mtx.v12); iohelper_write_f32(file, mtx.v13);
-	iohelper_write_f32(file, mtx.v21); iohelper_write_f32(file, mtx.v22); iohelper_write_f32(file, mtx.v23);
-	iohelper_write_f32(file, mtx.v31); iohelper_write_f32(file, mtx.v32); iohelper_write_f32(file, mtx.v33);
-	iohelper_write_f32(file, mtx.v41); iohelper_write_f32(file, mtx.v42); iohelper_write_f32(file, mtx.v43);
+	// i'm sorry the code duplication was bothering me, especially with isBigEndian too
+#define _MATWRITE(x) iohelper_write_f32_ve(file, mtx.v##x, isBigEndian)
+	_MATWRITE(11); _MATWRITE(12); _MATWRITE(13);
+	_MATWRITE(21); _MATWRITE(22); _MATWRITE(23);
+	_MATWRITE(31); _MATWRITE(32); _MATWRITE(33);
+	_MATWRITE(41); _MATWRITE(42); _MATWRITE(43);
+#undef _MATWRITE
 	return true;
 }

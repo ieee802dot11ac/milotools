@@ -3,12 +3,24 @@
 #include <stdio.h>
 
 
-HX_SPHERE hmx_primitive_sphere_load(FILE *file)
+HX_SPHERE hmx_primitive_sphere_load(FILE *file, bool isBigEndian)
 {
 	HX_SPHERE sphere;
-	fread(&sphere, 1, sizeof(HX_SPHERE), file);
+	sphere.x = iohelper_read_f32_ve(file, isBigEndian);
+	sphere.y = iohelper_read_f32_ve(file, isBigEndian);
+	sphere.z = iohelper_read_f32_ve(file, isBigEndian);
+	sphere.r = iohelper_read_f32_ve(file, isBigEndian);
 
 	return sphere;
+}
+
+bool hmx_primitive_sphere_write(FILE *file, HX_SPHERE sphere, bool isBigEndian)
+{
+	iohelper_write_f32_ve(file, sphere.x, isBigEndian);
+	iohelper_write_f32_ve(file, sphere.y, isBigEndian);
+	iohelper_write_f32_ve(file, sphere.z, isBigEndian);
+	iohelper_write_f32_ve(file, sphere.r, isBigEndian);
+	return true; // oh
 }
 
 void hmx_primitive_sphere_print(HX_SPHERE sphere)
@@ -19,11 +31,23 @@ void hmx_primitive_sphere_print(HX_SPHERE sphere)
 							 sphere.z);
 }
 
-HX_RECT hmx_primitive_rect_load(FILE *file)
+HX_RECT hmx_primitive_rect_load(FILE *file, bool isBigEndian)
 {
 	HX_RECT rect;
-	fread(&rect, 1, sizeof(HX_RECT), file);
+	rect.x = iohelper_read_f32_ve(file, isBigEndian);
+	rect.y = iohelper_read_f32_ve(file, isBigEndian);
+	rect.w = iohelper_read_f32_ve(file, isBigEndian);
+	rect.h = iohelper_read_f32_ve(file, isBigEndian);
 	return rect;
+}
+
+bool hmx_primitive_rect_write(FILE *file, HX_RECT rect, bool isBigEndian)
+{
+	iohelper_write_f32_ve(file, rect.x, isBigEndian);
+	iohelper_write_f32_ve(file, rect.y, isBigEndian);
+	iohelper_write_f32_ve(file, rect.w, isBigEndian);
+	iohelper_write_f32_ve(file, rect.h, isBigEndian);
+	return true; // oh
 }
 
 void hmx_primitive_rect_print(HX_RECT sphere)

@@ -15,8 +15,8 @@ typedef struct {
 	float v41, v42, v43;
 } HX_MATRIX;
 
-HX_MATRIX hmx_matrix_load(FILE *file);
-bool hmx_matrix_write(FILE *file, HX_MATRIX mtx);
+HX_MATRIX hmx_matrix_load(FILE *file, bool isBigEndian);
+bool hmx_matrix_write(FILE *file, HX_MATRIX mtx, bool isBigEndian);
 void hmx_matrix_print(HX_MATRIX matx);
 
 #ifdef __cplusplus

@@ -5,15 +5,15 @@
 #include <stdio.h>
 
 
-HX_LIGHT hmx_light_load(FILE *file)
+HX_LIGHT hmx_light_load(FILE *file, bool isBigEndian)
 {
 	HX_LIGHT light;
-	light.version = iohelper_read_u32(file);
-	light.transform = hmx_transform_load(file);
-	light.color = hmx_color_3f_load(file);
-	light.intensity = iohelper_read_u32(file);
-	light.range = iohelper_read_u32(file);
-	light.type = iohelper_read_u32(file);
+	light.version = iohelper_read_u32_ve(file, isBigEndian);
+	light.transform = hmx_transform_load(file, isBigEndian);
+	light.color = hmx_color_3f_load(file, isBigEndian);
+	light.intensity = iohelper_read_u32_ve(file, isBigEndian);
+	light.range = iohelper_read_u32_ve(file, isBigEndian);
+	light.type = iohelper_read_u32_ve(file, isBigEndian);
 	return light;
 }
 

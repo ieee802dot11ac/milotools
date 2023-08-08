@@ -8,6 +8,7 @@ extern "C" {
 #include "hmxcommon.h"
 #include "hmxstring.h"
 #include "hmxmatrix.h"
+#include "hmxvector.h"
 
 typedef enum
 {

@@ -32,6 +32,24 @@ INLINE bool iohelper_write_##type(FILE *const file, type value) \
 	return (fwrite(&value, sizeof(value), 1, file) != 1); \
 }
 
+// _ve stands for variable endianness
+#define READ_VARIABLE_ENDIANNESS(type) \
+INLINE type iohelper_read_##type##_ve(FILE *const file, bool isBigEndian) \
+{ \
+	if (isBigEndian) \
+		return iohelper_read_##type##_be(file); \
+	return iohelper_read_##type(file); \
+}
+
+// _ve stands for variable endianness
+#define WRITE_VARIABLE_ENDIANNESS(type) \
+INLINE bool iohelper_write_##type##_ve(FILE *const file, type value, bool isBigEndian) \
+{ \
+	if (isBigEndian) \
+		return iohelper_write_##type##_be(file, value); \
+	return iohelper_write_##type(file, value); \
+}
+
 // Reads a `u32` (little endian) from `file`
 BASIC_READ(u32)
 
@@ -73,11 +91,16 @@ INLINE f32 iohelper_read_f32_be(FILE *const file) {
 		warn("Short read of type f32!");
 		if (feof(file)) {fprintf(stderr, "EOF REACHED\n"); abort();}
 	}
-	u32 *ptr = &ret; // i don't want to do this either ;-;
+	u32 *ptr = (u32 *) &ret; // i don't want to do this either ;-;
 	*ptr = (*ptr & 0xFF000000 >> 24) || (*ptr & 0x00FF0000 >> 8) || (*ptr & 0xFF00 << 8) || (*ptr & 0xFF << 24);
 	ret = *ptr;
 	return ret;
 }
+
+READ_VARIABLE_ENDIANNESS(u32)
+READ_VARIABLE_ENDIANNESS(u16)
+
+READ_VARIABLE_ENDIANNESS(f32)
 
 // Writes a `u32` (little endian) to `file`
 BASIC_WRITE(u32)
@@ -108,10 +131,18 @@ INLINE bool iohelper_write_u16_be(FILE *const file, u16 value)
 
 INLINE bool iohelper_write_f32_be(FILE *const file, f32 value)
 {
-	u32 beValue = ((* ( long * ) &value & 0xFF000000) >> 24) | ((* ( long * ) &value & 0xFF0000) >> 8) |
-		      ((* ( long * ) &value & 0xFF00) << 8) | ((* ( long * ) &value & 0xFF) << 24);
+	union { u32 u; f32 f; } fuunion = { .f = value };
+	u32 v = fuunion.u;
+	u32 beValue = ((v & 0xFF000000) >> 24) |
+		      ((v & 0xFF0000) >> 8) |
+		      ((v & 0xFF00) << 8) |
+		      ((v & 0xFF) << 24);
 	return (fwrite(&beValue, sizeof(beValue), 1, file) != 1);
 }
+
+WRITE_VARIABLE_ENDIANNESS(u32)
+WRITE_VARIABLE_ENDIANNESS(u16)
+WRITE_VARIABLE_ENDIANNESS(f32)
 
 INLINE char *iohelper_read_cstring_at(FILE *const file, u32 fpos)
 {

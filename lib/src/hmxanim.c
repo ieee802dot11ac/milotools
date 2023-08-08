@@ -5,22 +5,22 @@
 #include "hmxstring.h"
 #include "iohelper.h"
 
-HX_ANIM *hmx_anim_load(FILE *file) {
+HX_ANIM *hmx_anim_load(FILE *file, bool isBigEndian) {
 	HX_ANIM *anim = malloc(sizeof(HX_ANIM));
-	anim->version = iohelper_read_u32(file);
-	anim->anim_entry_count = iohelper_read_u32(file);
+	anim->version = iohelper_read_u32_ve(file, isBigEndian);
+	anim->anim_entry_count = iohelper_read_u32_ve(file, isBigEndian);
 	if (anim->anim_entry_count != 0) {
 		anim->anim_entries = malloc(sizeof(AnimEntry) * anim->anim_entry_count);
 		for (u32 i = 0; i < anim->anim_entry_count; i++) {
-			anim->anim_entries[i].name = hmx_string_load(file);
-			anim->anim_entries[i].f1 = iohelper_read_f32(file);
-			anim->anim_entries[i].f2 = iohelper_read_f32(file);
+			anim->anim_entries[i].name = hmx_string_load(file, isBigEndian);
+			anim->anim_entries[i].f1 = iohelper_read_f32_ve(file, isBigEndian);
+			anim->anim_entries[i].f2 = iohelper_read_f32_ve(file, isBigEndian);
 		}
 	} else anim->anim_entries = NULL;
 	if (anim->anim_count != 0) {
 		anim->anim_objects = malloc(sizeof(HX_STRING) * anim->anim_count);
 		for (u32 i = 0; i < anim->anim_count; i++) {
-			anim->anim_objects[i] = hmx_string_load(file);
+			anim->anim_objects[i] = hmx_string_load(file, isBigEndian);
 		}
 	} else anim->anim_objects = NULL;
 	return anim;

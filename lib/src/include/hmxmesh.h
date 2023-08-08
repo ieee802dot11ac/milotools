@@ -135,7 +135,7 @@ typedef struct {
 } HX_MESH;
 
 
-BSPNode *bspnode_load(FILE *file);
+BSPNode *bspnode_load(FILE *file, bool isBigEndian);
 HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian);
 void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool isBigEndian);
 void hmx_mesh_cleanup(HX_MESH mesh);

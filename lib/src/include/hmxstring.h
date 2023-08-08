@@ -13,6 +13,8 @@ typedef struct {
     char *value;
 } HX_STRING;
 
+#define HX_STRING_EMPTY ((HX_STRING) { .length = 0, .value = NULL })
+
 HX_STRING hmx_string_load(FILE* file, bool isBigEndian);
 bool hmx_string_write(FILE* file, HX_STRING string, bool isBigEndian);
 char *hmx_string_cstring(HX_STRING string);

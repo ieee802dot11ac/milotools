@@ -13,6 +13,7 @@ int parse_args(int const argc, char const *const *const argv, HXConverterArgs *r
 	result->inputFileType = IFILETYPE_UNKNOWN;
 	result->outputFileType = OFILETYPE_UNKNOWN;
 	result->outVersion = 0;
+	result->isBigEndian = false; // TODO
 
 	bool acceptPosixArgs = true;
 

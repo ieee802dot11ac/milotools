@@ -86,16 +86,16 @@ typedef struct { // both W coordinates are v34 exclusive
 } HX_VERTEX_NU; // also applies up to rb2, apparently
 
 
-HX_VERTEX_FREQ hmx_freqvertex_load(FILE *file);
-void hmx_freqvertex_write(FILE *file, HX_VERTEX_FREQ vertex);
+HX_VERTEX_FREQ hmx_freqvertex_load(FILE *file, bool isBigEndian);
+void hmx_freqvertex_write(FILE *file, HX_VERTEX_FREQ vertex, bool isBigEndian);
 void hmx_freqvertex_print(HX_VERTEX_FREQ vertex);
 
-HX_VERTEX_AMP hmx_ampvertex_load(FILE *file);
-void hmx_ampvertex_write(FILE *file, HX_VERTEX_AMP vertex);
+HX_VERTEX_AMP hmx_ampvertex_load(FILE *file, bool isBigEndian);
+void hmx_ampvertex_write(FILE *file, HX_VERTEX_AMP vertex, bool isBigEndian);
 void hmx_ampvertex_print(HX_VERTEX_AMP vertex);
 
-HX_VERTEX_NU hmx_nu_vertex_load(FILE *file, int version);
-void hmx_nu_vertex_write(FILE *file, HX_VERTEX_NU vertex, int version);
+HX_VERTEX_NU hmx_nu_vertex_load(FILE *file, int version, bool isBigEndian);
+void hmx_nu_vertex_write(FILE *file, HX_VERTEX_NU vertex, int version, bool isBigEndian);
 void hmx_nu_vertex_print(HX_VERTEX_NU vertex);
 
 

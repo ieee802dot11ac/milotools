@@ -27,7 +27,7 @@ typedef struct {
 } HX_LIGHT;
 
 
-extern HX_LIGHT hmx_light_load(FILE *file);
+extern HX_LIGHT hmx_light_load(FILE *file, bool isBigEndian);
 extern void hmx_light_cleanup(HX_LIGHT light);
 extern void hmx_light_print(HX_LIGHT light);
 
