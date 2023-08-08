@@ -3,36 +3,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-HX_FREQARK *hmx_freq_ark_load(FILE *file, char *outdir) {
+HX_FREQARK *hmx_freq_ark_load(FILE *file, char const *outdir, bool isBigEndian) {
     HX_FREQARK *ark = malloc(sizeof(HX_FREQARK));
-    ark->header.magic[0] = iohelper_read_u8(file); ark->header.magic[1] = iohelper_read_u8(file); ark->header.magic[2] = iohelper_read_u8(file); ark->header.magic[3] = iohelper_read_u8(file);
-    ark->header.version = iohelper_read_u32(file);
 
-    ark->header.file_entry_offset = iohelper_read_u32(file); ark->header.file_entry_count = iohelper_read_u32(file);
-    ark->header.folder_entry_offset = iohelper_read_u32(file); ark->header.folder_entry_count = iohelper_read_u32(file);
-    ark->header.string_table_offset = iohelper_read_u32(file); ark->header.string_count = iohelper_read_u32(file);
+    ark->header.magic[0] = iohelper_read_u8(file);
+    ark->header.magic[1] = iohelper_read_u8(file);
+    ark->header.magic[2] = iohelper_read_u8(file);
+    ark->header.magic[3] = iohelper_read_u8(file);
+
+    ark->header.version = iohelper_read_u32_ve(file, isBigEndian);
+
+    ark->header.file_entry_offset = iohelper_read_u32_ve(file, isBigEndian);
+    ark->header.file_entry_count = iohelper_read_u32_ve(file, isBigEndian);
+
+    ark->header.folder_entry_offset = iohelper_read_u32_ve(file, isBigEndian);
+    ark->header.folder_entry_count = iohelper_read_u32_ve(file, isBigEndian);
+
+    ark->header.string_table_offset = iohelper_read_u32_ve(file, isBigEndian);
+    ark->header.string_count = iohelper_read_u32_ve(file, isBigEndian);
     
-    ark->header.total_hdr_size = iohelper_read_u32(file);
-    ark->header.block_size = iohelper_read_u32(file);
+    ark->header.total_hdr_size = iohelper_read_u32_ve(file, isBigEndian);
+    ark->header.block_size = iohelper_read_u32_ve(file, isBigEndian);
     
     ark->entries = malloc(sizeof(HX_FREQARK_FILEENTRY) * ark->header.file_entry_count);
     fseek(file, ark->header.file_entry_offset, SEEK_SET);
     
     for (u32 i = 0; i < ark->header.file_entry_count; i++) {
-        ark->entries[i].unknown = iohelper_read_u32(file);
-        ark->entries[i].file_name_offset = iohelper_read_u32(file);
-        ark->entries[i].folder_name_index = iohelper_read_u16(file);
-        ark->entries[i].block_offset = iohelper_read_u16(file);
-        ark->entries[i].block = iohelper_read_u32(file);
-        ark->entries[i].file_size = iohelper_read_u32(file);
-        ark->entries[i].inflated_size = iohelper_read_u32(file);
+        ark->entries[i].unknown = iohelper_read_u32_ve(file, isBigEndian);
+        ark->entries[i].file_name_offset = iohelper_read_u32_ve(file, isBigEndian);
+        ark->entries[i].folder_name_index = iohelper_read_u16_ve(file, isBigEndian);
+        ark->entries[i].block_offset = iohelper_read_u16_ve(file, isBigEndian);
+        ark->entries[i].block = iohelper_read_u32_ve(file, isBigEndian);
+        ark->entries[i].file_size = iohelper_read_u32_ve(file, isBigEndian);
+        ark->entries[i].inflated_size = iohelper_read_u32_ve(file, isBigEndian);
 
         u64 pos = ftell(file); // past this point: fakeland (not in the entry itself)
         ark->entries[i].FAKEfile_offset = ark->entries[i].block * ark->header.block_size + ark->entries[i].block_offset;
         ark->entries[i].FAKEfile_name = iohelper_read_cstring_at(file, ark->entries[i].file_name_offset);
         fseek(file, ark->header.folder_entry_offset + (ark->entries[i].folder_name_index * 8) + 4, SEEK_SET);
 
-        ark->entries[i].FAKEfolder_name_offset = iohelper_read_u32(file); 
+        ark->entries[i].FAKEfolder_name_offset = iohelper_read_u32_ve(file, isBigEndian); 
         ark->entries[i].FAKEfolder_name = iohelper_read_cstring_at(file, ark->entries[i].FAKEfolder_name_offset);
 
         fseek(file, pos, SEEK_SET);
@@ -42,8 +52,8 @@ HX_FREQARK *hmx_freq_ark_load(FILE *file, char *outdir) {
     ark->folders = malloc(sizeof(HX_FREQARK_FOLDERENTRY) * ark->header.folder_entry_count);
     for (u32 i = 0; i < ark->header.folder_entry_count; i++) {
 
-        ark->folders[i].unknown = iohelper_read_u32(file);
-        ark->folders[i].folder_name_index = iohelper_read_u32(file);
+        ark->folders[i].unknown = iohelper_read_u32_ve(file, isBigEndian);
+        ark->folders[i].folder_name_index = iohelper_read_u32_ve(file, isBigEndian);
         ark->folders[i].FAKEfolder_name = iohelper_read_cstring_at(file, ark->folders[i].folder_name_index);
 
         printf("folder %i registered: %s\n", i, ark->entries[i].FAKEfolder_name);

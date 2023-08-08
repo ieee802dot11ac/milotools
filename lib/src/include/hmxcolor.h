@@ -84,9 +84,9 @@ INLINE HX_COLOR_3F hmx_color_3f_from_color_4f(HX_COLOR_4F inColor)
 	};
 }
 
-extern HX_COLOR_8888 hmx_color_8888_load(FILE* file);
-extern HX_COLOR_4F hmx_color_4f_load(FILE* file);
-extern HX_COLOR_3F hmx_color_3f_load(FILE* file);
+extern HX_COLOR_8888 hmx_color_8888_load(FILE* file, bool isBigEndian);
+extern HX_COLOR_4F hmx_color_4f_load(FILE* file, bool isBigEndian);
+extern HX_COLOR_3F hmx_color_3f_load(FILE* file, bool isBigEndian);
 extern void hmx_color_8888_print(HX_COLOR_8888 color);
 extern void hmx_color_4f_print(HX_COLOR_4F color);
 extern void hmx_color_3f_print(HX_COLOR_3F color);

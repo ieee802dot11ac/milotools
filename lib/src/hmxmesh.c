@@ -8,6 +8,7 @@
 #include "hmxstring.h"
 #include "hmxtransform.h"
 #include "hmxtriangle.h"
+#include "hmxvector.h"
 #include "hmxvertex.h"
 #include "iohelper.h"
 #include <assert.h>
@@ -18,13 +19,13 @@
 // #define MESH_VERBOSE_TRIANGLE_PARTS
 // #define MESH_VERBOSE_VERTEX_PARTS
 
-BSPNode *bspnode_load(FILE *file) {
+BSPNode *bspnode_load(FILE *file, bool isBigEndian) {
 	BSPNode *node = malloc(sizeof(BSPNode));
 	node->has_value = iohelper_read_u8(file);
 	if (node->has_value) {
-		fread(&node->vec, sizeof(Vector4f), 1, file);
-		node->left = bspnode_load(file);
-		node->right = bspnode_load(file);
+		node->vec = hmx_vec4f_load(file, isBigEndian);
+		node->left = bspnode_load(file, isBigEndian);
+		node->right = bspnode_load(file, isBigEndian);
 	} else {
 		node->vec = (Vector4f){{0.0f},{0.0f},{0.0f},{0.0f}};
 		node->left = NULL;
@@ -37,17 +38,18 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 {
 	HX_MESH *mesh = malloc(sizeof(HX_MESH));
 	bool FREQMESH = false;
-	mesh->version = iohelper_read_u32(file); if (mesh->version <= 10) FREQMESH = true;
+	mesh->version = iohelper_read_u32_ve(file, isBigEndian);
+	if (mesh->version <= 10) FREQMESH = true;
 	if (mesh->version > 27) mesh->meta = hmx_metadata_load(file, isBigEndian);
 	mesh->transform = hmx_transform_load(file, isBigEndian);
-	mesh->draw = hmx_draw_load(file);
+	mesh->draw = hmx_draw_load(file, isBigEndian);
 
 	if (mesh->version < 15) {
-		mesh->always_zero = iohelper_read_u32(file);
-		mesh->ampbones_count = iohelper_read_u32(file);
+		mesh->always_zero = iohelper_read_u32_ve(file, isBigEndian);
+		mesh->ampbones_count = iohelper_read_u32_ve(file, isBigEndian);
 		if (FREQMESH) {
 			for (i32 i = 0; i < mesh->ampbones_count; i++) 
-				mesh->ampbones[i] = iohelper_read_cstring_to_hxstring(file);	
+				mesh->ampbones[i] = iohelper_read_cstring_to_hxstring(file);
 		} else {
 			for (i32 i = 0; i < mesh->ampbones_count; i++) 
 				mesh->ampbones[i] = hmx_string_load(file, isBigEndian);
@@ -55,8 +57,8 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 	}
 
 	if (mesh->version < 20) {
-		mesh->num_1 = iohelper_read_u32(file);
-		mesh->num_2 = iohelper_read_u32(file);
+		mesh->num_1 = iohelper_read_u32_ve(file, isBigEndian);
+		mesh->num_2 = iohelper_read_u32_ve(file, isBigEndian);
 	}
 
 	if (mesh->version < 3) {
@@ -87,11 +89,11 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 	}
 
 	if (mesh->version < 3) {
-		fread(&mesh->some_vector, sizeof(Vector3f), 1, file);
+		mesh->some_vector = hmx_vec3f_load(file, isBigEndian);
 	}
 
 	if (mesh->version < 15) {
-		fread(&mesh->sphere, sizeof(HX_SPHERE), 1, file);
+		mesh->sphere = hmx_primitive_sphere_load(file, isBigEndian);
 	}
 
 	if (mesh->version < 8) {
@@ -101,28 +103,28 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 	if (mesh->version < 15) {	
 		if (FREQMESH) mesh->some_string = iohelper_read_cstring_to_hxstring(file);
 		else mesh->some_string = hmx_string_load(file, isBigEndian);
-		mesh->some_float = iohelper_read_f32(file);
+		mesh->some_float = iohelper_read_f32_ve(file, isBigEndian);
 	}
 
 
 	if (mesh->version < 16) {
 		if (mesh->version > 11) mesh->some_bool2 = iohelper_read_u8(file);
-	} else mesh->mutableParts = iohelper_read_u32(file);
-	if (mesh->version > 17) mesh->volume = iohelper_read_u32(file);
+	} else mesh->mutableParts = iohelper_read_u32_ve(file, isBigEndian);
+	if (mesh->version > 17) mesh->volume = iohelper_read_u32_ve(file, isBigEndian);
 
-	if (mesh->version > 18) mesh->node = bspnode_load(file);
+	if (mesh->version > 18) mesh->node = bspnode_load(file, isBigEndian);
 	if (mesh->node->has_value) return mesh;
 
 	if (mesh->version == 7) mesh->some_bool3 = iohelper_read_u8(file);
-	if (mesh->version < 11) mesh->some_number = iohelper_read_u32(file);
+	if (mesh->version < 11) mesh->some_number = iohelper_read_u32_ve(file, isBigEndian);
 
-	mesh->vertCount = iohelper_read_u32(file);
+	mesh->vertCount = iohelper_read_u32_ve(file, isBigEndian);
 
 	if (mesh->version >= 36) {
 		mesh->is_ng = iohelper_read_u8(file);
 		if (mesh->is_ng) {
-			mesh->vert_size = iohelper_read_u32(file);
-			mesh->some_type = iohelper_read_u32(file);
+			mesh->vert_size = iohelper_read_u32_ve(file, isBigEndian);
+			mesh->some_type = iohelper_read_u32_ve(file, isBigEndian);
 		}
 	}
 	/*
@@ -135,51 +137,51 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 	if (mesh->version <= 10) {
 		mesh->vertTableFreq = malloc(sizeof(HX_VERTEX_FREQ) * mesh->vertCount);
 		assert (mesh->vertTableFreq != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableFreq[i] = hmx_freqvertex_load(file);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableFreq[i] = hmx_freqvertex_load(file, isBigEndian);
 	} else if (mesh->version <= 22) {
 		mesh->vertTableAmp = malloc(sizeof(HX_VERTEX_AMP) * mesh->vertCount);
 		assert (mesh->vertTableAmp != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableAmp[i] = hmx_ampvertex_load(file);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableAmp[i] = hmx_ampvertex_load(file, isBigEndian);
 	} else if (mesh->version < 35 || mesh->is_ng == false) {
 		mesh->vertTableNu = malloc(sizeof(HX_VERTEX_NU) * mesh->vertCount);
 		assert (mesh->vertTableNu != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableNu[i] = hmx_nu_vertex_load(file, mesh->version > 28);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableNu[i] = hmx_nu_vertex_load(file, mesh->version > 28, isBigEndian);
 	}
 
-	mesh->triCount = iohelper_read_u32(file);
+	mesh->triCount = iohelper_read_u32_ve(file, isBigEndian);
 	mesh->triTable = malloc(sizeof(u16) * 3 * mesh->triCount); // why the fuck was it allocating the size of a vert
 	assert (mesh->triTable != NULL);
 	for (u32 i = 0; i < mesh->triCount; ++i)
-		mesh->triTable[i] = hmx_triangle_load(file);
+		mesh->triTable[i] = hmx_triangle_load(file, isBigEndian);
 
 	if (mesh->version < 24) {
-		mesh->short_count = iohelper_read_u32(file);
+		mesh->short_count = iohelper_read_u32_ve(file, isBigEndian);
 		for (u32 i = 0; i < mesh->short_count; i++) {
-			mesh->some_shorts[i] = iohelper_read_u16(file);
+			mesh->some_shorts[i] = iohelper_read_u16_ve(file, isBigEndian);
 		}
 	}
 
 	if (mesh->version < 24 && mesh->version > 21) {
-		mesh->group_count = iohelper_read_u32(file);
+		mesh->group_count = iohelper_read_u32_ve(file, isBigEndian);
 		for (u32 i = 0; i < mesh->group_count; i++) {
-			mesh->groups[i].some_number = iohelper_read_u32(file);
-			mesh->groups[i].short_count = iohelper_read_u32(file);
+			mesh->groups[i].some_number = iohelper_read_u32_ve(file, isBigEndian);
+			mesh->groups[i].short_count = iohelper_read_u32_ve(file, isBigEndian);
 			for (u32 j = 0; j < mesh->groups[i].short_count; j++) {
-				mesh->groups[i].shorts[j] = iohelper_read_u16(file);
+				mesh->groups[i].shorts[j] = iohelper_read_u16_ve(file, isBigEndian);
 			}
-			mesh->groups[i].int_count = iohelper_read_u32(file);
+			mesh->groups[i].int_count = iohelper_read_u32_ve(file, isBigEndian);
 			for (u32 j = 0; j < mesh->groups[i].int_count; j++) {
-				mesh->groups[i].ints[j] = iohelper_read_u32(file);
+				mesh->groups[i].ints[j] = iohelper_read_u32_ve(file, isBigEndian);
 			}
 		}
 	}
 
 	if (mesh->version > 13 && mesh->version < 24) {
-		mesh->unknown = iohelper_read_u32(file);
+		mesh->unknown = iohelper_read_u32_ve(file, isBigEndian);
 		return mesh;
 	}
 
-	mesh->groupSizesCount = iohelper_read_u32(file);
+	mesh->groupSizesCount = iohelper_read_u32_ve(file, isBigEndian);
 	mesh->groupSizes = malloc(sizeof(u8) * mesh->groupSizesCount);
 	u32 shouldMatchTris = 0;
 	for (u32 i = 0; i < mesh->groupSizesCount; ++i) {
@@ -190,7 +192,7 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 	if (shouldMatchTris != mesh->triCount)
 		warn("Group sizes sum does not match # of triangles in mesh!");
 
-	mesh->charCount = iohelper_read_u32(file);
+	mesh->charCount = iohelper_read_u32_ve(file, isBigEndian);
 	if (mesh->version < 34) {
 		mesh->bones = malloc(sizeof(HX_STRING) * 4);
 		mesh->boneTransforms = malloc(sizeof(HX_MATRIX) * 4);
@@ -200,7 +202,7 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 			mesh->bones[i] = hmx_string_load(file, isBigEndian);
 
 		for (u32 i = 0; i < 4; ++i)
-			mesh->boneTransforms[i] = hmx_matrix_load(file);
+			mesh->boneTransforms[i] = hmx_matrix_load(file, isBigEndian);
 	} else {
 		for (u32 i = 0; i < 4; ++i) {
 			mesh->bones[i] = (HX_STRING) { .value = NULL, .length = 0 };
@@ -211,8 +213,8 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 
 	mesh->parts = malloc(sizeof(HX_GROUPSECTION) * mesh->groupSizesCount);
 	for (u32 i = 0; i < mesh->groupSizesCount; ++i) {
-		mesh->parts[i].faceCount = iohelper_read_u32(file);
-		mesh->parts[i].vertexCount = iohelper_read_u32(file);
+		mesh->parts[i].faceCount = iohelper_read_u32_ve(file, isBigEndian);
+		mesh->parts[i].vertexCount = iohelper_read_u32_ve(file, isBigEndian);
 
 		mesh->parts[i].faces = malloc(sizeof(u32) * mesh->parts[i].faceCount);
 		assert(mesh->parts[i].faces != NULL);
@@ -220,34 +222,25 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 		assert(mesh->parts[i].vertices != NULL);
 
 		for (u32 si = 0; si < mesh->parts[i].faceCount; ++si)
-			mesh->parts[i].faces[si] = iohelper_read_u32(file);
+			mesh->parts[i].faces[si] = iohelper_read_u32_ve(file, isBigEndian);
 		for (u32 vi = 0; vi < mesh->parts[i].vertexCount; ++vi)
-			mesh->parts[i].vertices[vi] = iohelper_read_u16(file);
+			mesh->parts[i].vertices[vi] = iohelper_read_u16_ve(file, isBigEndian);
 	}
 
 	return mesh;
 }
 
-void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool isBigEndian) { //FIXME assumes little isBigEndian, need to stop doing that 
+void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool isBigEndian) { //FIXME assumes little endian, need to stop doing that 
 	bool FREQMESH = false;
-	if (isBigEndian) {
-		iohelper_write_u32_be(file, mesh->version);
-	} else {
-		iohelper_write_u32(file, mesh->version);
-	} 
+	iohelper_write_u32_ve(file, mesh->version, isBigEndian);
 	if (mesh->version <= 10) FREQMESH = true;
 	if (mesh->version > 27) hmx_metadata_write(file, mesh->meta, isBigEndian);
 	hmx_transform_write(file, mesh->transform, isBigEndian);
-	hmx_draw_write(file, mesh->draw);
+	hmx_draw_write(file, mesh->draw, isBigEndian);
 
 	if (mesh->version < 15) {
-		if (isBigEndian) {
-			iohelper_write_u32_be(file, mesh->always_zero);
-			iohelper_write_u32_be(file, mesh->ampbones_count);
-		} else {
-			iohelper_write_u32(file, mesh->always_zero);
-			iohelper_write_u32(file, mesh->ampbones_count);
-		}
+		iohelper_write_u32_ve(file, mesh->always_zero, isBigEndian);
+		iohelper_write_u32_ve(file, mesh->ampbones_count, isBigEndian);
 		if (FREQMESH) {
 			for (i32 i = 0; i < mesh->ampbones_count; i++) 
 				fputs(hmx_string_cstring(mesh->ampbones[i]), file);	
@@ -258,13 +251,8 @@ void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool isBigEndian) { //FIXME assum
 	}
 
 	if (mesh->version < 20) {
-		if (isBigEndian) {
-			iohelper_write_u32_be(file, mesh->num_1);
-			iohelper_write_u32_be(file, mesh->num_2);
-		} else {
-			iohelper_write_u32(file, mesh->num_1);
-			iohelper_write_u32(file, mesh->num_2);
-		}
+		iohelper_write_u32_ve(file, mesh->num_1, isBigEndian);
+		iohelper_write_u32_ve(file, mesh->num_2, isBigEndian);
 	}
 
 	if (mesh->version < 3) {
@@ -295,11 +283,11 @@ void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool isBigEndian) { //FIXME assum
 	}
 
 	if (mesh->version < 3) {
-		fwrite(&mesh->some_vector, sizeof(Vector3f), 1, file);
+		hmx_vec3f_write(file, mesh->some_vector, isBigEndian);
 	}
 
 	if (mesh->version < 15) {
-		fwrite(&mesh->sphere, sizeof(HX_SPHERE), 1, file);
+		hmx_primitive_sphere_write(file, mesh->sphere, isBigEndian);
 	}
 
 	if (mesh->version < 8) {
@@ -309,36 +297,36 @@ void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool isBigEndian) { //FIXME assum
 	if (mesh->version < 15) {	
 		if (FREQMESH) fputs(hmx_string_cstring(mesh->some_string), file);
 		else hmx_string_write(file, mesh->some_string, isBigEndian);
-		iohelper_write_f32(file, mesh->some_float);
+		iohelper_write_f32_ve(file, mesh->some_float, isBigEndian);
 	}
 
 	if (mesh->version < 16) {
 		if (mesh->version > 11) iohelper_write_u8(file, mesh->some_bool2);
-	} else iohelper_write_u32(file, mesh->mutableParts);
-	if (mesh->version > 17) iohelper_write_u32(file, mesh->volume);
+	} else iohelper_write_u32_ve(file, mesh->mutableParts, isBigEndian);
+	if (mesh->version > 17) iohelper_write_u32_ve(file, mesh->volume, isBigEndian);
 
 	// if (mesh->version > 18) mesh->node = bspnode_load(file); // no bsps, mostly cause ????
 	// if (mesh->node->has_value) return;
 
 	if (mesh->version == 7) iohelper_write_u8(file, mesh->some_bool3);
-	if (mesh->version < 11) iohelper_write_u32(file, mesh->some_number);
+	if (mesh->version < 11) iohelper_write_u32_ve(file, mesh->some_number, isBigEndian);
 
-	iohelper_write_u32(file, mesh->vertCount);
+	iohelper_write_u32_ve(file, mesh->vertCount, isBigEndian);
 
 	if (mesh->version >= 36) {
 		iohelper_write_u8(file, mesh->is_ng);
 		if (mesh->is_ng) {
-			iohelper_write_u32(file, mesh->vert_size);
-			iohelper_write_u32(file, mesh->some_type);
+			iohelper_write_u32_ve(file, mesh->vert_size, isBigEndian);
+			iohelper_write_u32_ve(file, mesh->some_type, isBigEndian);
 		}
 	}
 
 	if (mesh->version <= 10) { // TODO write the freq and amp vert write funcs
-		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_freqvertex_write(file, mesh->vertTableFreq[i]);
+		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_freqvertex_write(file, mesh->vertTableFreq[i], isBigEndian);
 	} else if (mesh->version <= 22) {
-		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_ampvertex_write(file, mesh->vertTableAmp[i]);
+		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_ampvertex_write(file, mesh->vertTableAmp[i], isBigEndian);
 	} else if (mesh->version < 35 || mesh->is_ng == false) {
-		for (u32 i = 0; i < mesh->vertCount; ++i) hmx_nu_vertex_write(file, mesh->vertTableNu[i], mesh->version);
+		for (u32 i = 0; i < mesh->vertCount; ++i) hmx_nu_vertex_write(file, mesh->vertTableNu[i], mesh->version, isBigEndian);
 	}
 }
 

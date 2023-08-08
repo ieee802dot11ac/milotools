@@ -36,7 +36,6 @@
 
 #include <stdlib.h>
 
-
 typedef struct
 {
     /* Texture name from .mtl file */

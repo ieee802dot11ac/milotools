@@ -2,47 +2,43 @@
 #include "hmxanim.h"
 #include "hmxcommon.h"
 #include "hmxstring.h"
+#include "hmxvector.h"
 #include "iohelper.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-HX_TRANSFORM_ANIM *hmx_transanim_load(FILE *file) {
+HX_TRANSFORM_ANIM *hmx_transanim_load(FILE *file, bool isBigEndian) {
 	HX_TRANSFORM_ANIM *tnm = malloc(sizeof(HX_TRANSFORM_ANIM));
-	char *dbg = malloc(4);
-	tnm->version = iohelper_read_u32(file);
-	tnm->anim = hmx_anim_load(file);
-	tnm->trans_object = hmx_string_load(file);
-	tnm->rot_keys_count = iohelper_read_u32(file);
+	tnm->version = iohelper_read_u32_ve(file, isBigEndian);
+	tnm->anim = hmx_anim_load(file, isBigEndian);
+	tnm->trans_object = hmx_string_load(file, isBigEndian);
+	tnm->rot_keys_count = iohelper_read_u32_ve(file, isBigEndian);
 	if (tnm->rot_keys_count > 0) {
-		sprintf(dbg, "rot keys: %d\n", tnm->rot_keys_count);
-		perror(dbg);
+		warn("rot keys: %d", tnm->rot_keys_count);
 		for (u32 i = 0; i < tnm->rot_keys_count; i++) {
-			tnm->rot_keys[i].quat.w = iohelper_read_f32(file);
-			tnm->rot_keys[i].quat.x = iohelper_read_f32(file);
-			tnm->rot_keys[i].quat.y = iohelper_read_f32(file);
-			tnm->rot_keys[i].quat.z = iohelper_read_f32(file);
-			tnm->rot_keys[i].pos = iohelper_read_f32(file);
+			// not using hmx_vec4f_load because that loads in xyzw order, not wxyz order.
+			tnm->rot_keys[i].quat.w = iohelper_read_f32_ve(file, isBigEndian);
+			tnm->rot_keys[i].quat.x = iohelper_read_f32_ve(file, isBigEndian);
+			tnm->rot_keys[i].quat.y = iohelper_read_f32_ve(file, isBigEndian);
+			tnm->rot_keys[i].quat.z = iohelper_read_f32_ve(file, isBigEndian);
+			tnm->rot_keys[i].pos = iohelper_read_f32_ve(file, isBigEndian);
 		}
 	} else tnm->rot_keys = NULL;
-	tnm->trans_keys_count = iohelper_read_u32(file);
+	tnm->trans_keys_count = iohelper_read_u32_ve(file, isBigEndian);
 	if (tnm->trans_keys_count > 0) {
 		for (u32 i = 0; i < tnm->trans_keys_count; i++) {
-			tnm->trans_keys[i].vec3.x = iohelper_read_f32(file);
-			tnm->trans_keys[i].vec3.y = iohelper_read_f32(file);
-			tnm->trans_keys[i].vec3.z = iohelper_read_f32(file);
-			tnm->trans_keys[i].pos = iohelper_read_f32(file);
+			tnm->trans_keys[i].vec3 = hmx_vec3f_load(file, isBigEndian);
+			tnm->trans_keys[i].pos = iohelper_read_f32_ve(file, isBigEndian);
 		}
 	} else tnm->trans_keys = NULL;
-	tnm->trans_anim_owner = hmx_string_load(file);
+	tnm->trans_anim_owner = hmx_string_load(file, isBigEndian);
 	tnm->trans_spline = iohelper_read_u8(file);
 	tnm->repeat_trans = iohelper_read_u8(file);
-	tnm->scale_keys_count = iohelper_read_u32(file);
+	tnm->scale_keys_count = iohelper_read_u32_ve(file, isBigEndian);
 	if (tnm->scale_keys_count > 0) {
 		for (u32 i = 0; i < tnm->scale_keys_count; i++) {
-			tnm->scale_keys[i].vec3.x = iohelper_read_f32(file);
-			tnm->scale_keys[i].vec3.y = iohelper_read_f32(file);
-			tnm->scale_keys[i].vec3.z = iohelper_read_f32(file);
-			tnm->scale_keys[i].pos = iohelper_read_f32(file);
+			tnm->scale_keys[i].vec3 = hmx_vec3f_load(file, isBigEndian);
+			tnm->scale_keys[i].pos = iohelper_read_f32_ve(file, isBigEndian);
 		}
 	} else tnm->scale_keys = NULL;
 	tnm->scale_spline = iohelper_read_u8(file);

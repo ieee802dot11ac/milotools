@@ -116,9 +116,9 @@ typedef struct {
 	u32* sizes; // blockCount wide
 } HX_MILOHEADER;
 
-int hmx_milo_decompress(FILE* file, char *outfilename);
-int hmx_milo_compress(FILE* file, char *outfilename, BlockStructure mode);
-HX_MILOFILE *hmx_milo_load (FILE *file);
+int hmx_milo_decompress(FILE* file, char const *outfilename, bool isBigEndian);
+int hmx_milo_compress(FILE* file, char const *outfilename, BlockStructure mode, bool isBigEndian);
+HX_MILOFILE *hmx_milo_load (FILE *file, bool isBigEndian);
 void hmx_milo_cleanup(HX_MILOFILE* milo);
 void hmx_milo_print(HX_MILOFILE* milo);
 

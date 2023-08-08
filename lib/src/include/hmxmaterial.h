@@ -273,11 +273,11 @@ typedef struct {
 
 } HX_MATERIAL;
 
-HX_MATERIAL hmx_material_load(FILE *file);
+HX_MATERIAL hmx_material_load(FILE *file, bool isBigEndian);
 void hmx_material_cleanup(HX_MATERIAL mat);
 void hmx_material_print(HX_MATERIAL mat);
 
-HX_MATERIAL_TEXTURE_ENTRY hmx_material_texture_entry_load(FILE *file);
+HX_MATERIAL_TEXTURE_ENTRY hmx_material_texture_entry_load(FILE *file, bool isBigEndian);
 void hmx_material_texture_entry_cleanup(HX_MATERIAL_TEXTURE_ENTRY texEnt);
 void hmx_material_texture_entry_print(HX_MATERIAL_TEXTURE_ENTRY texEnt);
 

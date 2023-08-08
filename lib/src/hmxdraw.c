@@ -6,37 +6,38 @@
 #include <stdlib.h>
 
 
-HX_DRAW hmx_draw_load(FILE *file)
+HX_DRAW hmx_draw_load(FILE *file, bool isBigEndian)
 {
 	HX_DRAW draw;
-	draw.version = iohelper_read_u32(file);
+	draw.version = iohelper_read_u32_ve(file, isBigEndian);
 
 	draw.showing = iohelper_read_u8(file) != 0;
 
 	if (draw.version < 2) {
-		draw.drawableCount = iohelper_read_u32(file); printf("drawable count: %d\n", draw.drawableCount);
+		draw.drawableCount = iohelper_read_u32_ve(file, isBigEndian);
+		printf("drawable count: %d\n", draw.drawableCount);
 		draw.drawables = malloc(sizeof(HX_STRING) * draw.drawableCount);
 		for (u32 i = 0; i < draw.drawableCount; ++i)
-			draw.drawables[i] = hmx_string_load(file);
+			draw.drawables[i] = hmx_string_load(file, isBigEndian);
 	}
-	if (draw.version > 0) draw.bounding = hmx_primitive_sphere_load(file);
-	if (draw.version > 2) draw.draw_order = iohelper_read_f32(file);
-	if (draw.version >= 4) draw.depthpass = iohelper_read_u32(file);
+	if (draw.version > 0) draw.bounding = hmx_primitive_sphere_load(file, isBigEndian);
+	if (draw.version > 2) draw.draw_order = iohelper_read_f32_ve(file, isBigEndian);
+	if (draw.version >= 4) draw.depthpass = iohelper_read_u32_ve(file, isBigEndian);
 	return draw;
 }
 
-bool hmx_draw_write(FILE *file, HX_DRAW draw) {
-	iohelper_write_u32(file, draw.version);
+bool hmx_draw_write(FILE *file, HX_DRAW draw, bool isBigEndian) {
+	iohelper_write_u32_ve(file, draw.version, isBigEndian);
 	iohelper_write_u8(file, draw.showing);
 	if (draw.version < 2) {
-		iohelper_write_u32(file, draw.drawableCount);
+		iohelper_write_u32_ve(file, draw.drawableCount, isBigEndian);
 		draw.drawables = malloc(sizeof(HX_STRING) * draw.drawableCount);
 		for (u32 i = 0; i < draw.drawableCount; ++i)
-			hmx_string_write(file, draw.drawables[i]);
+			hmx_string_write(file, draw.drawables[i], isBigEndian);
 	}
-	if (draw.version > 0) fwrite(&draw.bounding, sizeof(HX_SPHERE), 1, file);
-	if (draw.version > 2) iohelper_write_f32(file, draw.draw_order);
-	if (draw.version >= 4) iohelper_write_u32(file, draw.depthpass);
+	if (draw.version > 0) hmx_primitive_sphere_write(file, draw.bounding, isBigEndian);
+	if (draw.version > 2) iohelper_write_f32_ve(file, draw.draw_order, isBigEndian);
+	if (draw.version >= 4) iohelper_write_u32_ve(file, draw.depthpass, isBigEndian);
 	return true;
 }
 

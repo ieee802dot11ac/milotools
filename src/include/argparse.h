@@ -16,6 +16,7 @@ typedef struct {
 	SUPPORTED_INPUT_FILETYPE inputFileType;
 	SUPPORTED_OUTPUT_FILETYPE outputFileType;
 	int outVersion;
+	bool isBigEndian;
 } HXConverterArgs;
 
 us fsize(FILE *file);

@@ -41,7 +41,7 @@ typedef struct {
 } HX_CAMERA;
 
 
-extern HX_CAMERA hmx_camera_load(FILE *file);
+extern HX_CAMERA hmx_camera_load(FILE *file, bool isBigEndian);
 extern void hmx_camera_cleanup(HX_CAMERA camera);
 extern void hmx_camera_print(HX_CAMERA camera);
 

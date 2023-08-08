@@ -55,7 +55,7 @@ typedef struct {
     char *string_table[]; // cisco doesn't seem to implement it as an array but to be fair 010 is a stupid language
 } HX_FREQARK;
 
-HX_FREQARK *hmx_freq_ark_load(FILE *file, char *outdir);
+HX_FREQARK *hmx_freq_ark_load(FILE *file, char const *outdir, bool isBigEndian);
 void hmx_freq_ark_cleanup(HX_FREQARK *ark);
 void hmx_freq_ark_print(HX_FREQARK *ark);
 

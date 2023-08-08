@@ -31,8 +31,8 @@ typedef struct {
     OVERRIDEINCLUDEINDEPTHONLYPASS_ENUM depthpass; // v4+, so only green day?
 } HX_DRAW;
 
-extern HX_DRAW hmx_draw_load(FILE *file);
-extern bool hmx_draw_write(FILE *file, HX_DRAW draw);
+extern HX_DRAW hmx_draw_load(FILE *file, bool isBigEndian);
+extern bool hmx_draw_write(FILE *file, HX_DRAW draw, bool isBigEndian);
 extern void hmx_draw_cleanup(HX_DRAW draw);
 extern void hmx_draw_print(HX_DRAW draw);
 

@@ -3,20 +3,21 @@
 #include "hmxprimitive.h"
 #include "hmxstring.h"
 #include "hmxtransform.h"
+#include "hmxvector.h"
 #include "iohelper.h"
 #include <stdio.h>
 
-HX_CAMERA hmx_camera_load(FILE *file) {
+HX_CAMERA hmx_camera_load(FILE *file, bool isBigEndian) {
     HX_CAMERA camera;
-    camera.version = iohelper_read_u32(file);
-    camera.transform = hmx_transform_load(file);
-    camera.draw = hmx_draw_load(file);
-    camera.near_plane = iohelper_read_f32(file);
-    camera.far_plane = iohelper_read_f32(file);
-    camera.y_fov = iohelper_read_f32(file);
-    camera.screen_rect = hmx_primitive_rect_load(file);
-    fread(&camera.z_range, sizeof(Vector2f), 1, file);
-    camera.target_tex = hmx_string_load(file);
+    camera.version = iohelper_read_u32_ve(file, isBigEndian);
+    camera.transform = hmx_transform_load(file, isBigEndian);
+    camera.draw = hmx_draw_load(file, isBigEndian);
+    camera.near_plane = iohelper_read_f32_ve(file, isBigEndian);
+    camera.far_plane = iohelper_read_f32_ve(file, isBigEndian);
+    camera.y_fov = iohelper_read_f32_ve(file, isBigEndian);
+    camera.screen_rect = hmx_primitive_rect_load(file, isBigEndian);
+    camera.z_range = hmx_vec2f_load(file, isBigEndian);
+    camera.target_tex = hmx_string_load(file, isBigEndian);
     return camera;
 }
 

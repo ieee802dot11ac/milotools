@@ -5,27 +5,27 @@
 #include "iohelper.h"
 #include "hmxmaterial.h"
 
-HX_MATERIAL hmx_material_load(FILE *file) // currently for gh1
+HX_MATERIAL hmx_material_load(FILE *file, bool isBigEndian) // currently for gh1
 {
 	HX_MATERIAL mat;
-	mat.version = iohelper_read_u32(file);
-	mat.textureCount = iohelper_read_u32(file);
+	mat.version = iohelper_read_u32_ve(file, isBigEndian);
+	mat.textureCount = iohelper_read_u32_ve(file, isBigEndian);
 	mat.textures = malloc(mat.textureCount * sizeof(HX_MATERIAL_TEXTURE_ENTRY));
 	for (u32 i = 0; i < mat.textureCount; ++i)
-		mat.textures[i] = hmx_material_texture_entry_load(file);
-	mat.blend = iohelper_read_u32(file);
-	mat.color.r = iohelper_read_f32(file);
-	mat.color.g = iohelper_read_f32(file);
-	mat.color.b = iohelper_read_f32(file);
-	mat.color.a = iohelper_read_f32(file);
+		mat.textures[i] = hmx_material_texture_entry_load(file, isBigEndian);
+	mat.blend = iohelper_read_u32_ve(file, isBigEndian);
+	mat.color.r = iohelper_read_f32_ve(file, isBigEndian);
+	mat.color.g = iohelper_read_f32_ve(file, isBigEndian);
+	mat.color.b = iohelper_read_f32_ve(file, isBigEndian);
+	mat.color.a = iohelper_read_f32_ve(file, isBigEndian);
 
 	mat.always1_1 = iohelper_read_u8(file);
-	mat.always0_1 = iohelper_read_u16(file);
-	mat.always1_2 = iohelper_read_u32(file);
-	mat.always0_2 = iohelper_read_u16(file);
+	mat.always0_1 = iohelper_read_u16_ve(file, isBigEndian);
+	mat.always1_2 = iohelper_read_u32_ve(file, isBigEndian);
+	mat.always0_2 = iohelper_read_u16_ve(file, isBigEndian);
 
-	mat.blend2 = iohelper_read_u32(file);
-	mat.always0_3 = iohelper_read_u16(file);
+	mat.blend2 = iohelper_read_u32_ve(file, isBigEndian);
+	mat.always0_3 = iohelper_read_u16_ve(file, isBigEndian);
 
 	return mat;
 }
@@ -70,14 +70,14 @@ void hmx_material_texture_entry_print(HX_MATERIAL_TEXTURE_ENTRY texEnt)
 	putchar('\n');
 }
 
-HX_MATERIAL_TEXTURE_ENTRY hmx_material_texture_entry_load(FILE *file)
+HX_MATERIAL_TEXTURE_ENTRY hmx_material_texture_entry_load(FILE *file, bool isBigEndian)
 {
 	HX_MATERIAL_TEXTURE_ENTRY texEnt;
-	texEnt.unknown1 = iohelper_read_u32(file);
-	texEnt.map_type = iohelper_read_u32(file);
-	texEnt.matx = hmx_matrix_load(file);
-	texEnt.texWrap = iohelper_read_u32(file);
-	texEnt.texName = hmx_string_load(file);
+	texEnt.unknown1 = iohelper_read_u32_ve(file, isBigEndian);
+	texEnt.map_type = iohelper_read_u32_ve(file, isBigEndian);
+	texEnt.matx = hmx_matrix_load(file, isBigEndian);
+	texEnt.texWrap = iohelper_read_u32_ve(file, isBigEndian);
+	texEnt.texName = hmx_string_load(file, isBigEndian);
 	return texEnt;
 }
 

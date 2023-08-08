@@ -57,15 +57,15 @@ typedef struct {
     HX_STRING path;
 } HX_PICTURE_EX;
 
-extern HX_BUTTON_EX *hmx_buttonex_load(FILE *file);
+extern HX_BUTTON_EX *hmx_buttonex_load(FILE *file, bool isBigEndian);
 extern void hmx_buttonex_cleanup(HX_BUTTON_EX *button);
 extern void hmx_buttonex_print(HX_BUTTON_EX *button);
 
-extern HX_LABEL_EX *hmx_labelex_load(FILE *file);
+extern HX_LABEL_EX *hmx_labelex_load(FILE *file, bool isBigEndian);
 extern void hmx_labelex_cleanup(HX_LABEL_EX *label);
 extern void hmx_labelex_print(HX_LABEL_EX *label);
 
-extern HX_PICTURE_EX *hmx_pictureex_load(FILE *file);
+extern HX_PICTURE_EX *hmx_pictureex_load(FILE *file, bool isBigEndian);
 extern void hmx_pictureex_cleanup(HX_PICTURE_EX *pic);
 extern void hmx_pictureex_print(HX_PICTURE_EX *pic);
 

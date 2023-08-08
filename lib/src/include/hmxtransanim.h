@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "hmxstring.h"
+#include "hmxvector.h"
 #include "hmxanim.h"
 
 typedef struct {
@@ -47,7 +48,7 @@ typedef struct {
 	bool rot_slerp;
 } HX_TRANSFORM_ANIM; // so many version differences
 
-extern HX_TRANSFORM_ANIM *hmx_transanim_load(FILE *file);
+extern HX_TRANSFORM_ANIM *hmx_transanim_load(FILE *file, bool isBigEndian);
 extern void hmx_transanim_cleanup(HX_TRANSFORM_ANIM *tnm);
 extern void hmx_transanim_print(HX_TRANSFORM_ANIM *tnm);
 

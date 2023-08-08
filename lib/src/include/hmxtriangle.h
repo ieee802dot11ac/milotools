@@ -13,7 +13,7 @@ typedef struct {
 } HX_TRIANGLE;
 
 
-HX_TRIANGLE hmx_triangle_load(FILE *file);
+HX_TRIANGLE hmx_triangle_load(FILE *file, bool isBigEndian);
 void hmx_triangle_print(HX_TRIANGLE triangle);
 
 

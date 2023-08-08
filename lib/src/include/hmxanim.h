@@ -30,7 +30,7 @@ typedef struct {
 	HX_STRING* anim_objects;
 } HX_ANIM;
 
-extern HX_ANIM *hmx_anim_load(FILE *file);
+extern HX_ANIM *hmx_anim_load(FILE *file, bool isBigEndian);
 extern void hmx_anim_cleanup(HX_ANIM *anim);
 extern void hmx_anim_print(HX_ANIM *anim);
 

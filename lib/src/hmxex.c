@@ -3,21 +3,22 @@
 #include "hmxex.h"
 #include "hmx.h"
 #include "hmxstring.h"
+#include "hmxvector.h"
 #include "iohelper.h"
 
-HX_BUTTON_EX *hmx_buttonex_load(FILE *file) {
+HX_BUTTON_EX *hmx_buttonex_load(FILE *file, bool isBigEndian) {
     HX_BUTTON_EX *button = malloc(sizeof(HX_BUTTON_EX) + 0xFF);
-    button->version = iohelper_read_u32(file);
-    button->trans = hmx_transform_load(file);
-    button->draw = hmx_draw_load(file);
-    button->unknown = iohelper_read_u32(file);
-    button->always0.x = iohelper_read_f32(file); button->always0.y = iohelper_read_f32(file); button->always0.z = iohelper_read_f32(file);
-    button->textType = hmx_string_load(file);
+    button->version = iohelper_read_u32_ve(file, isBigEndian);
+    button->trans = hmx_transform_load(file, isBigEndian);
+    button->draw = hmx_draw_load(file, isBigEndian);
+    button->unknown = iohelper_read_u32_ve(file, isBigEndian);
+    button->always0.x = iohelper_read_f32_ve(file, isBigEndian); button->always0.y = iohelper_read_f32_ve(file, isBigEndian); button->always0.z = iohelper_read_f32_ve(file, isBigEndian);
+    button->textType = hmx_string_load(file, isBigEndian);
     button->showing = iohelper_read_u8(file);
     button->enabled = iohelper_read_u8(file);
-    button->hundredSomething = iohelper_read_f32(file);
-    button->tenSomething = iohelper_read_f32(file);
-    button->buttonText = hmx_string_load(file);
+    button->hundredSomething = iohelper_read_f32_ve(file, isBigEndian);
+    button->tenSomething = iohelper_read_f32_ve(file, isBigEndian);
+    button->buttonText = hmx_string_load(file, isBigEndian);
     return button;
 }
 void hmx_buttonex_cleanup(HX_BUTTON_EX *button) {
@@ -44,19 +45,19 @@ void hmx_buttonex_print(HX_BUTTON_EX *button) {
     return;
 }
 
-HX_LABEL_EX *hmx_labelex_load(FILE *file) {
+HX_LABEL_EX *hmx_labelex_load(FILE *file, bool isBigEndian) {
     HX_LABEL_EX *label = malloc(sizeof(HX_LABEL_EX) + 0xFF);
-    label->version = iohelper_read_u32(file);
-    label->trans = hmx_transform_load(file);
-    label->draw = hmx_draw_load(file);
+    label->version = iohelper_read_u32_ve(file, isBigEndian);
+    label->trans = hmx_transform_load(file, isBigEndian);
+    label->draw = hmx_draw_load(file, isBigEndian);
     label->showing = iohelper_read_u8(file);
-    label->position.x = iohelper_read_f32(file); label->position.y = iohelper_read_f32(file); label->position.z = iohelper_read_f32(file);
-    label->size = iohelper_read_u32(file);
-    label->bounding = hmx_primitive_sphere_load(file);
-    label->fontType = hmx_string_load(file);
+    label->position = hmx_vec3f_load(file, isBigEndian);
+    label->size = iohelper_read_u32_ve(file, isBigEndian);
+    label->bounding = hmx_primitive_sphere_load(file, isBigEndian);
+    label->fontType = hmx_string_load(file, isBigEndian);
     label->always0 = iohelper_read_u8(file);
-    label->text = hmx_string_load(file);
-    label->fSize = iohelper_read_f32(file);
+    label->text = hmx_string_load(file, isBigEndian);
+    label->fSize = iohelper_read_f32_ve(file, isBigEndian);
     return label;
 }
 void hmx_labelex_cleanup(HX_LABEL_EX *label) {
@@ -83,12 +84,12 @@ void hmx_labelex_print(HX_LABEL_EX *label) {
     return;
 }
 
-HX_PICTURE_EX *hmx_pictureex_load(FILE *file) {
+HX_PICTURE_EX *hmx_pictureex_load(FILE *file, bool isBigEndian) {
     HX_PICTURE_EX *pic = malloc(sizeof(HX_PICTURE_EX) + 0xFF);
-    pic->version = iohelper_read_u32(file);
-    pic->trans = hmx_transform_load(file);
-    pic->draw = hmx_draw_load(file);
-    pic->path = hmx_string_load(file);
+    pic->version = iohelper_read_u32_ve(file, isBigEndian);
+    pic->trans = hmx_transform_load(file, isBigEndian);
+    pic->draw = hmx_draw_load(file, isBigEndian);
+    pic->path = hmx_string_load(file, isBigEndian);
     return pic;
 }
 void hmx_pictureex_cleanup(HX_PICTURE_EX *pic) {
