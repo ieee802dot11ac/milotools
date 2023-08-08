@@ -7,11 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-HX_STRING hmx_string_load(FILE *file, bool endian)
+HX_STRING hmx_string_load(FILE *file, bool isBigEndian)
 {
 	u32 len;
 	HX_STRING string;
-	if (endian) {
+	if (isBigEndian) {
 		len = iohelper_read_u32_be(file);
 	} else {
 		len = iohelper_read_u32(file);
@@ -29,8 +29,8 @@ HX_STRING hmx_string_load(FILE *file, bool endian)
 	return string;
 }
 
-bool hmx_string_write(FILE* file, HX_STRING string, bool endian) {
-	if (endian) {
+bool hmx_string_write(FILE* file, HX_STRING string, bool isBigEndian) {
+	if (isBigEndian) {
 		iohelper_write_u32_be(file, string.length);
 	} else {
 		iohelper_write_u32(file, string.length);

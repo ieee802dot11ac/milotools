@@ -18,8 +18,8 @@ typedef struct {
     HX_STRING comment; // ever just leave a comment in a finished product? yeah, me neither; not on ps2
 } HX_METADATA;
 
-HX_METADATA *hmx_metadata_load(FILE *file, bool endian);
-void hmx_metadata_write(FILE *file, HX_METADATA *meta, bool endian);
+HX_METADATA *hmx_metadata_load(FILE *file, bool isBigEndian);
+void hmx_metadata_write(FILE *file, HX_METADATA *meta, bool isBigEndian);
 void hmx_metadata_print(HX_METADATA *meta);
 void hmx_metadata_cleanup(HX_METADATA *meta);
 

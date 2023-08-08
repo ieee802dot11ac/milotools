@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 
-HX_TRANSFORM hmx_transform_load(FILE *file, bool endian)
+HX_TRANSFORM hmx_transform_load(FILE *file, bool isBigEndian)
 {
 	HX_TRANSFORM transform;
 	transform.version = iohelper_read_u32(file);
@@ -19,7 +19,7 @@ HX_TRANSFORM hmx_transform_load(FILE *file, bool endian)
 		transform.transCount = iohelper_read_u32(file);
 		transform.transObjects = malloc(transform.transCount * sizeof(HX_STRING));
 		for (u32 i = 0; i < transform.transCount; ++i)
-			transform.transObjects[i] = hmx_string_load(file, endian); // these are cstrings in freq but we're just gonna hope we don't have that problem
+			transform.transObjects[i] = hmx_string_load(file, isBigEndian); // these are cstrings in freq but we're just gonna hope we don't have that problem
 	}
 
 	if (transform.version > 6) transform.constraint = iohelper_read_u32(file);
@@ -42,23 +42,23 @@ HX_TRANSFORM hmx_transform_load(FILE *file, bool endian)
 		transform.unknown_floats.a = iohelper_read_f32(file);
 	}
 	
-	if (transform.version > 5) transform.targetRef = hmx_string_load(file, endian);
+	if (transform.version > 5) transform.targetRef = hmx_string_load(file, isBigEndian);
 
 	if (transform.version > 6) transform.preserveScale = (iohelper_read_u8(file) != 0);
 
-	transform.parentRef = hmx_string_load(file, endian); // some weird shit going on in the notes. this is basically it, though
+	transform.parentRef = hmx_string_load(file, isBigEndian); // some weird shit going on in the notes. this is basically it, though
 
 	return transform;
 }
 
-bool hmx_transform_write(FILE *file, HX_TRANSFORM transform, bool endian) {
+bool hmx_transform_write(FILE *file, HX_TRANSFORM transform, bool isBigEndian) {
 	iohelper_write_u32(file, transform.version);
 	hmx_matrix_write(file, transform.localTransMtx);
 	hmx_matrix_write(file, transform.worldTransMtx);
 	if (transform.version < 9) {
 		iohelper_write_u32(file, transform.transCount);
 		for (u32 i = 0; i < transform.transCount; ++i)
-			hmx_string_write(file, transform.transObjects[i], endian); // these are cstrings in freq but we're just gonna hope we don't have that problem
+			hmx_string_write(file, transform.transObjects[i], isBigEndian); // these are cstrings in freq but we're just gonna hope we don't have that problem
 	}
 
 	if (transform.version > 6) iohelper_write_u32(file, transform.constraint);
@@ -81,11 +81,11 @@ bool hmx_transform_write(FILE *file, HX_TRANSFORM transform, bool endian) {
 		iohelper_write_f32(file, transform.unknown_floats.a);
 	}
 
-	if (transform.version > 5) hmx_string_write(file, transform.targetRef, endian);
+	if (transform.version > 5) hmx_string_write(file, transform.targetRef, isBigEndian);
 
 	if (transform.version > 6) iohelper_write_u8(file, transform.preserveScale);
 
-	hmx_string_write(file, transform.parentRef, endian);
+	hmx_string_write(file, transform.parentRef, isBigEndian);
 
 	return true;
 }
