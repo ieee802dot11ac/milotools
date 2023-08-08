@@ -7,12 +7,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-HX_STRING hmx_string_load(FILE *file)
+HX_STRING hmx_string_load(FILE *file, bool endian)
 {
 	u32 len;
 	HX_STRING string;
-	len = iohelper_read_u32(file);
-
+	if (endian) {
+		len = iohelper_read_u32_be(file);
+	} else {
+		len = iohelper_read_u32(file);
+	}
 	string.length = len;
 
 	if (len != 0) {
@@ -26,8 +29,12 @@ HX_STRING hmx_string_load(FILE *file)
 	return string;
 }
 
-bool hmx_string_write(FILE* file, HX_STRING string) {
-	iohelper_write_u32(file, string.length);
+bool hmx_string_write(FILE* file, HX_STRING string, bool endian) {
+	if (endian) {
+		iohelper_write_u32_be(file, string.length);
+	} else {
+		iohelper_write_u32(file, string.length);
+	}
 	if (string.length != 0) {
 		fwrite(string.value, 1, string.length, file);
 	}

@@ -14,8 +14,16 @@ typedef struct {
 	float f2;
 } AnimEntry;
 
+typedef enum {
+    k30_fps,
+    k480_fpb,
+    k30_fps_ui,
+    k1_fpb,
+    k30_fps_tutorial
+} RATE_ENUM; // what's an fpb? who knows, who cares
+
 typedef struct {
-	u32 version; // should be 0 (?!?!?!)
+	u32 version; // 0 (Amp/AntiGrav/GH1), 4 (GH2 4-song/GH2/GH2 360/RB1/TBRB/GDRB/DC2)
 	u32 anim_entry_count;
 	AnimEntry* anim_entries;
 	u32 anim_count;

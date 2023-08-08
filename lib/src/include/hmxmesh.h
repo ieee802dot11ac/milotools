@@ -136,8 +136,8 @@ typedef struct {
 
 
 BSPNode *bspnode_load(FILE *file);
-HX_MESH *hmx_mesh_load(FILE *file);
-void hmx_mesh_write(FILE *file, HX_MESH *mesh);
+HX_MESH *hmx_mesh_load(FILE *file, bool endian);
+void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool endian); // 0 assumes little, 1 assumes big
 void hmx_mesh_cleanup(HX_MESH mesh);
 void hmx_mesh_print(HX_MESH mesh);
 

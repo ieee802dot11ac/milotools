@@ -66,24 +66,7 @@ typedef enum {
 typedef struct {
 	char* type;
 	char* name;
-	union {
-		HX_BUTTON_EX buttonx;
-		HX_CAMERA camera;
-		HX_ENVIRON environment;
-		HX_LABEL_EX labelx;
-		HX_LIGHT light;
-		HX_MATERIAL material;
-		HX_MESH mesh;
-		HX_PICTURE_EX picturex;
-		HX_TEXTURE texture;
-		HX_TRANSFORM transform;
-		HX_TRANSFORM_ANIM transanim;
-		HX_UI_BUTTON button;
-		HX_UI_COLOR color;
-		HX_UI_COMPONENT component;
-		HX_UI_LABEL label;
-		HX_UI_LIST list;
-	}; // if you run into more, god help you
+	void *data; // i don't wanna do this either ;-; but i legitimately can't see a better way to do it
 } HX_MILOOBJECT;
 
 typedef struct {

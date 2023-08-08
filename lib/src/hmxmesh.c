@@ -33,13 +33,13 @@ BSPNode *bspnode_load(FILE *file) {
 	return node;
 }
 
-HX_MESH *hmx_mesh_load(FILE *file)
+HX_MESH *hmx_mesh_load(FILE *file, bool endian)
 {
 	HX_MESH *mesh = malloc(sizeof(HX_MESH));
 	bool FREQMESH = false;
 	mesh->version = iohelper_read_u32(file); if (mesh->version <= 10) FREQMESH = true;
-	if (mesh->version > 27) mesh->meta = hmx_metadata_load(file);
-	mesh->transform = hmx_transform_load(file);
+	if (mesh->version > 27) mesh->meta = hmx_metadata_load(file, endian);
+	mesh->transform = hmx_transform_load(file, endian);
 	mesh->draw = hmx_draw_load(file);
 
 	if (mesh->version < 15) {
@@ -50,7 +50,7 @@ HX_MESH *hmx_mesh_load(FILE *file)
 				mesh->ampbones[i] = iohelper_read_cstring_to_hxstring(file);	
 		} else {
 			for (i32 i = 0; i < mesh->ampbones_count; i++) 
-				mesh->ampbones[i] = hmx_string_load(file);
+				mesh->ampbones[i] = hmx_string_load(file, endian);
 		}
 	}
 
@@ -60,30 +60,30 @@ HX_MESH *hmx_mesh_load(FILE *file)
 	}
 
 	if (mesh->version < 3) {
-		mesh->some_value = hmx_string_load(file);
+		mesh->some_value = hmx_string_load(file, endian);
 	}
 
 	if (FREQMESH) mesh->matPath = iohelper_read_cstring_to_hxstring(file);
-	else mesh->matPath = hmx_string_load(file);
-	if (mesh->version == 27) mesh->mat_2 = hmx_string_load(file);
+	else mesh->matPath = hmx_string_load(file, endian);
+	if (mesh->version == 27) mesh->mat_2 = hmx_string_load(file, endian);
 	if (FREQMESH) mesh->geometryOwner = iohelper_read_cstring_to_hxstring(file);
-	else mesh->geometryOwner = hmx_string_load(file);
+	else mesh->geometryOwner = hmx_string_load(file, endian);
 
 	if (mesh->version < 13) {	
 		if (FREQMESH) mesh->alt_geom_owner = iohelper_read_cstring_to_hxstring(file);
-		else mesh->alt_geom_owner = hmx_string_load(file);
+		else mesh->alt_geom_owner = hmx_string_load(file, endian);
 	}
 
 	if (mesh->version < 15) {	
 		if (FREQMESH) mesh->trans_parent = iohelper_read_cstring_to_hxstring(file);
-		else mesh->trans_parent = hmx_string_load(file);
+		else mesh->trans_parent = hmx_string_load(file, endian);
 	}
 
 	if (mesh->version < 14) {	
 		if (FREQMESH) mesh->trans_1 = iohelper_read_cstring_to_hxstring(file);
-		else mesh->trans_1 = hmx_string_load(file);
+		else mesh->trans_1 = hmx_string_load(file, endian);
 		if (FREQMESH) mesh->trans_2 = iohelper_read_cstring_to_hxstring(file);
-		else mesh->trans_2 = hmx_string_load(file);
+		else mesh->trans_2 = hmx_string_load(file, endian);
 	}
 
 	if (mesh->version < 3) {
@@ -100,7 +100,7 @@ HX_MESH *hmx_mesh_load(FILE *file)
 
 	if (mesh->version < 15) {	
 		if (FREQMESH) mesh->some_string = iohelper_read_cstring_to_hxstring(file);
-		else mesh->some_string = hmx_string_load(file);
+		else mesh->some_string = hmx_string_load(file, endian);
 		mesh->some_float = iohelper_read_f32(file);
 	}
 
@@ -197,7 +197,7 @@ HX_MESH *hmx_mesh_load(FILE *file)
 	}
 	if (mesh->charCount != 0) {
 		for (u32 i = 0; i < 4; ++i)
-			mesh->bones[i] = hmx_string_load(file);
+			mesh->bones[i] = hmx_string_load(file, endian);
 
 		for (u32 i = 0; i < 4; ++i)
 			mesh->boneTransforms[i] = hmx_matrix_load(file);
@@ -228,55 +228,70 @@ HX_MESH *hmx_mesh_load(FILE *file)
 	return mesh;
 }
 
-void hmx_mesh_write(FILE *file, HX_MESH *mesh) {
+void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool endian) { //FIXME assumes little endian, need to stop doing that 
 	bool FREQMESH = false;
-	iohelper_write_u32(file, mesh->version); if (mesh->version <= 10) FREQMESH = true;
-	if (mesh->version > 27) hmx_metadata_write(file, mesh->meta);
-	hmx_transform_write(file, mesh->transform);
+	if (endian) {
+		iohelper_write_u32_be(file, mesh->version);
+	} else {
+		iohelper_write_u32(file, mesh->version);
+	} 
+	if (mesh->version <= 10) FREQMESH = true;
+	if (mesh->version > 27) hmx_metadata_write(file, mesh->meta, endian);
+	hmx_transform_write(file, mesh->transform, endian);
 	hmx_draw_write(file, mesh->draw);
 
 	if (mesh->version < 15) {
-		iohelper_write_u32(file, mesh->always_zero);
-		iohelper_write_u32(file, mesh->ampbones_count);
+		if (endian) {
+			iohelper_write_u32_be(file, mesh->always_zero);
+			iohelper_write_u32_be(file, mesh->ampbones_count);
+		} else {
+			iohelper_write_u32(file, mesh->always_zero);
+			iohelper_write_u32(file, mesh->ampbones_count);
+		}
 		if (FREQMESH) {
 			for (i32 i = 0; i < mesh->ampbones_count; i++) 
 				fputs(hmx_string_cstring(mesh->ampbones[i]), file);	
 		} else {
 			for (i32 i = 0; i < mesh->ampbones_count; i++) 
-				hmx_string_write(file, mesh->ampbones[i]);
+				hmx_string_write(file, mesh->ampbones[i], endian);
 		}
 	}
 
 	if (mesh->version < 20) {
-		iohelper_write_u32(file, mesh->num_1);
-		iohelper_write_u32(file, mesh->num_2);
+		if (endian) {
+			iohelper_write_u32_be(file, mesh->num_1);
+			iohelper_write_u32_be(file, mesh->num_2);
+		} else {
+			iohelper_write_u32(file, mesh->num_1);
+			iohelper_write_u32(file, mesh->num_2);
+		}
 	}
 
 	if (mesh->version < 3) {
-		hmx_string_write(file, mesh->some_value);
+		hmx_string_write(file, mesh->some_value, endian);
 	}
 
 	if (FREQMESH) fputs(hmx_string_cstring(mesh->matPath), file);	
-	else hmx_string_write(file, mesh->matPath);
-	if (mesh->version == 27) mesh->mat_2 = hmx_string_load(file);
+	else hmx_string_write(file, mesh->matPath, endian);
+	if (mesh->version == 27) mesh->mat_2 = hmx_string_load(file, endian);
 	if (FREQMESH) fputs(hmx_string_cstring(mesh->geometryOwner), file);	
-	else hmx_string_write(file, mesh->geometryOwner);
+	else hmx_string_write(file, mesh->geometryOwner, endian);
 
 	if (mesh->version < 13) {	
 		if (FREQMESH) fputs(hmx_string_cstring(mesh->alt_geom_owner), file);
-		else hmx_string_write(file, mesh->alt_geom_owner);
+		else hmx_string_write(file, mesh->alt_geom_owner, endian);
 	}
 
 	if (mesh->version < 15) {	
 		if (FREQMESH) fputs(hmx_string_cstring(mesh->trans_parent), file);
-		else hmx_string_write(file, mesh->trans_parent);
+		else hmx_string_write(file, mesh->trans_parent, endian);
 	}
 
 	if (mesh->version < 14) {
 		if (FREQMESH) fputs(hmx_string_cstring(mesh->trans_1), file);
-		else hmx_string_write(file, mesh->trans_1);
+		else hmx_string_write(file, mesh->trans_1, endian);
 		if (FREQMESH) fputs(hmx_string_cstring(mesh->trans_2), file);
-		else hmx_string_write(file, mesh->trans_2);
+		else hmx_string_write(file, mesh->trans_2, endian);
 	}
 
 	if (mesh->version < 3) {
@@ -293,7 +308,7 @@ void hmx_mesh_write(FILE *file, HX_MESH *mesh) {
 
 	if (mesh->version < 15) {	
 		if (FREQMESH) fputs(hmx_string_cstring(mesh->some_string), file);
-		else hmx_string_write(file, mesh->some_string);
+		else hmx_string_write(file, mesh->some_string, endian);
 		iohelper_write_f32(file, mesh->some_float);
 	}
 
@@ -318,7 +333,7 @@ void hmx_mesh_write(FILE *file, HX_MESH *mesh) {
 		}
 	}
 
-	if (mesh->version <= 10) {
+	if (mesh->version <= 10) { // TODO write the freq and amp vert write funcs
 		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_freqvertex_write(file, mesh->vertTableFreq[i]);
 	} else if (mesh->version <= 22) {
 		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_ampvertex_write(file, mesh->vertTableAmp[i]);

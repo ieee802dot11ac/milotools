@@ -8,6 +8,9 @@ extern "C" {
 #include "hmxcommon.h"
 #include "hmxdtx.h"
 
+#define EMPTY_META_PS2 (HX_METADATA){0,(HX_STRING){0,NULL},NULL}
+#define EMPTY_META_NG (HX_METADATA){1,(HX_STRING){0,NULL},NULL,(HX_STRING){0,NULL}}
+
 typedef struct {
     u32 revision;
     HX_STRING type;
@@ -15,8 +18,8 @@ typedef struct {
     HX_STRING comment; // ever just leave a comment in a finished product? yeah, me neither; not on ps2
 } HX_METADATA;
 
-HX_METADATA *hmx_metadata_load(FILE *file);
-bool hmx_metadata_write(FILE *file, HX_METADATA *meta);
+HX_METADATA *hmx_metadata_load(FILE *file, bool endian);
+void hmx_metadata_write(FILE *file, HX_METADATA *meta, bool endian);
 void hmx_metadata_print(HX_METADATA *meta);
 void hmx_metadata_cleanup(HX_METADATA *meta);
 

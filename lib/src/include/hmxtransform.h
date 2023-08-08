@@ -53,8 +53,8 @@ typedef struct {
 } HX_TRANSFORM;
 
 
-HX_TRANSFORM hmx_transform_load(FILE *file);
-bool hmx_transform_write(FILE *file, HX_TRANSFORM transform);
+HX_TRANSFORM hmx_transform_load(FILE *file, bool endian);
+bool hmx_transform_write(FILE *file, HX_TRANSFORM transform, bool endian);
 void hmx_transform_cleanup(HX_TRANSFORM transform);
 void hmx_transform_print(HX_TRANSFORM transform);
 

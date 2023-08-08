@@ -3,6 +3,7 @@
 #include "hmxark.h"
 #include "hmxenviron.h"
 #include "filetypes.h"
+#include "hmxmetadata.h"
 #include "hmxmilo.h"
 #include "hmxstring.h"
 #include "hmxtransanim.h"
@@ -12,7 +13,7 @@
 #include "hmxtexture.h"
 #include "hmxbitmap.h"
 #include "hmxmesh.h"
-// #include "objwrapper.h" // TODO move to frontend. also make it, yknow, work
+#include "fast_obj.h"
 #include "spngwrapper.h"
 #include "hmxlight.h"
 #include "hmxmaterial.h"
@@ -420,27 +421,25 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 	return false;
 }
 
-bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFilePath)
+bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFilePath, int version)
 {
-	/*FILE *objMeshFile = fopen(objFilePath, "r");
+	fastObjMesh *objMesh = fast_obj_read(objFilePath);
 	FILE *hxMeshFile = fopen(hxFilePath, "w");
 
 	if (hxMeshFile == NULL) {
 		warn("Failed to open file `%s` for reading", hxFilePath);
 		return false;
-	} else if (objMeshFile == NULL) {
+	} else if (objMesh == NULL) {
 		warn("Failed to open file `%s` for writing", objFilePath);
 		return false;
 	}
 
-	HX_MESH *hxMeshData = hmx_mesh_load(hxMeshFile);
-	// fclose(objMeshFile);
-	OBJData obj = obj_from_hmx(*hxMeshData);
+	HX_MESH *hxMeshData = malloc(sizeof(HX_MESH));
+	hxMeshData->meta = &EMPTY_META_PS2;
+	//OBJData obj = obj_from_hmx(*hxMeshData);
 	//hmx_mesh_cleanup(hxMeshData); // makes it crash? no clue why, probably a double free
 
-	hmx_mesh_write(hxMeshFile, hxMeshData);
-	obj_cleanup(obj);
-
-	fclose(objMeshFile);*/
+	hmx_mesh_write(hxMeshFile, hxMeshData, 0);
+	fast_obj_destroy(objMesh);
 	return false;
 }

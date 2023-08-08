@@ -1,10 +1,13 @@
 // hmxui.h - Harmonix UI stuff (the actually modern way)
 #ifndef HMXUI_H
 #define HMXUI_H
-#include "hmx.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "hmxtransform.h"
+#include "hmxdraw.h"
+#include "hmxcommon.h"
+#include "hmxcolor.h"
 typedef struct {
     u32 version;
     HX_TRANSFORM trans;
@@ -31,7 +34,7 @@ typedef struct {
     i32 version;
     HX_UI_COMPONENT ui_component;
     bool localize;
-    HX_STRING text_token; // the token for the locale
+    HX_STRING text_token; // the token to search for in locale.dta
 } HX_UI_LABEL;
 
 typedef struct {

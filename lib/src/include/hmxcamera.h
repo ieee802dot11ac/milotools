@@ -6,14 +6,16 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "hmxmetadata.h"
 #include "hmxtransform.h"
 #include "hmxdraw.h"
 #include "hmxstring.h"
 
 typedef struct {
-	u32 version; // 9 (GH1, i.e. this), 12 (GH2/TBRB)
+	u32 version; // 9 (GH1), 12 (GH2/GH2 360/TBRB)
+	HX_METADATA meta;
 	HX_TRANSFORM transform;
-	HX_DRAW draw;
+	HX_DRAW draw; // <v12
 
 	// The distance in world coordinates to the far clipping
 	// plane. The near/far ratio is limited to 1:1000 to preserve

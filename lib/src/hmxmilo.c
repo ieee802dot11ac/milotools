@@ -46,7 +46,7 @@ int hmx_milo_decompress(FILE* file, char *outfilename) {
 			// decompress(compressed_data[i],header->sizes[i], true, false, file);
 		} else if (header->version[3] == 0xCD) {
 			decompressed = decompress(compressed_data[i],header->sizes[i], false, true, NULL);
-		} // we can ignore freq for now, mostly because archiveexplorer keeps crashing on me so i couldn't test it if i wanted to
+		} // gunzip freq your damn self
 		else decompressed = compressed_data[i];
 		memtemp = memcpy(memtemp, decompressed, header->sizes[i]);
 	}
