@@ -1,6 +1,6 @@
 #pragma once
 
-struct HX_MESHPART {
+struct HX_GROUPSECTION {
 	u32 faceCount;
 	u32 vertexCount;
 	u32 faces[faceCount];		// list of offsets from this.vertices,

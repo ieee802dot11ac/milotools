@@ -50,7 +50,7 @@ void hmx_environ_print(HX_ENVIRON environ) {
         hmx_string_print(environ.lights[i]);
     }
     printf("AMBIENT COLOR: "); hmx_color_4f_print(environ.ambient_color);
-    printf("FOG: \n"); hmx_fog_print(environ.fog);
+    printf("\nFOG: \n"); hmx_fog_print(environ.fog);
     printf("\nFOG ENABLE: %i\n", environ.fogEnable);
-    printf("END ENVIRONMENT");
+    printf("END ENVIRONMENT\n");
 }

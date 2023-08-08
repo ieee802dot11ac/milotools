@@ -1,0 +1,48 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build_mingw:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Grab latest MinGW and libspng
+        run: |
+          curl https://github.com/randy408/libspng/archive/v0.7.4.zip >libspng.zip
+          powershell Expand-Archive libspng.zip -DestinationPath libspng
+      - name: Build libspng
+        run: |
+          cd libspng
+          make
+      - name: Build the dingus
+        run: |
+          make
+          mkdir -p out
+          mv bin/hxconv.exe out/
+          mv lib/bin/libhmxobj.dll out/
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: Win64Latest
+          path: out
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: sudo apt-get install -y libspng-dev zlib1g-dev gcc make
+      - name: Build the dingus
+        run: |
+          make
+          mkdir -p out
+          mv bin/hxconv out/
+          mv lib/bin/libhmxobj.so out/
+          echo "#!/usr/bin/sh\
+          mv libhmxobj.so /usr/lib/\
+          mv hxconv /usr/bin" >INSTALL.sh
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: LinuxLatest
+          path: out

@@ -1,13 +1,17 @@
 #include "hmxtexture.h"
+#include "hmxmetadata.h"
 #include "hmxstring.h"
 #include "iohelper.h"
 #include "hmxbitmap.h"
 #include <stdio.h>
 
-HX_TEXTURE hmx_texture_load(FILE *file)
+HX_TEXTURE hmx_texture_load(FILE *file, bool gdrb)
 {
 	HX_TEXTURE tex;
 	tex.version = iohelper_read_u32(file);
+	if (tex.version > 8) hmx_metadata_load(file);
+
+	if (tex.version >= 11 && gdrb) tex.some_bool = iohelper_read_u8(file);
 
 	tex.width = iohelper_read_u32(file);
 	tex.height = iohelper_read_u32(file);
@@ -15,13 +19,37 @@ HX_TEXTURE hmx_texture_load(FILE *file)
 
 	tex.bmpName = hmx_string_load(file);
 
-	tex.index_f = iohelper_read_f32(file);
+	if (tex.version >= 8) tex.index_f = iohelper_read_f32(file);
 	tex.index = iohelper_read_u32(file);
 
-	tex.useExtPath = (iohelper_read_u8(file) != 0);
+	if (tex.version >= 11 && !gdrb) tex.some_bool2 = iohelper_read_u8(file);
 
-	tex.bmp = hmx_bitmap_load(file);
+	if (tex.version != 7) tex.useExtPath = (iohelper_read_u8(file) != 0);
+	else tex.useExtPathAntiGrav = iohelper_read_u32(file);
+	if (!tex.useExtPath || tex.useExtPathAntiGrav == 0) tex.bmp = hmx_bitmap_load(file);
 	return tex;
+}
+
+void hmx_texture_write(FILE *file, HX_TEXTURE tex, bool gdrb) {
+	iohelper_write_u32(file, tex.version);
+
+	if (tex.version > 8) hmx_metadata_write(file, tex.meta);
+	if (tex.version >= 11 && gdrb) iohelper_write_u8(file, tex.some_bool);
+
+	iohelper_write_u32(file, tex.width);
+	iohelper_write_u32(file, tex.height);
+	iohelper_write_u32(file, tex.bpp);
+
+	hmx_string_write(file, tex.bmpName);
+
+	if (tex.version >= 8) iohelper_write_f32(file, tex.index_f);
+	iohelper_write_u32(file, tex.index);
+
+	if (tex.version >= 11 && !gdrb) iohelper_write_u8(file, tex.some_bool2);
+
+	if (tex.version != 7) iohelper_write_u8(file, tex.useExtPath);
+	else iohelper_write_u32(file, tex.useExtPathAntiGrav);
+	if (!tex.useExtPath || tex.useExtPathAntiGrav == 0) hmx_bitmap_write(file, tex.bmp);
 }
 
 void hmx_texture_cleanup(HX_TEXTURE tex)

@@ -1,15 +1,19 @@
 #include "converters.h"
 #include "argparse.h"
+#include "hmxark.h"
 #include "hmxenviron.h"
 #include "filetypes.h"
+#include "hmxmetadata.h"
+#include "hmxmilo.h"
 #include "hmxstring.h"
+#include "hmxtransanim.h"
 #include "programinfo.h"
 #include "err.h"
 #include "hmxcolor.h"
 #include "hmxtexture.h"
 #include "hmxbitmap.h"
 #include "hmxmesh.h"
-#include "hmxobj.h"
+#include "fast_obj.h"
 #include "spngwrapper.h"
 #include "hmxlight.h"
 #include "hmxmaterial.h"
@@ -52,6 +56,33 @@ int convert(HXConverterArgs args)
 		if (!conv_hxbmp_to_png(hxBmpData, args.outputPath))
 			return EXIT_FAILURE;
 
+	} else if (args.inputFileType == IFILETYPE_HX_MAT && args.outputFileType == OFILETYPE_WAVEFRONT_MTL) {
+
+		FILE *file = fopen(args.inputPath, "r");
+		HX_MATERIAL mat = hmx_material_load(file);
+		fclose(file);
+
+		hmx_material_print(mat);
+		hmx_material_cleanup(mat);
+
+	} else if (args.inputFileType == IFILETYPE_HX_MILO && args.outputFileType == OFILETYPE_HX_RAWMILO) {
+		
+		FILE *file = fopen(args.inputPath, "r");
+		int status = hmx_milo_decompress(file, args.outputPath);
+		if (status != 0) {
+			printf("decompression error! error: %d", status);
+		}
+		fclose(file);
+		
+	} else if (args.inputFileType == IFILETYPE_HX_RAWMILO && args.outputFileType == OFILETYPE_DIR) {
+
+		FILE *file = fopen(args.inputPath, "r");
+		HX_MILOFILE *milo = hmx_milo_load(file); // TODO implement this
+		fclose(file);
+
+		hmx_milo_print(milo);
+		hmx_milo_cleanup(milo);
+
 	} else if (args.inputFileType == IFILETYPE_HX_LIT) {
 
 		FILE *file = fopen(args.inputPath, "r");
@@ -69,15 +100,6 @@ int convert(HXConverterArgs args)
 
 		hmx_camera_print(camera);
 		hmx_camera_cleanup(camera);
-
-	} else if (args.inputFileType == IFILETYPE_HX_MAT && args.outputFileType == OFILETYPE_WAVEFRONT_MTL) {
-
-		FILE *file = fopen(args.inputPath, "r");
-		HX_MATERIAL mat = hmx_material_load(file);
-		fclose(file);
-
-		hmx_material_print(mat);
-		hmx_material_cleanup(mat);
 
 	} else if (args.inputFileType == IFILETYPE_HX_ENVIRON) {
 
@@ -106,6 +128,29 @@ int convert(HXConverterArgs args)
 		hmx_buttonex_print(button);
 		hmx_buttonex_cleanup(button);
 
+	} else if (args.inputFileType == IFILETYPE_HX_PICX) {
+		
+		FILE *file = fopen(args.inputPath, "r");
+		HX_PICTURE_EX *pic = hmx_pictureex_load(file);
+		fclose(file);
+
+		hmx_pictureex_print(pic);
+		hmx_pictureex_cleanup(pic);
+
+	} else if (args.inputFileType == IFILETYPE_HX_ARK) {
+		
+		FILE *file = fopen(args.inputPath, "r");
+		HX_FREQARK *ark = hmx_freq_ark_load(file, NULL);
+		// fclose(file); // apparently this makes it crash. oops
+		hmx_freq_ark_print(ark);
+		hmx_freq_ark_cleanup(ark);
+
+	/*} else if (args.inputFileType == IFILETYPE_HX_TNM) { // straight borked rn, so we're gonna ignore that
+		
+		FILE *file = fopen(args.inputPath, "r");
+		HX_TRANSFORM_ANIM *tnm = hmx_transanim_load(file);
+		hmx_transanim_print(tnm);
+		hmx_transanim_cleanup(tnm);*/	
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}
@@ -118,24 +163,26 @@ bool conv_hxbmp_to_png(HX_BITMAP hxBmp, char const *const pngFilePath) {
 	HX_COLOR_8888 *pixels = malloc(sizeof(HX_COLOR_8888) * hxBmp.width * hxBmp.height);
 	bool ret = true;
 
-	for (int y = 0; y < hxBmp.height; ++y) {
-		for (int x = 0; x < hxBmp.width; ++x) {
-			u8 pixel;
-			if (hxBmp.bpp == 8) {
-				pixel = hxBmp.texData[x + y * hxBmp.width];
-			} else if (hxBmp.bpp == 4) {
-				size_t addr = (x / 2) + y * (hxBmp.width / 2);
-				u8 shift = (x & 1) << 2;
-				u8 mask = 0xF << shift;
-				pixel = (hxBmp.texData[addr] & mask) >> shift;
-			} else {
-				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
-						hxBmp.bpp);
-				goto CLEAN_UP_FAILURE;
+	for (int mip = 0; mip < hxBmp.mipmapLevels; mip++) {
+		for (int y = 0; y < hxBmp.height; ++y) {
+			for (int x = 0; x < hxBmp.width; ++x) {
+				u8 pixel;
+				if (hxBmp.bpp == 8) {
+					pixel = hxBmp.texData[mip][x + y * hxBmp.width];
+				} else if (hxBmp.bpp == 4) {
+					size_t addr = (x / 2) + y * (hxBmp.width / 2);
+					u8 shift = (x & 1) << 2;
+					u8 mask = 0xF << shift;
+					pixel = (hxBmp.texData[mip][addr] & mask) >> shift;
+				} else {
+					fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
+							hxBmp.bpp);
+					goto CLEAN_UP_FAILURE;
+				}
+				HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
+				color = hmx_color_8888_fix_alpha(color);
+				pixels[x + y * hxBmp.width] = color;
 			}
-			HX_COLOR_8888 color = hxBmp.colorPalette[pixel];
-			color = hmx_color_8888_fix_alpha(color);
-			pixels[x + y * hxBmp.width] = color;
 		}
 	}
 	export_png(pngFilePath, hxBmp.width, hxBmp.height, pixels);
@@ -159,7 +206,7 @@ bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePa
 		return false;
 	}
 
-	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
+	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile, false);
 	HX_BITMAP hxBmp = hxTexData.bmp;
 	ret = conv_hxbmp_to_png(hxBmp, pngFilePath);
 	hmx_texture_cleanup(hxTexData);
@@ -186,28 +233,29 @@ bool conv_hxbmp_to_pam (HX_BITMAP *hxBmp, char const *const pamFilePath)
 	fputs("MAXVAL 255\n", pamFile);
 	fputs("TUPLTYPE RGB_ALPHA\n", pamFile);
 	fputs("ENDHDR\n", pamFile);
-
-	for (int y = 0; y < hxBmp->height; ++y) {
-		for (int x = 0; x < hxBmp->width; ++x) {
-			u8 pixel;
-			if (hxBmp->bpp == 8) {
-				pixel = hxBmp->texData[x + y * hxBmp->width];
-			} else if (hxBmp->bpp == 4) {
-				size_t addr = (x / 2) + y * (hxBmp->width / 2);
-				u8 shift = (x & 1) << 2;
-				u8 mask = 0xF << shift;
-				pixel = (hxBmp->texData[addr] & mask) >> shift;
-			} else {
-				fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
-						hxBmp->bpp);
-				goto CLEAN_UP_FAILURE;
+	for (int mip = 0; mip < hxBmp->mipmapLevels; mip++) {
+		for (int y = 0; y < hxBmp->height; ++y) {
+			for (int x = 0; x < hxBmp->width; ++x) {
+				u8 pixel;
+				if (hxBmp->bpp == 8) {
+					pixel = hxBmp->texData[mip][x + y * hxBmp->width];
+				} else if (hxBmp->bpp == 4) {
+					size_t addr = (x / 2) + y * (hxBmp->width / 2);
+					u8 shift = (x & 1) << 2;
+					u8 mask = 0xF << shift;
+					pixel = (hxBmp->texData[mip][addr] & mask) >> shift;
+				} else {
+					fprintf(stderr, "Unsupported number of bits per pixel (%u bpp) in texture file.\n",
+							hxBmp->bpp);
+					goto CLEAN_UP_FAILURE;
+				}
+				HX_COLOR_8888 color = hxBmp->colorPalette[pixel];
+				color = hmx_color_8888_fix_alpha(color);
+				fprintf(pamFile, "%c%c%c%c", color.r,
+							     color.g,
+							     color.b,
+							     color.a);
 			}
-			HX_COLOR_8888 color = hxBmp->colorPalette[pixel];
-			color = hmx_color_8888_fix_alpha(color);
-			fprintf(pamFile, "%c%c%c%c", color.r,
-						     color.g,
-						     color.b,
-						     color.a);
 		}
 	}
 	goto CLEAN_UP_SUCCESS;
@@ -229,7 +277,7 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 		return false;
 	}
 
-	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile);
+	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile, false);
 	HX_BITMAP hxBmp = hxTexData.bmp;
 	ret = conv_hxbmp_to_pam(&hxBmp, pamFilePath);
 	hmx_texture_cleanup(hxTexData);
@@ -306,7 +354,7 @@ bool conv_hxmat_to_mtl(char const *const hxFilePath, char const *const outFilePa
 
 bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath, char const *const recursePath)
 {
-	FILE *hxMeshFile = fopen(hxFilePath, "r");
+	/*FILE *hxMeshFile = fopen(hxFilePath, "r");
 	FILE *objMeshFile = fopen(objFilePath, "w");
 
 	if (hxMeshFile == NULL) {
@@ -317,13 +365,13 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		return false;
 	}
 
-	HX_MESH hxMeshData = hmx_mesh_load(hxMeshFile);
+	HX_MESH *hxMeshData = hmx_mesh_load(hxMeshFile);
 	fclose(hxMeshFile);
-	OBJData obj = obj_from_hmx(hxMeshData);
+	OBJData obj = obj_from_hmx(*hxMeshData);
 	fputs("# Generated using " PROGRAM_NAME " " PROGRAM_VERSION "\n", objMeshFile);
 
 	if (recursePath != NULL) {
-		char *const matPath = hmx_string_cstring(hxMeshData.matPath);
+		char *const matPath = hmx_string_cstring(hxMeshData->matPath);
 		char *const resourcePath = malloc(strlen(matPath) + strlen(recursePath) + 16);
 
 		strcpy(resourcePath, recursePath);
@@ -364,11 +412,34 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		free(resourcePath);
 		free(resourceOutPath);
 	}
-	hmx_mesh_cleanup(hxMeshData);
+	//hmx_mesh_cleanup(hxMeshData); // makes it crash? no clue why, probably a double free
 
 	obj_write(obj, objMeshFile);
 	obj_cleanup(obj);
 
-	fclose(objMeshFile);
-	return true;
+	fclose(objMeshFile);*/
+	return false;
+}
+
+bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFilePath, int version)
+{
+	fastObjMesh *objMesh = fast_obj_read(objFilePath);
+	FILE *hxMeshFile = fopen(hxFilePath, "w");
+
+	if (hxMeshFile == NULL) {
+		warn("Failed to open file `%s` for reading", hxFilePath);
+		return false;
+	} else if (objMesh == NULL) {
+		warn("Failed to open file `%s` for writing", objFilePath);
+		return false;
+	}
+
+	HX_MESH *hxMeshData = malloc(sizeof(HX_MESH));
+	hxMeshData->meta = &EMPTY_META_PS2;
+	//OBJData obj = obj_from_hmx(*hxMeshData);
+	//hmx_mesh_cleanup(hxMeshData); // makes it crash? no clue why, probably a double free
+
+	hmx_mesh_write(hxMeshFile, hxMeshData, 0);
+	fast_obj_destroy(objMesh);
+	return false;
 }

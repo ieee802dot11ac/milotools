@@ -13,7 +13,8 @@ typedef struct {
     char *value;
 } HX_STRING;
 
-HX_STRING hmx_string_load(FILE* file);
+HX_STRING hmx_string_load(FILE* file, bool endian);
+bool hmx_string_write(FILE* file, HX_STRING string, bool endian);
 char *hmx_string_cstring(HX_STRING string);
 void hmx_string_cleanup(HX_STRING string);
 void hmx_string_print(HX_STRING string);

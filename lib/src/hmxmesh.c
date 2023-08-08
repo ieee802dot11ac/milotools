@@ -1,8 +1,10 @@
 #include "hmxmesh.h"
 #include "hmxcommon.h"
 #include "hmxdraw.h"
-#include "hmxmeshpart.h"
+#include "hmxgroupsec.h"
 #include "hmxmatrix.h"
+#include "hmxmetadata.h"
+#include "hmxprimitive.h"
 #include "hmxstring.h"
 #include "hmxtransform.h"
 #include "hmxtriangle.h"
@@ -16,76 +18,328 @@
 // #define MESH_VERBOSE_TRIANGLE_PARTS
 // #define MESH_VERBOSE_VERTEX_PARTS
 
-HX_MESH hmx_mesh_load(FILE *file)
+BSPNode *bspnode_load(FILE *file) {
+	BSPNode *node = malloc(sizeof(BSPNode));
+	node->has_value = iohelper_read_u8(file);
+	if (node->has_value) {
+		fread(&node->vec, sizeof(Vector4f), 1, file);
+		node->left = bspnode_load(file);
+		node->right = bspnode_load(file);
+	} else {
+		node->vec = (Vector4f){{0.0f},{0.0f},{0.0f},{0.0f}};
+		node->left = NULL;
+		node->right = NULL;
+	}
+	return node;
+}
+
+HX_MESH *hmx_mesh_load(FILE *file, bool endian)
 {
-	HX_MESH mesh;
-	mesh.version = iohelper_read_u32(file);
-	mesh.transform = hmx_transform_load(file);
-	mesh.draw = hmx_draw_load(file);
+	HX_MESH *mesh = malloc(sizeof(HX_MESH));
+	bool FREQMESH = false;
+	mesh->version = iohelper_read_u32(file); if (mesh->version <= 10) FREQMESH = true;
+	if (mesh->version > 27) mesh->meta = hmx_metadata_load(file, endian);
+	mesh->transform = hmx_transform_load(file, endian);
+	mesh->draw = hmx_draw_load(file);
 
-	mesh.matPath = hmx_string_load(file);
-	mesh.geometryOwner = hmx_string_load(file);
-
-	mesh.mutableParts = iohelper_read_u32(file);
-	mesh.volume = iohelper_read_u32(file);
-
-	mesh.bsp = iohelper_read_u8(file);
-
-	mesh.vertCount = iohelper_read_u32(file);
-	mesh.vertTable = malloc(sizeof(HX_VERTEX) * mesh.vertCount);
-	assert (mesh.vertTable != NULL);
-	for (u32 i = 0; i < mesh.vertCount; ++i)
-		mesh.vertTable[i] = hmx_vertex_load(file);
-
-	mesh.triCount = iohelper_read_u32(file);
-	mesh.triTable = malloc(sizeof(HX_VERTEX) * mesh.triCount);
-	assert (mesh.triTable != NULL);
-	for (u32 i = 0; i < mesh.triCount; ++i)
-		mesh.triTable[i] = hmx_triangle_load(file);
-
-	mesh.partCount = iohelper_read_u32(file);
-	mesh.partTriCounts = malloc(sizeof(u8) * mesh.partCount);
-	u32 shouldMatchTris = 0;
-	for (u32 i = 0; i < mesh.partCount; ++i) {
-		mesh.partTriCounts[i] = iohelper_read_u8(file);
-		shouldMatchTris += mesh.partTriCounts[i];
+	if (mesh->version < 15) {
+		mesh->always_zero = iohelper_read_u32(file);
+		mesh->ampbones_count = iohelper_read_u32(file);
+		if (FREQMESH) {
+			for (i32 i = 0; i < mesh->ampbones_count; i++) 
+				mesh->ampbones[i] = iohelper_read_cstring_to_hxstring(file);	
+		} else {
+			for (i32 i = 0; i < mesh->ampbones_count; i++) 
+				mesh->ampbones[i] = hmx_string_load(file, endian);
+		}
 	}
 
-	if (shouldMatchTris != mesh.triCount)
+	if (mesh->version < 20) {
+		mesh->num_1 = iohelper_read_u32(file);
+		mesh->num_2 = iohelper_read_u32(file);
+	}
+
+	if (mesh->version < 3) {
+		mesh->some_value = hmx_string_load(file, endian);
+	}
+
+	if (FREQMESH) mesh->matPath = iohelper_read_cstring_to_hxstring(file);
+	else mesh->matPath = hmx_string_load(file, endian);
+	if (mesh->version == 27) mesh->mat_2 = hmx_string_load(file, endian);
+	if (FREQMESH) mesh->geometryOwner = iohelper_read_cstring_to_hxstring(file);
+	else mesh->geometryOwner = hmx_string_load(file, endian);
+
+	if (mesh->version < 13) {	
+		if (FREQMESH) mesh->alt_geom_owner = iohelper_read_cstring_to_hxstring(file);
+		else mesh->alt_geom_owner = hmx_string_load(file, endian);
+	}
+
+	if (mesh->version < 15) {	
+		if (FREQMESH) mesh->trans_parent = iohelper_read_cstring_to_hxstring(file);
+		else mesh->trans_parent = hmx_string_load(file, endian);
+	}
+
+	if (mesh->version < 14) {	
+		if (FREQMESH) mesh->trans_1 = iohelper_read_cstring_to_hxstring(file);
+		else mesh->trans_1 = hmx_string_load(file, endian);
+		if (FREQMESH) mesh->trans_2 = iohelper_read_cstring_to_hxstring(file);
+		else mesh->trans_2 = hmx_string_load(file, endian);
+	}
+
+	if (mesh->version < 3) {
+		fread(&mesh->some_vector, sizeof(Vector3f), 1, file);
+	}
+
+	if (mesh->version < 15) {
+		fread(&mesh->sphere, sizeof(HX_SPHERE), 1, file);
+	}
+
+	if (mesh->version < 8) {
+		mesh->some_bool = iohelper_read_u8(file);
+	}
+
+	if (mesh->version < 15) {	
+		if (FREQMESH) mesh->some_string = iohelper_read_cstring_to_hxstring(file);
+		else mesh->some_string = hmx_string_load(file, endian);
+		mesh->some_float = iohelper_read_f32(file);
+	}
+
+
+	if (mesh->version < 16) {
+		if (mesh->version > 11) mesh->some_bool2 = iohelper_read_u8(file);
+	} else mesh->mutableParts = iohelper_read_u32(file);
+	if (mesh->version > 17) mesh->volume = iohelper_read_u32(file);
+
+	if (mesh->version > 18) mesh->node = bspnode_load(file);
+	if (mesh->node->has_value) return mesh;
+
+	if (mesh->version == 7) mesh->some_bool3 = iohelper_read_u8(file);
+	if (mesh->version < 11) mesh->some_number = iohelper_read_u32(file);
+
+	mesh->vertCount = iohelper_read_u32(file);
+
+	if (mesh->version >= 36) {
+		mesh->is_ng = iohelper_read_u8(file);
+		if (mesh->is_ng) {
+			mesh->vert_size = iohelper_read_u32(file);
+			mesh->some_type = iohelper_read_u32(file);
+		}
+	}
+	/*
+	mesh.vertTableGH = malloc(sizeof(HX_VERTEX_GH) * mesh.vertCount);
+	assert (mesh.vertTableGH != NULL);
+	for (u32 i = 0; i < mesh.vertCount; ++i)
+		mesh.vertTableGH[i] = hmx_vertex_load(file);
+	*/
+
+	if (mesh->version <= 10) {
+		mesh->vertTableFreq = malloc(sizeof(HX_VERTEX_FREQ) * mesh->vertCount);
+		assert (mesh->vertTableFreq != NULL);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableFreq[i] = hmx_freqvertex_load(file);
+	} else if (mesh->version <= 22) {
+		mesh->vertTableAmp = malloc(sizeof(HX_VERTEX_AMP) * mesh->vertCount);
+		assert (mesh->vertTableAmp != NULL);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableAmp[i] = hmx_ampvertex_load(file);
+	} else if (mesh->version < 35 || mesh->is_ng == false) {
+		mesh->vertTableNu = malloc(sizeof(HX_VERTEX_NU) * mesh->vertCount);
+		assert (mesh->vertTableNu != NULL);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableNu[i] = hmx_nu_vertex_load(file, mesh->version > 28);
+	}
+
+	mesh->triCount = iohelper_read_u32(file);
+	mesh->triTable = malloc(sizeof(u16) * 3 * mesh->triCount); // why the fuck was it allocating the size of a vert
+	assert (mesh->triTable != NULL);
+	for (u32 i = 0; i < mesh->triCount; ++i)
+		mesh->triTable[i] = hmx_triangle_load(file);
+
+	if (mesh->version < 24) {
+		mesh->short_count = iohelper_read_u32(file);
+		for (u32 i = 0; i < mesh->short_count; i++) {
+			mesh->some_shorts[i] = iohelper_read_u16(file);
+		}
+	}
+
+	if (mesh->version < 24 && mesh->version > 21) {
+		mesh->group_count = iohelper_read_u32(file);
+		for (u32 i = 0; i < mesh->group_count; i++) {
+			mesh->groups[i].some_number = iohelper_read_u32(file);
+			mesh->groups[i].short_count = iohelper_read_u32(file);
+			for (u32 j = 0; j < mesh->groups[i].short_count; j++) {
+				mesh->groups[i].shorts[j] = iohelper_read_u16(file);
+			}
+			mesh->groups[i].int_count = iohelper_read_u32(file);
+			for (u32 j = 0; j < mesh->groups[i].int_count; j++) {
+				mesh->groups[i].ints[j] = iohelper_read_u32(file);
+			}
+		}
+	}
+
+	if (mesh->version > 13 && mesh->version < 24) {
+		mesh->unknown = iohelper_read_u32(file);
+		return mesh;
+	}
+
+	mesh->groupSizesCount = iohelper_read_u32(file);
+	mesh->groupSizes = malloc(sizeof(u8) * mesh->groupSizesCount);
+	u32 shouldMatchTris = 0;
+	for (u32 i = 0; i < mesh->groupSizesCount; ++i) {
+		mesh->groupSizes[i] = iohelper_read_u8(file);
+		shouldMatchTris += mesh->groupSizes[i];
+	}
+
+	if (shouldMatchTris != mesh->triCount)
 		warn("Group sizes sum does not match # of triangles in mesh!");
 
-	mesh.charCount = iohelper_read_u32(file);
-	if (mesh.charCount != 0) {
+	mesh->charCount = iohelper_read_u32(file);
+	if (mesh->version < 34) {
+		mesh->bones = malloc(sizeof(HX_STRING) * 4);
+		mesh->boneTransforms = malloc(sizeof(HX_MATRIX) * 4);
+	}
+	if (mesh->charCount != 0) {
 		for (u32 i = 0; i < 4; ++i)
-			mesh.bones[i] = hmx_string_load(file);
+			mesh->bones[i] = hmx_string_load(file, endian);
 
 		for (u32 i = 0; i < 4; ++i)
-			mesh.boneTransforms[i] = hmx_matrix_load(file);
+			mesh->boneTransforms[i] = hmx_matrix_load(file);
 	} else {
 		for (u32 i = 0; i < 4; ++i) {
-			mesh.bones[i] = (HX_STRING) { .value = NULL, .length = 0 };
-			mesh.boneTransforms[i] = (HX_MATRIX) { 0 };
+			mesh->bones[i] = (HX_STRING) { .value = NULL, .length = 0 };
+			mesh->boneTransforms[i] = (HX_MATRIX) { 0 };
 		}
 
 	}
 
-	mesh.parts = malloc(sizeof(HX_MESHPART) * mesh.partCount);
-	for (u32 i = 0; i < mesh.partCount; ++i) {
-		mesh.parts[i].faceCount = iohelper_read_u32(file);
-		mesh.parts[i].vertexCount = iohelper_read_u32(file);
+	mesh->parts = malloc(sizeof(HX_GROUPSECTION) * mesh->groupSizesCount);
+	for (u32 i = 0; i < mesh->groupSizesCount; ++i) {
+		mesh->parts[i].faceCount = iohelper_read_u32(file);
+		mesh->parts[i].vertexCount = iohelper_read_u32(file);
 
-		mesh.parts[i].faces = malloc(sizeof(u32) * mesh.parts[i].faceCount);
-		assert(mesh.parts[i].faces != NULL);
-		mesh.parts[i].vertices = malloc(sizeof(u16) * mesh.parts[i].vertexCount);
-		assert(mesh.parts[i].vertices != NULL);
+		mesh->parts[i].faces = malloc(sizeof(u32) * mesh->parts[i].faceCount);
+		assert(mesh->parts[i].faces != NULL);
+		mesh->parts[i].vertices = malloc(sizeof(u16) * mesh->parts[i].vertexCount);
+		assert(mesh->parts[i].vertices != NULL);
 
-		for (u32 si = 0; si < mesh.parts[i].faceCount; ++si)
-			mesh.parts[i].faces[si] = iohelper_read_u32(file);
-		for (u32 vi = 0; vi < mesh.parts[i].vertexCount; ++vi)
-			mesh.parts[i].vertices[vi] = iohelper_read_u16(file);
+		for (u32 si = 0; si < mesh->parts[i].faceCount; ++si)
+			mesh->parts[i].faces[si] = iohelper_read_u32(file);
+		for (u32 vi = 0; vi < mesh->parts[i].vertexCount; ++vi)
+			mesh->parts[i].vertices[vi] = iohelper_read_u16(file);
 	}
 
 	return mesh;
+}
+
+void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool endian) { //FIXME assumes little endian, need to stop doing that 
+	bool FREQMESH = false;
+	if (endian) {
+		iohelper_write_u32_be(file, mesh->version);
+	} else {
+		iohelper_write_u32(file, mesh->version);
+	} 
+	if (mesh->version <= 10) FREQMESH = true;
+	if (mesh->version > 27) hmx_metadata_write(file, mesh->meta, endian);
+	hmx_transform_write(file, mesh->transform, endian);
+	hmx_draw_write(file, mesh->draw);
+
+	if (mesh->version < 15) {
+		if (endian) {
+			iohelper_write_u32_be(file, mesh->always_zero);
+			iohelper_write_u32_be(file, mesh->ampbones_count);
+		} else {
+			iohelper_write_u32(file, mesh->always_zero);
+			iohelper_write_u32(file, mesh->ampbones_count);
+		}
+		if (FREQMESH) {
+			for (i32 i = 0; i < mesh->ampbones_count; i++) 
+				fputs(hmx_string_cstring(mesh->ampbones[i]), file);	
+		} else {
+			for (i32 i = 0; i < mesh->ampbones_count; i++) 
+				hmx_string_write(file, mesh->ampbones[i], endian);
+		}
+	}
+
+	if (mesh->version < 20) {
+		if (endian) {
+			iohelper_write_u32_be(file, mesh->num_1);
+			iohelper_write_u32_be(file, mesh->num_2);
+		} else {
+			iohelper_write_u32(file, mesh->num_1);
+			iohelper_write_u32(file, mesh->num_2);
+		}
+	}
+
+	if (mesh->version < 3) {
+		hmx_string_write(file, mesh->some_value, endian);
+	}
+
+	if (FREQMESH) fputs(hmx_string_cstring(mesh->matPath), file);	
+	else hmx_string_write(file, mesh->matPath, endian);
+	if (mesh->version == 27) mesh->mat_2 = hmx_string_load(file, endian);
+	if (FREQMESH) fputs(hmx_string_cstring(mesh->geometryOwner), file);	
+	else hmx_string_write(file, mesh->geometryOwner, endian);
+
+	if (mesh->version < 13) {	
+		if (FREQMESH) fputs(hmx_string_cstring(mesh->alt_geom_owner), file);
+		else hmx_string_write(file, mesh->alt_geom_owner, endian);
+	}
+
+	if (mesh->version < 15) {	
+		if (FREQMESH) fputs(hmx_string_cstring(mesh->trans_parent), file);
+		else hmx_string_write(file, mesh->trans_parent, endian);
+	}
+
+	if (mesh->version < 14) {
+		if (FREQMESH) fputs(hmx_string_cstring(mesh->trans_1), file);
+		else hmx_string_write(file, mesh->trans_1, endian);
+		if (FREQMESH) fputs(hmx_string_cstring(mesh->trans_2), file);
+		else hmx_string_write(file, mesh->trans_2, endian);
+	}
+
+	if (mesh->version < 3) {
+		fwrite(&mesh->some_vector, sizeof(Vector3f), 1, file);
+	}
+
+	if (mesh->version < 15) {
+		fwrite(&mesh->sphere, sizeof(HX_SPHERE), 1, file);
+	}
+
+	if (mesh->version < 8) {
+		iohelper_write_u8(file, mesh->some_bool);
+	}
+
+	if (mesh->version < 15) {	
+		if (FREQMESH) fputs(hmx_string_cstring(mesh->some_string), file);
+		else hmx_string_write(file, mesh->some_string, endian);
+		iohelper_write_f32(file, mesh->some_float);
+	}
+
+	if (mesh->version < 16) {
+		if (mesh->version > 11) iohelper_write_u8(file, mesh->some_bool2);
+	} else iohelper_write_u32(file, mesh->mutableParts);
+	if (mesh->version > 17) iohelper_write_u32(file, mesh->volume);
+
+	// if (mesh->version > 18) mesh->node = bspnode_load(file); // no bsps, mostly cause ????
+	// if (mesh->node->has_value) return;
+
+	if (mesh->version == 7) iohelper_write_u8(file, mesh->some_bool3);
+	if (mesh->version < 11) iohelper_write_u32(file, mesh->some_number);
+
+	iohelper_write_u32(file, mesh->vertCount);
+
+	if (mesh->version >= 36) {
+		iohelper_write_u8(file, mesh->is_ng);
+		if (mesh->is_ng) {
+			iohelper_write_u32(file, mesh->vert_size);
+			iohelper_write_u32(file, mesh->some_type);
+		}
+	}
+
+	if (mesh->version <= 10) { // TODO write the freq and amp vert write funcs
+		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_freqvertex_write(file, mesh->vertTableFreq[i]);
+	} else if (mesh->version <= 22) {
+		//for (u32 i = 0; i < mesh->vertCount; ++i) hmx_ampvertex_write(file, mesh->vertTableAmp[i]);
+	} else if (mesh->version < 35 || mesh->is_ng == false) {
+		for (u32 i = 0; i < mesh->vertCount; ++i) hmx_nu_vertex_write(file, mesh->vertTableNu[i], mesh->version);
+	}
 }
 
 void hmx_mesh_cleanup(HX_MESH mesh)
@@ -95,16 +349,16 @@ void hmx_mesh_cleanup(HX_MESH mesh)
 	hmx_string_cleanup(mesh.matPath);
 	hmx_string_cleanup(mesh.geometryOwner);
 
-	free(mesh.vertTable);
+	free(mesh.vertTableNu);
 	free(mesh.triTable);
-	free(mesh.partTriCounts);
+	free(mesh.groupSizes);
 
 	if (mesh.charCount != 0) {
 		for (u32 i = 0; i < 4; ++i)
 			hmx_string_cleanup(mesh.bones[i]);
 	}
 
-	for (u32 i = 0; i < mesh.partCount; ++i) {
+	for (u32 i = 0; i < mesh.groupSizesCount; ++i) {
 		free(mesh.parts[i].faces);
 		free(mesh.parts[i].vertices);
 	}
@@ -130,14 +384,14 @@ void hmx_mesh_print(HX_MESH mesh)
 	hmx_string_print(mesh.geometryOwner);
 	putchar('\n');
 
-	printf("MUTABLE_PARTS: %s\n", HX_MUTABLE_TYPE_name(mesh.mutableParts));
+	printf("MUTABLE_PARTS: %s\n", HX_MUTABLE_TYPE_NAME[mesh.mutableParts]);
 	printf("VOLUME: %s\n", HX_VOLUME_TYPE_NAME[mesh.volume]);
 
-	printf("BSP: %u\n", mesh.bsp);
+	// printf("BSP: %u\n", mesh.bsp);
 
 	fputs("VERTICES: [", stdout);
 	for (u32 i = 0; i < mesh.vertCount; ++i) {
-		hmx_vertex_print(mesh.vertTable[i]);
+		hmx_nu_vertex_print(mesh.vertTableNu[i]);
 		if (i != mesh.vertCount - 1)
 			fputs(", ", stdout);
 	}
@@ -154,8 +408,8 @@ void hmx_mesh_print(HX_MESH mesh)
 	// Just guessing how this is structured
 	puts("MESH_PARTS: [");
 	HX_TRIANGLE *triStart = mesh.triTable;
-	for (u32 i = 0; i < mesh.partCount; ++i) {
-		HX_TRIANGLE *triEnd = triStart + mesh.partTriCounts[i];
+	for (u32 i = 0; i < mesh.groupSizesCount; ++i) {
+		HX_TRIANGLE *triEnd = triStart + mesh.groupSizes[i];
 		fputs("\tMeshPart(triangles=[", stdout);
 		for (; triStart < triEnd; ++triStart) {
 			assert (triStart < mesh.triTable + mesh.triCount);
@@ -170,7 +424,7 @@ void hmx_mesh_print(HX_MESH mesh)
 				fputs(", ", stdout);
 		}
 		fputs("], faces=[", stdout);
-		HX_MESHPART group = mesh.parts[i];
+		HX_GROUPSECTION group = mesh.parts[i];
 		u16 *vertStart = group.vertices;
 		u32 prevfaces = 0;
 		for (u32 si = 0; si < group.faceCount; ++si) {
@@ -185,7 +439,7 @@ void hmx_mesh_print(HX_MESH mesh)
 				printf("%u", vertId);
 #else
 				HX_VERTEX vert = mesh.vertTable[vertId];
-				hmx_vertex_print(vert);
+				hmx_ghvertex_print(vert);
 #endif
 				if (vertStart != vertEnd - 1)
 					fputs(", ", stdout);
@@ -195,7 +449,7 @@ void hmx_mesh_print(HX_MESH mesh)
 				fputs(", ", stdout);
 		}
 		fputs("])", stdout);
-		if (i != mesh.partCount - 1)
+		if (i != mesh.groupSizesCount - 1)
 			fputs(", ", stdout);
 		putchar('\n');
 	}
@@ -204,7 +458,10 @@ void hmx_mesh_print(HX_MESH mesh)
 		puts("BONES: NONE");
 	} else {
 		fputs("BONES: [", stdout);
-		for (u32 i = 0; i < 4; ++i) {
+		u32 max = 0;
+		if (mesh.version < 34) max = 4;
+		else max = mesh.bone_count;
+		for (u32 i = 0; i < max; ++i) {
 			fputs("Bone(refId=", stdout);
 			hmx_string_print(mesh.bones[i]);
 			fputs(", transform=", stdout);
@@ -222,4 +479,11 @@ char const *const HX_VOLUME_TYPE_NAME[HX_VOLUME_TYPE_AMOUNT] = {
 	"VolumeTriangles",
 	"VolumeBSP",
 	"VolumeBox",
+};
+
+char const *const HX_MUTABLE_TYPE_NAME[HX_MUTABLE_TYPE_AMOUNT] = {
+	"kMutableNone",
+	[31]="kMutableVerts",
+	"kMutableFaces",
+	[63]="kMutableAll",
 };

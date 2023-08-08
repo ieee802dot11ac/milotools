@@ -2,6 +2,7 @@
 *.o
 */bin/
 */obj/
+bin/hxconv
 
 # Valgrind core dumps
 vgcore.*
@@ -9,12 +10,23 @@ vgcore.*
 # Clang compile commands
 compile_commands.json
 .cache/
+.vscode/
 
 # we don't want extracted/copyrighted stuff getting into the repo
 _*/
 *.vgs
-*_ps2
-*.png
+*.png*
 *.gh
 *.kr
 *.mesh
+*.tex
+*.bmp*
+*.mat
+*.obj
+*.mtl
+*.xbv
+*.ipu
+*.rnd*
+*.flatmilo
+*.milo*
+*.ARK

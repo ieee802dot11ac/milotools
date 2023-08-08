@@ -13,7 +13,7 @@ LIBSOURCES := $(shell find "$(LIBSRCDIR)/" -name "*.c")
 LIBOBJECTS := $(LIBSOURCES:$(LIBSRCDIR)/%.c=$(LIBOBJDIR)/%.c.o)
 
 CC := gcc
-CCARGS := -g -O3 -Wall -Wextra -Wpedantic -I$(SRCDIR)/include/ -I$(LIBSRCDIR)/include/
+CCARGS := -g -O3 -Wall -Wextra -Wpedantic -I$(SRCDIR)/include/ -I$(LIBSRCDIR)/include/ -Lz
 
 LD := gcc
 LDARGS :=

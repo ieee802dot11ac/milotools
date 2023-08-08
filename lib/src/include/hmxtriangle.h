@@ -9,7 +9,7 @@ extern "C" {
 
 
 typedef struct {
-	u16 vert[3];
+	u16 idx[3];
 } HX_TRIANGLE;
 
 
