@@ -104,17 +104,17 @@ void hmx_transform_print(HX_TRANSFORM transform) {
 
 	fputs("LOCAL_MATRIX: ", stdout);
 	hmx_matrix_print(transform.localTransMtx);
-	fputs("WORLD_MATRIX: ", stdout);
+	fputs("\nWORLD_MATRIX: ", stdout);
 	hmx_matrix_print(transform.worldTransMtx);
 
 	if (transform.transCount != 0) {
-		puts("TRANS_OBJECTS:");
+		puts("\nTRANS_OBJECTS:");
 		for (u32 i = 0; i < transform.transCount; ++i) {
 			hmx_string_print(transform.transObjects[i]);
 			fputs(", ", stdout);
 		}
 	} else {
-		puts("TRANS_OBJECTS: NONE");
+		puts("\nTRANS_OBJECTS: NONE");
 	}
 
 	fputs("CONSTRAINT: ", stdout);

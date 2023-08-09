@@ -1,12 +1,15 @@
 #include "converters.h"
 #include "argparse.h"
 #include "hmxark.h"
+#include "hmxdraw.h"
 #include "hmxenviron.h"
 #include "filetypes.h"
 #include "hmxmetadata.h"
 #include "hmxmilo.h"
 #include "hmxstring.h"
 #include "hmxtransanim.h"
+#include "hmxtransform.h"
+#include "hmxvertex.h"
 #include "programinfo.h"
 #include "err.h"
 #include "hmxcolor.h"
@@ -31,6 +34,14 @@ int convert(HXConverterArgs args)
 		if (!conv_hxmesh_to_obj(args.inputPath, args.outputPath, args.recursePath, isBigEndian))
 			return EXIT_FAILURE;
 
+	} else if (args.inputFileType == IFILETYPE_WAVEFRONT_OBJ && args.outputFileType == OFILETYPE_HX_MESH) {
+		if (args.outVersion == 0) {
+			perror("no given output version!");
+			return EXIT_FAILURE;
+		}
+		if (!conv_obj_to_hxmesh(args.inputPath, args.outputPath, args.outVersion, isBigEndian))
+			return EXIT_FAILURE;
+
 	} else if (args.inputFileType == IFILETYPE_HX_TEX && args.outputFileType == OFILETYPE_NETPBM_PAM) {
 
 		if (!conv_hxtex_to_pam(args.inputPath, args.outputPath, isBigEndian))
@@ -41,7 +52,7 @@ int convert(HXConverterArgs args)
 		FILE* hxBmpFile = fopen(args.inputPath, "r");
 		HX_BITMAP hxBmpData = hmx_bitmap_load(hxBmpFile, isBigEndian);
 		fclose(hxBmpFile);
-		if (!conv_hxbmp_to_pam(&hxBmpData, args.outputPath, isBigEndian))
+		if (!conv_hxbmp_to_pam(&hxBmpData, args.outputPath))
 			return EXIT_FAILURE;
 
 	} else if (args.inputFileType == IFILETYPE_HX_TEX && args.outputFileType == OFILETYPE_PNG) {
@@ -54,7 +65,7 @@ int convert(HXConverterArgs args)
 		FILE* hxBmpFile = fopen(args.inputPath, "r");
 		HX_BITMAP hxBmpData = hmx_bitmap_load(hxBmpFile, isBigEndian);
 		fclose(hxBmpFile);
-		if (!conv_hxbmp_to_png(hxBmpData, args.outputPath, isBigEndian))
+		if (!conv_hxbmp_to_png(hxBmpData, args.outputPath))
 			return EXIT_FAILURE;
 
 	} else if (args.inputFileType == IFILETYPE_HX_MAT && args.outputFileType == OFILETYPE_WAVEFRONT_MTL) {
@@ -159,7 +170,7 @@ int convert(HXConverterArgs args)
 	return EXIT_SUCCESS;
 }
 
-bool conv_hxbmp_to_png(HX_BITMAP hxBmp, char const *const pngFilePath, bool isBigEndian) {
+bool conv_hxbmp_to_png(HX_BITMAP hxBmp, char const *const pngFilePath) {
 	// PNG SHIT STARTS HERE
 	HX_COLOR_8888 *pixels = malloc(sizeof(HX_COLOR_8888) * hxBmp.width * hxBmp.height);
 	bool ret = true;
@@ -209,13 +220,13 @@ bool conv_hxtex_to_png(char const *const hxFilePath, char const *const pngFilePa
 
 	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile, false, isBigEndian);
 	HX_BITMAP hxBmp = hxTexData.bmp;
-	ret = conv_hxbmp_to_png(hxBmp, pngFilePath, isBigEndian);
+	ret = conv_hxbmp_to_png(hxBmp, pngFilePath);
 	hmx_texture_cleanup(hxTexData);
 	fclose(hxTexFile);
 	return ret;
 }
 
-bool conv_hxbmp_to_pam (HX_BITMAP *hxBmp, char const *const pamFilePath, bool isBigEndian)
+bool conv_hxbmp_to_pam (HX_BITMAP *hxBmp, char const *const pamFilePath)
 {
 	FILE *pamFile = fopen(pamFilePath, "w");
 	bool ret = true;
@@ -280,7 +291,7 @@ bool conv_hxtex_to_pam(char const *const hxFilePath, char const *const pamFilePa
 
 	HX_TEXTURE hxTexData = hmx_texture_load(hxTexFile, false, isBigEndian);
 	HX_BITMAP hxBmp = hxTexData.bmp;
-	ret = conv_hxbmp_to_pam(&hxBmp, pamFilePath, isBigEndian);
+	ret = conv_hxbmp_to_pam(&hxBmp, pamFilePath);
 	hmx_texture_cleanup(hxTexData);
 	fclose(hxTexFile);
 	return ret;
@@ -355,7 +366,7 @@ bool conv_hxmat_to_mtl(char const *const hxFilePath, char const *const outFilePa
 
 bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFilePath, char const *const recursePath, bool isBigEndian)
 {
-	/*FILE *hxMeshFile = fopen(hxFilePath, "r");
+	FILE *hxMeshFile = fopen(hxFilePath, "r");
 	FILE *objMeshFile = fopen(objFilePath, "w");
 
 	if (hxMeshFile == NULL) {
@@ -365,7 +376,7 @@ bool conv_hxmesh_to_obj(char const *const hxFilePath, char const *const objFileP
 		warn("Failed to open file `%s` for writing", objFilePath);
 		return false;
 	}
-
+	/*
 	HX_MESH *hxMeshData = hmx_mesh_load(hxMeshFile, isBigEndian);
 	fclose(hxMeshFile);
 	OBJData obj = obj_from_hmx(*hxMeshData);
@@ -435,12 +446,44 @@ bool conv_obj_to_hxmesh( char const *const objFilePath, char const *const hxFile
 		return false;
 	}
 
+	if (objMesh->position_count != objMesh->normal_count || objMesh->position_count != objMesh->texcoord_count) {
+		printf("vert counts don't match!\n");
+		printf("pos %d norm %d tex %d",objMesh->position_count,objMesh->normal_count,objMesh->texcoord_count);
+	}
+	
 	HX_MESH *hxMeshData = malloc(sizeof(HX_MESH));
-	hxMeshData->meta = &EMPTY_META_PS2;
-	//OBJData obj = obj_from_hmx(*hxMeshData);
-	//hmx_mesh_cleanup(hxMeshData); // makes it crash? no clue why, probably a double free
+	if (isBigEndian) {
+		hxMeshData->meta = &HX_META_EMPTY_NG;
+	} else hxMeshData->meta = &HX_META_EMPTY_PS2;
+	hxMeshData->transform = HX_TRANSFORM_EMPTY;
+	hxMeshData->draw = HX_DRAW_EMPTY;
+
+	if (version >= 28) {
+		hxMeshData->transform.version = 9;
+		hxMeshData->draw.version = 3;
+		hxMeshData->version = version;
+	}
+
+	hxMeshData->vertTableNu = malloc(sizeof(HX_VERTEX_NU)*objMesh->position_count);
+	for (u32 i = 0; i < objMesh->position_count; i++) {
+		u32 j = i * 3;
+		u32 tex = i * 2;
+		HX_VERTEX_NU vert = (HX_VERTEX_NU){
+			.x = objMesh->positions[j],
+			.y = objMesh->positions[j+1],
+			.z = objMesh->positions[j+2],
+			.nx = objMesh->normals[j],
+			.ny = objMesh->normals[j+1],
+			.nz = objMesh->normals[j+1],
+			.u = objMesh->texcoords[tex],
+			.v = objMesh->texcoords[tex+1]
+		};
+		hxMeshData->vertCount++;
+		hxMeshData->vertTableNu[i] = vert;
+	}
+
 
 	hmx_mesh_write(hxMeshFile, hxMeshData, isBigEndian);
 	fast_obj_destroy(objMesh);
-	return false;
+	return true;
 }

@@ -137,7 +137,7 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 	if (mesh->version <= 10) {
 		mesh->vertTableFreq = malloc(sizeof(HX_VERTEX_FREQ) * mesh->vertCount);
 		assert (mesh->vertTableFreq != NULL);
-		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableFreq[i] = hmx_freqvertex_load(file, isBigEndian);
+		for (u32 i = 0; i < mesh->vertCount; ++i) mesh->vertTableFreq[i] = hmx_freqvertex_load(file);
 	} else if (mesh->version <= 22) {
 		mesh->vertTableAmp = malloc(sizeof(HX_VERTEX_AMP) * mesh->vertCount);
 		assert (mesh->vertTableAmp != NULL);
@@ -205,7 +205,7 @@ HX_MESH *hmx_mesh_load(FILE *file, bool isBigEndian)
 			mesh->boneTransforms[i] = hmx_matrix_load(file, isBigEndian);
 	} else {
 		for (u32 i = 0; i < 4; ++i) {
-			mesh->bones[i] = (HX_STRING) { .value = NULL, .length = 0 };
+			mesh->bones[i] = HX_STRING_EMPTY;
 			mesh->boneTransforms[i] = (HX_MATRIX) { 0 };
 		}
 
@@ -305,7 +305,7 @@ void hmx_mesh_write(FILE *file, HX_MESH *mesh, bool isBigEndian) { //FIXME assum
 	} else iohelper_write_u32_ve(file, mesh->mutableParts, isBigEndian);
 	if (mesh->version > 17) iohelper_write_u32_ve(file, mesh->volume, isBigEndian);
 
-	// if (mesh->version > 18) mesh->node = bspnode_load(file); // no bsps, mostly cause ????
+	// if (mesh->version > 18) mesh->node = bspnode_write(file); // no bsps, mostly cause ????
 	// if (mesh->node->has_value) return;
 
 	if (mesh->version == 7) iohelper_write_u8(file, mesh->some_bool3);

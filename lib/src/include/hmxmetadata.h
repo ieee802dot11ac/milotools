@@ -16,8 +16,8 @@ typedef struct {
     HX_STRING comment; // ever just leave a comment in a finished product? yeah, me neither; not on ps2
 } HX_METADATA;
 
-#define EMPTY_META_PS2 ((HX_METADATA) { .revision = 0, .type = HX_STRING_EMPTY, .node = NULL, .comment = HX_STRING_EMPTY })
-#define EMPTY_META_NG ((HX_METADATA) { .revision = 1, .type = HX_STRING_EMPTY , .node = NULL, .comment = HX_STRING_EMPTY })
+#define HX_META_EMPTY_PS2 ((HX_METADATA) { .revision = 0, .type = HX_STRING_EMPTY, .node = NULL, .comment = HX_STRING_EMPTY })
+#define HX_META_EMPTY_NG ((HX_METADATA) { .revision = 1, .type = HX_STRING_EMPTY , .node = NULL, .comment = HX_STRING_EMPTY })
 
 HX_METADATA *hmx_metadata_load(FILE *file, bool isBigEndian);
 void hmx_metadata_write(FILE *file, HX_METADATA *meta, bool isBigEndian);

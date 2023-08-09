@@ -32,8 +32,8 @@ void hmx_metadata_write(FILE *file, HX_METADATA *meta, bool isBigEndian) {
 void hmx_metadata_print(HX_METADATA *meta) {
     printf("revision: %d\n", meta->revision);
     printf("type: %s\n", hmx_string_cstring(meta->type));
-    printf("node:\n"); hmx_dtx_print(meta->node);
-    printf("revision: %s\n", hmx_string_cstring(meta->comment));
+    printf("begin node\n"); hmx_dtx_print(meta->node); printf("end node\n");
+    if (meta->revision) printf("comment: %s\n", hmx_string_cstring(meta->comment));
 }
 
 void hmx_metadata_cleanup(HX_METADATA *meta) {

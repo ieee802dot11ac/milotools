@@ -1,24 +1,28 @@
 #include "hmxcolor.h"
+#include "iohelper.h"
 #include <stdio.h>
 
 HX_COLOR_8888 hmx_color_8888_load(FILE* file, bool isBigEndian) {
 	HX_COLOR_8888 color;
-	// idk if endianness matters here, like if it's 4 bytes or if it's a u32?e
+	// idk if endianness matters here, like if it's 4 bytes or if it's a u32?
 	fread(&color, sizeof(u8), 4, file);
 	return color;
 }
 
 HX_COLOR_4F hmx_color_4f_load(FILE* file, bool isBigEndian) {
 	HX_COLOR_4F color;
-	// idk if endianness matters here, like if it's 4 bytes or if it's a u32?e
-	fread(&color, sizeof(float), 4, file);
+	color.r = iohelper_read_f32_ve(file, isBigEndian);
+	color.g = iohelper_read_f32_ve(file, isBigEndian);
+	color.b = iohelper_read_f32_ve(file, isBigEndian);
+	color.a = iohelper_read_f32_ve(file, isBigEndian);
 	return color;
 }
 
 HX_COLOR_3F hmx_color_3f_load(FILE* file, bool isBigEndian) {
 	HX_COLOR_3F color;
-	// idk if endianness matters here, like if it's 3 bytes or if it's a u24?e
-	fread(&color, sizeof(float), 3, file);
+	color.r = iohelper_read_f32_ve(file, isBigEndian);
+	color.g = iohelper_read_f32_ve(file, isBigEndian);
+	color.b = iohelper_read_f32_ve(file, isBigEndian);
 	return color;
 }
 

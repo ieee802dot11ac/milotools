@@ -64,6 +64,8 @@ int parse_args(int const argc, char const *const *const argv, HXConverterArgs *r
 				}
 				result->outVersion = (int) strtol(argv[i + 1], NULL, 0);
 				skipArgs = 1;
+			} else if (streq(arg, "--bigEndian")) {
+				result->isBigEndian = true;
 			} else {
 				goto ACCEPT_PATHS;
 			}
@@ -163,7 +165,7 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 	} else if (streq(arg, "hmxark") || streq(arg, "hxark")) {
 		return IFILETYPE_HX_ARK;
 	} else if (streq(arg, "hmxtransanim") || streq(arg, "hxtnm")) {
-		return IFILETYPE_HX_ARK;
+		return IFILETYPE_HX_TNM;
 	} 
 	return IFILETYPE_UNKNOWN;
 }
@@ -182,6 +184,8 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 		return OFILETYPE_HX_RAWMILO;
 	} else if (streq(arg, "dir")) {
 		return OFILETYPE_DIR;
+	} else if (streq(arg, "mesh")) {
+		return OFILETYPE_HX_MESH;
 	}
 	return OFILETYPE_UNKNOWN;
 }
@@ -214,7 +218,9 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_ARK;
 	} else if (streq(ext, "tnm") || streq(ext, "hxtransanim")) {
 		return IFILETYPE_HX_TNM;
-	}
+	} else if (streq(ext, "obj")) {
+		return IFILETYPE_WAVEFRONT_OBJ;
+	} 
 	return IFILETYPE_UNKNOWN;
 }
 
@@ -243,7 +249,8 @@ void print_help(char const *const fileName, FILE *const writeTo)
 	fprintf(writeTo, "[-i | --input] <filetype>: Force a filetype for the input.\n");
 	fprintf(writeTo, "[-o | --output] <filetype>: Force a filetype for the output.\n");
 	fprintf(writeTo, "[-r | --root | --recursive] <path>: Recursively converts resources linked inside the input file, using `path` as the root directory for where additional assets are to be loaded from.\n");
-	fprintf(writeTo, "NOTE: currently, you have to unpack milos and extract them as separate stages.\n");
+	fprintf(writeTo, "[--bigEndian]: Set for big endian files, i.e. from 7th gen consoles.\n");
+	fprintf(writeTo, "NOTE: input .objs *must* be triangulated. However, Blender has a built-in feature for this.\n");
 
 	return;
 }

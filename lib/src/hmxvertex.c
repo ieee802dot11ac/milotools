@@ -2,29 +2,29 @@
 #include "iohelper.h"
 #include <stdio.h>
 
-HX_VERTEX_FREQ hmx_freqvertex_load(FILE *file, bool isBigEndian)
+HX_VERTEX_FREQ hmx_freqvertex_load(FILE *file) // seeing how freq models were used in one game on one console and it's not going anywhere, having this be forced LE is ok
 {
 	HX_VERTEX_FREQ vertex;
-	vertex.x = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.y = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.z = iohelper_read_f32_ve(file, isBigEndian);
+	vertex.x = iohelper_read_f32(file);
+	vertex.y = iohelper_read_f32(file);
+	vertex.z = iohelper_read_f32(file);
 
-	vertex.nx = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.ny = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.nz = iohelper_read_f32_ve(file, isBigEndian);
+	vertex.nx = iohelper_read_f32(file);
+	vertex.ny = iohelper_read_f32(file);
+	vertex.nz = iohelper_read_f32(file);
 
-	vertex.u = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.v = iohelper_read_f32_ve(file, isBigEndian);
+	vertex.u = iohelper_read_f32(file);
+	vertex.v = iohelper_read_f32(file);
 
-	vertex.weight_0 = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.weight_1 = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.weight_2 = iohelper_read_f32_ve(file, isBigEndian);
-	vertex.weight_3 = iohelper_read_f32_ve(file, isBigEndian);
+	vertex.weight_0 = iohelper_read_f32(file);
+	vertex.weight_1 = iohelper_read_f32(file);
+	vertex.weight_2 = iohelper_read_f32(file);
+	vertex.weight_3 = iohelper_read_f32(file);
 
-	vertex.bone_0 = iohelper_read_u16_ve(file, isBigEndian);
-	vertex.bone_1 = iohelper_read_u16_ve(file, isBigEndian);
-	vertex.bone_2 = iohelper_read_u16_ve(file, isBigEndian);
-	vertex.bone_3 = iohelper_read_u16_ve(file, isBigEndian);
+	vertex.bone_0 = iohelper_read_u16(file);
+	vertex.bone_1 = iohelper_read_u16(file);
+	vertex.bone_2 = iohelper_read_u16(file);
+	vertex.bone_3 = iohelper_read_u16(file);
 
 	return vertex;
 }

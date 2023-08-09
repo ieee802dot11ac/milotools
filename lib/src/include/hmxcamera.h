@@ -13,9 +13,9 @@ extern "C" {
 
 typedef struct {
 	u32 version; // 9 (GH1), 12 (GH2/GH2 360/TBRB)
-	HX_METADATA meta;
+	HX_METADATA *meta;
 	HX_TRANSFORM transform;
-	HX_DRAW draw; // <v12
+	HX_DRAW draw; // <v10
 
 	// The distance in world coordinates to the far clipping
 	// plane. The near/far ratio is limited to 1:1000 to preserve

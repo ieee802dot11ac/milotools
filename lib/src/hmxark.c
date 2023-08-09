@@ -74,7 +74,7 @@ void hmx_freq_ark_print(HX_FREQARK *ark) {
     printf("header magic: %s\n", ark->header.magic);
     printf("version: %d\n", ark->header.version);
     printf("file entry table offset: 0x%X, size: %d\n", ark->header.file_entry_offset, ark->header.file_entry_count);
-    printf("folder entry table offset: 0x%X, size: %d\n", ark->header.folder_entry_offset, ark->header.folder_entry_count);
+    printf("folder entry table offset: 0x%X, size including root: %d\n", ark->header.folder_entry_offset, ark->header.folder_entry_count);
     printf("string table? offset: 0x%X, size: %d\n", ark->header.string_table_offset, ark->header.string_count);
     printf("total header size: %d\n", ark->header.total_hdr_size);
     printf("block size: %d\n", ark->header.block_size);

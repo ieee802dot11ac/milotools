@@ -6,7 +6,7 @@ HX_DTX *hmx_dtx_load(FILE *file) {
     HX_DTX *dtx = malloc(sizeof(HX_DTX));
     dtx->hasTree = iohelper_read_u8(file);
     if (dtx->hasTree) {
-        // TODO read dtx lmao
+        // TODO read dtb lmao
     } else dtx->root = NULL;
     return dtx;
 }

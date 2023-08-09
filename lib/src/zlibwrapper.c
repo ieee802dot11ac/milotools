@@ -34,7 +34,7 @@ u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* gzfd) 
 	}
 }
 
-u8 *recompress(u8 *in_data, size_t len, bool method, bool post2010, size_t chunk) {
+u8 *recompress(u8 *in_data, size_t len, bool method, bool post2010, size_t chunk) { // TODO make this work properly cause i fuckin hate zlib
 	u8 *out_data = malloc(len);
 	if (method) {
 		return out_data;

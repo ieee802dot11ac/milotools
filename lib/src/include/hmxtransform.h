@@ -53,6 +53,22 @@ typedef struct {
 	HX_STRING parentRef; // some weird shit, no clue
 } HX_TRANSFORM;
 
+#define HX_TRANSFORM_EMPTY ((HX_TRANSFORM) {\
+	.version=9,\
+	.localTransMtx=(HX_MATRIX){0,0,0, 0,0,0, 0,0,0, 0,0,0},\
+	.worldTransMtx=(HX_MATRIX){0,0,0, 0,0,0, 0,0,0, 0,0,0},\
+	.transCount=0,\
+	.transObjects=NULL,\
+	.constraint=kConstraintNone,\
+	.constraint2=0,\
+	.some_number=0,\
+	.some_flags=0,\
+	.unknown1=0, .unknown2=0, .unknown3=0,\
+	.unknown_bool=false,\
+	.unknown_floats=(Vector4f){0,0,0,0},\
+	.targetRef=HX_STRING_EMPTY,\
+	.preserveScale=true,\
+	.parentRef=HX_STRING_EMPTY})
 
 HX_TRANSFORM hmx_transform_load(FILE *file, bool isBigEndian);
 bool hmx_transform_write(FILE *file, HX_TRANSFORM transform, bool isBigEndian);

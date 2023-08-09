@@ -27,7 +27,7 @@ HX_BITMAP hmx_bitmap_load(FILE *file, bool isBigEndian)
 			bmp.bpp = (bmp.bytesPerLine * 8) / bmp.width; // hacky workaround, necessary cause freq a shit
 			bmp.mipmapLevels = 0;
 		} else { // amp
-			fseek(file, -5, SEEK_CUR); // unfuck that headache
+			fseek(file, 1, SEEK_SET); // unfuck that headache
 			bmp.bpp = iohelper_read_u8(file);
 			bmp.encoding = iohelper_read_u16_ve(file, isBigEndian); // *should* always be 3
 			bmp.width = iohelper_read_u16_ve(file, isBigEndian);

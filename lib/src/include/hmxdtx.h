@@ -35,7 +35,7 @@ typedef enum {
 typedef struct {
 	u16 size;
 	u8* data;
-} GLOB_DATA;
+} GLOB_DATA; // globs feel like a remnant of txt.bin
 
 typedef struct
 {
