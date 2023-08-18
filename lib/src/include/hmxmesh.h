@@ -23,7 +23,7 @@ typedef struct BSPNode{
     Vector4f vec;
     struct BSPNode* left;
     struct BSPNode* right;
-} BSPNode;
+} BSPNode; // circa 2005 the max depth allowed was 40, according to krp's ../../system/run/config/default.dta
 
 typedef struct {
     u32 some_number;
