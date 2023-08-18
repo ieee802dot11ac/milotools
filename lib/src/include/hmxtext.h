@@ -1,7 +1,6 @@
 // hmxtext.h - 3d text? weird. anyways note: all milos with text also have fonts
 #ifndef HMXTEXT_H
 #define HMXTEXT_H
-#include "hmxstring.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
