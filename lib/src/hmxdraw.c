@@ -53,19 +53,18 @@ void hmx_draw_print(HX_DRAW draw)
 {
 	printf("VERSION: %u\n", draw.version);
 
-	if (!draw.showing)
-		printf("SHOWING: FALSE\n");
-	else
-		printf("SHOWING: TRUE\n");
-
-	fputs("DRAWABLES: [", stdout);
-	for (u32 i = 0; i < draw.drawableCount; ++i) {
-		hmx_string_print(draw.drawables[i]);
-		if (i != draw.drawableCount - 1)
-			fputs(", ", stdout);
+	
+	printf("SHOWING: %s\n", draw.showing ? "TRUE" : "FALSE");
+	if (draw.version < 2) {
+		fputs("DRAWABLES: [", stdout);
+		for (u32 i = 0; i < draw.drawableCount; ++i) {
+			hmx_string_print(draw.drawables[i]);
+			if (i != draw.drawableCount - 1)
+				fputs(", ", stdout);
+		}
+		puts("]");
 	}
-	puts("]");
-
-	fputs("BOUNDING: ", stdout);
-	hmx_primitive_sphere_print(draw.bounding);
+	if (draw.version > 0) {printf("BOUNDING: ", stdout); hmx_primitive_sphere_print(draw.bounding); printf("\n");}
+	if (draw.version > 2) printf("DRAW ORDER: %f\n", draw.draw_order);
+	if (draw.version >= 4) printf("DEPTH PASS ENUM: %d\n", draw.depthpass);
 }

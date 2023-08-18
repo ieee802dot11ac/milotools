@@ -1,4 +1,5 @@
 #include "hmxtransform.h"
+#include "hmxcolor.h"
 #include "hmxcommon.h"
 #include "hmxmatrix.h"
 #include "hmxstring.h"
@@ -36,10 +37,7 @@ HX_TRANSFORM hmx_transform_load(FILE *file, bool isBigEndian)
 	if (transform.version < 5) transform.unknown_bool = iohelper_read_u8(file);
 
 	if (transform.version < 2) {
-		transform.unknown_floats.r = iohelper_read_f32_ve(file, isBigEndian);
-		transform.unknown_floats.g = iohelper_read_f32_ve(file, isBigEndian);
-		transform.unknown_floats.b = iohelper_read_f32_ve(file, isBigEndian);
-		transform.unknown_floats.a = iohelper_read_f32_ve(file, isBigEndian);
+		transform.unknown_floats = hmx_color_4f_load(file, isBigEndian);
 	}
 	
 	if (transform.version > 5) transform.targetRef = hmx_string_load(file, isBigEndian);
@@ -107,31 +105,35 @@ void hmx_transform_print(HX_TRANSFORM transform) {
 	fputs("\nWORLD_MATRIX: ", stdout);
 	hmx_matrix_print(transform.worldTransMtx);
 
-	if (transform.transCount != 0) {
-		puts("\nTRANS_OBJECTS:");
-		for (u32 i = 0; i < transform.transCount; ++i) {
-			hmx_string_print(transform.transObjects[i]);
-			fputs(", ", stdout);
+	if (transform.version < 9) {
+		if (transform.transCount != 0) {
+			puts("\nTRANS_OBJECTS:");
+			for (u32 i = 0; i < transform.transCount; ++i) {
+				hmx_string_print(transform.transObjects[i]);
+				fputs(", ", stdout);
+			}
+		} else {
+			puts("\nTRANS_OBJECTS: NONE");
 		}
-	} else {
-		puts("\nTRANS_OBJECTS: NONE");
+	}
+	if (transform.version > 6) printf("\nCONSTRAINT: %s\n", HX_TRANSFORM_CONSTRAINT_NAME[transform.constraint]);
+	else if (transform.version == 6) printf("\nCONSTRAINT 2: %s\n", HX_TRANSFORM_CONSTRAINT_NAME[transform.constraint2]);
+	else if (transform.version > 0 && transform.version < 3) printf("\nSOME NUMBER: %d\n", transform.some_number);
+	else printf("\nSOME FLAGS: %d\n", transform.some_flags);
+
+	if (transform.version < 7) {
+		printf("UNKNOWN 1: %d\n", transform.unknown1);
+		printf("UNKNOWN 2: %d\n", transform.unknown2);
+		printf("UNKNOWN 3: %d\n", transform.unknown3);
 	}
 
-	fputs("CONSTRAINT: ", stdout);
-	puts(HX_TRANSFORM_CONSTRAINT_NAME[transform.constraint]);
+	if (transform.version < 5) printf("UNKNOWN BOOL: %s\n", transform.unknown_bool ? "TRUE" : "FALSE");
+	if (transform.version < 2) {printf("UNKNOWN FLOATS: "); hmx_color_4f_print(transform.unknown_floats); printf("\n");}
 
-	fputs("TARGET_REFERENCE: ", stdout);
-	hmx_string_print(transform.targetRef);
-	putchar('\n');
+	if (transform.version > 5) printf("TARGET_REFERENCE: %s\n", hmx_string_cstring(transform.targetRef));
+	if (transform.version > 6) printf("PRESERVE_SCALE: %s\n", transform.preserveScale ? "TRUE" : "FALSE");
 
-	if (transform.preserveScale)
-		puts("PRESERVE_SCALE: TRUE");
-	else
-		puts("PRESERVE_SCALE: FALSE");
-
-	fputs("PARENT_REFERENCE: ", stdout);
-	hmx_string_print(transform.parentRef);
-	putchar('\n');
+	printf("PARENT_REFERENCE: %s\n", hmx_string_cstring(transform.parentRef));
 }
 
 char const *const HX_TRANSFORM_CONSTRAINT_NAME[HX_TRANSFORM_CONSTRAINT_AMOUNT] = {

@@ -166,6 +166,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_arg(char const *const arg)
 		return IFILETYPE_HX_ARK;
 	} else if (streq(arg, "hmxtransanim") || streq(arg, "hxtnm")) {
 		return IFILETYPE_HX_TNM;
+	} else if (streq(arg, "hmxtext") || streq(arg, "hxtxt")) {
+		return IFILETYPE_HX_TEXT;
 	} 
 	return IFILETYPE_UNKNOWN;
 }
@@ -220,6 +222,8 @@ SUPPORTED_INPUT_FILETYPE get_input_filetype_ext(char const *const ext)
 		return IFILETYPE_HX_TNM;
 	} else if (streq(ext, "obj")) {
 		return IFILETYPE_WAVEFRONT_OBJ;
+	} else if (streq(ext, "text") || streq(ext, "txt")) {
+		return IFILETYPE_HX_TEXT;
 	} 
 	return IFILETYPE_UNKNOWN;
 }

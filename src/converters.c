@@ -7,6 +7,7 @@
 #include "hmxmetadata.h"
 #include "hmxmilo.h"
 #include "hmxstring.h"
+#include "hmxtext.h"
 #include "hmxtransanim.h"
 #include "hmxtransform.h"
 #include "hmxvertex.h"
@@ -163,6 +164,13 @@ int convert(HXConverterArgs args)
 		HX_TRANSFORM_ANIM *tnm = hmx_transanim_load(file, isBigEndian);
 		hmx_transanim_print(tnm);
 		hmx_transanim_cleanup(tnm);*/	
+	} else if (args.inputFileType == IFILETYPE_HX_TEXT) {
+		
+		FILE *file = fopen(args.inputPath, "r");
+		HX_TEXT *text = hmx_text_load(file, isBigEndian);
+		fclose(file);
+		hmx_text_print(text);
+
 	} else {
 		fputs("Unknown conversion!\n", stderr);
 	}

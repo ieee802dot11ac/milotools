@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include "hmxcolor.h"
 #include "hmxcommon.h"
 #include "hmxstring.h"
 #include "hmxmatrix.h"
@@ -46,7 +47,7 @@ typedef struct {
 
 	bool unknown_bool; // <5
 
-	Vector4f unknown_floats; //  <2
+	HX_COLOR_4F unknown_floats; //  <2
 
 	HX_STRING targetRef; // >5
 	bool preserveScale; // >6
@@ -65,7 +66,7 @@ typedef struct {
 	.some_flags=0,\
 	.unknown1=0, .unknown2=0, .unknown3=0,\
 	.unknown_bool=false,\
-	.unknown_floats=(Vector4f){0,0,0,0},\
+	.unknown_floats=(HX_COLOR_4F){0,0,0,0},\
 	.targetRef=HX_STRING_EMPTY,\
 	.preserveScale=true,\
 	.parentRef=HX_STRING_EMPTY})
