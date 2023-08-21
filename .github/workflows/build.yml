@@ -36,7 +36,7 @@ jobs:
         run: sudo apt-get install -y zlib1g-dev gcc make unzip curl
       - name: spng a bitch
         run: \
-          curl https://github.com/randy408/libspng/archive/v0.7.4.zip >v0.7.4.zip
+          wget https://github.com/randy408/libspng/archive/v0.7.4.zip 
           unzip v0.7.4.zip -d libspng
           cp libspng/spng/spng.c lib/src
           cp libspng/spng/spng.h lib/src/include
