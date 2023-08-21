@@ -16,7 +16,7 @@ CC := gcc
 CCARGS := -g -O3 -Wall -Wextra -Wpedantic -I$(SRCDIR)/include/ -I$(LIBSRCDIR)/include/ -Lz
 
 LD := gcc
-LDARGS :=
+LDARGS := -Lz
 
 AR := ar
 ARARGS := 
