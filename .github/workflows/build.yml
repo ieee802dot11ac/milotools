@@ -43,6 +43,7 @@ jobs:
       - name: Build the dingus
         run: |
           sed -i '1s/^/#define SPNG__BUILD\n/' lib/src/include/spngwrapper.h
+          sed -i 's/-lspng//g' Makefile
           make
           mkdir -p out
           mv bin/hxconv out/
