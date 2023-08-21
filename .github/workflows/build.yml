@@ -7,16 +7,18 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Grab latest MinGW and libspng
+      - name: Grab latest libspng
         run: |
           curl https://github.com/randy408/libspng/archive/v0.7.4.zip >libspng.zip
           powershell Expand-Archive libspng.zip -DestinationPath libspng
-      - name: Build libspng
+      - name: Install libspng
         run: |
           cd libspng
-          make
+          cp spng/spng.c ../lib/src
+          cp spng/spng.h ../lib/src/include
       - name: Build the dingus
         run: |
+          sed -i '1s/^/#define SPNG__BUILD\n/' lib/src/include/spngwrapper.h
           make
           mkdir -p out
           mv bin/hxconv.exe out/
@@ -40,7 +42,7 @@ jobs:
           mv lib/bin/libhmxobj.so out/
           echo "#!/usr/bin/sh\
           mv libhmxobj.so /usr/lib/\
-          mv hxconv /usr/bin" >INSTALL.sh
+          mv hxconv /usr/bin" >SUDOME_INSTALL.sh
       - name: Upload result
         uses: actions/upload-artifact@v2
         with:
