@@ -38,8 +38,8 @@ jobs:
         run: |
           wget https://github.com/randy408/libspng/archive/v0.7.4.zip 
           unzip v0.7.4.zip -d libspng
-          cp libspng/spng/spng.c lib/src
-          cp libspng/spng/spng.h lib/src/include
+          cp libspng/libspng-0.7.4/spng/spng.c lib/src
+          cp libspng/libspng-0.7.4/spng/spng.h lib/src/include
       - name: Build the dingus
         run: |
           sed -i '1s/^/#define SPNG__BUILD\n/' lib/src/include/spngwrapper.h
