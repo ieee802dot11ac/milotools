@@ -71,7 +71,7 @@ int hmx_milo_decompress(FILE* file, char const *outfilename, bool isBigEndian) {
 }
 
 int hmx_milo_compress(FILE* file, char const *outfilename, BlockStructure mode, bool isBigEndian) {
-	return 0;
+	return 0; // this would take effort. just. just no.
 }
 
 HX_MILOFILE *hmx_milo_load (FILE *file, bool isBigEndian) {

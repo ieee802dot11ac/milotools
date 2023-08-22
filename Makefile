@@ -16,7 +16,7 @@ CC := gcc
 CCARGS := -g -O3 -Wall -Wextra -Wpedantic -I$(SRCDIR)/include/ -I$(LIBSRCDIR)/include/ -Lz
 
 LD := gcc
-LDARGS := -lz
+LDARGS :=
 
 AR := ar
 ARARGS := 
@@ -70,6 +70,6 @@ clean:
 
 install:
 	mkdir -p /usr/include/hmxobj
-	cp -r lib/src/include /usr/include/hmxobj
+	cp lib/src/include/* /usr/include/hmxobj
 	cp lib/bin/libhmxobj.so /usr/lib
 	cp bin/hxconv /usr/bin
