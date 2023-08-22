@@ -1,7 +1,7 @@
 #include "zlibwrapper.h"
 #include "hmxcommon.h"
 #include "puff.h" // to alleviate decompression woes
-#include <zlib.h>
+//#include <zlib.h>
 #include <stdlib.h>
 u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* gzfd) { // method: f=zlib t=gzip post2010: f=no_offset t=4offset
 	u8 *out_data = malloc(len); // temp, didn't wanna leave it init'd to null cause i'm an idiot
