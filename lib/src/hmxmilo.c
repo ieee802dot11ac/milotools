@@ -16,7 +16,7 @@ int hmx_milo_decompress(FILE* file, char const *outfilename, bool isBigEndian) {
 	header->version[2] = iohelper_read_u8(file);
 	header->version[3] = iohelper_read_u8(file);
 
-	printf("0x%X%X%X%X\n", header->version[3], header->version[2], header->version[1], header->version[0]);
+	printf("0x%X%X%X%X\n", header->version[3], header->version[2], header->version[1], header->version[0]); // trust issues
 
 	header->offset = iohelper_read_u32_ve(file, isBigEndian);
 	header->blockCount = iohelper_read_u32_ve(file, isBigEndian);
@@ -40,6 +40,8 @@ int hmx_milo_decompress(FILE* file, char const *outfilename, bool isBigEndian) {
 	for (int i = 0; i < header->blockCount; i++) total += header->sizes[i];
 	u8 *memMilo = malloc(total);
 	void *memtemp = memMilo;
+	us outlen = strlen(outfilename) + 1;
+	char outCopy[outlen + 16];
 	for (int i = 0; i < header->blockCount; i++) {
 		u8 *decompressed = malloc(2*header->sizes[i]);
 		if (header->version[3] == 0xCB) {
@@ -48,8 +50,7 @@ int hmx_milo_decompress(FILE* file, char const *outfilename, bool isBigEndian) {
 			printf("we can't auto-gunzip this, so you'll have to do it manually, sorry\n");
 			decompressed = compressed_data[i];
 			// copy outfilename first, so we don't end up destroying the stack with a strcat
-			us outlen = strlen(outfilename) + 1;
-			char outCopy[outlen + 16];
+			
 			strcpy(outCopy, outfilename);
 			strcat(outCopy, ".gz");
 			// decompress(compressed_data[i],header->sizes[i], true, false, file);
@@ -59,7 +60,10 @@ int hmx_milo_decompress(FILE* file, char const *outfilename, bool isBigEndian) {
 		else decompressed = compressed_data[i];
 		memtemp = memcpy(memtemp, decompressed, header->sizes[i]);
 	}
-	FILE *out = fopen(outfilename, "w");
+	FILE *out;
+	if (header->version[3] == 0xCC) {
+		out = fopen(outCopy, "w");
+	} else {out = fopen(outfilename, "w");}
 	fwrite(memMilo, 1, total, out);
 	free(header->sizes);
 	free(header);

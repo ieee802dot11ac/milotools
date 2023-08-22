@@ -66,26 +66,37 @@ typedef enum {
 typedef struct {
 	char* type;
 	char* name;
-	void *data; // i don't wanna do this either ;-; but i legitimately can't see a better way to do it
+	void* data; // i don't wanna do this either ;-; but i legitimately can't see a better way to do it
 } HX_MILOOBJECT;
 
 typedef struct {
 	HX_STRING type;
 	HX_STRING name;
 
-	u32 offset;
-	u32 size;
+	u32 FAKEoffset;
+	u32 FAKEsize;
 } HX_MILOENTRY;
 
 typedef struct {
-	HX_STRING dir_type; // class_name
-	HX_STRING dir_name;
+	HX_STRING type;
+    HX_STRING name;
+    bool unknown_bool; // Always 1?
+    
+    u32 FAKEoffset;
+    u32 FAKEsize;
+} HX_FREQMILOENTRY;
 
-	// String table info for names/classes
-	u32 string_table_string_count;
-	u32 string_table_used_size;
-	// those guys were >v10. these are normal
+typedef struct {
+	HX_STRING dir_type; // >10
+	HX_STRING dir_name; // >10
+
+	u32 string_table_string_count; // >10
+	u32 string_table_used_size; // >10
+
+	bool unknown; // >=32
+
 	i32 entry_count;
+	HX_FREQMILOENTRY* freqEntries; // tbh can probably just roll this into one
 	HX_MILOENTRY* entries;
 } HX_MILOENTRIES;
 
