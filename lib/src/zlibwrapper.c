@@ -6,12 +6,12 @@
 u8 *decompress(u8 *in_data, size_t len, bool method, bool post2010, FILE* gzfd) { // method: f=zlib t=gzip post2010: f=no_offset t=4offset
 	u8 *out_data = malloc(len); // temp, didn't wanna leave it init'd to null cause i'm an idiot
 	if (method) {
-		gzdopen(fileno(gzfd), "r");
-		int status = gzread(NULL, in_data, len);
-		if (status != Z_OK) {
-			perror("gzread died!\n");
-			return NULL;
-		}
+//		gzdopen(fileno(gzfd), "r");
+//		int status = gzread(NULL, in_data, len);
+//		if (status != Z_OK) {
+//			perror("gzread died!\n");
+//			return NULL;
+//		}
 		return out_data;
 	} else {
 		unsigned long outlen = 0;

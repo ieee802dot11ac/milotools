@@ -64,7 +64,7 @@ void hmx_draw_print(HX_DRAW draw)
 		}
 		puts("]");
 	}
-	if (draw.version > 0) {printf("BOUNDING: ", stdout); hmx_primitive_sphere_print(draw.bounding); printf("\n");}
+	if (draw.version > 0) {printf("BOUNDING: "); hmx_primitive_sphere_print(draw.bounding); printf("\n");}
 	if (draw.version > 2) printf("DRAW ORDER: %f\n", draw.draw_order);
 	if (draw.version >= 4) printf("DEPTH PASS ENUM: %d\n", draw.depthpass);
 }
