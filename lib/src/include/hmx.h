@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include "hmxanim.h"
+#include "hmxaudio.h"
 #include "hmxbitmap.h"
 #include "hmxcamera.h"
 #include "hmxcolor.h"
@@ -27,10 +28,8 @@ extern "C" {
 #include "hmxtriangle.h"
 #include "hmxui.h"
 #include "hmxvertex.h"
-#include "hmxvgs.h"
 #include "hmxxbv.h"
 #include "iohelper.h"
-#include "spngwrapper.h"
 
 #ifdef __cplusplus
 } /* extern "C" */

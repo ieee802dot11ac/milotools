@@ -172,7 +172,6 @@ void hmx_nu_vertex_write(FILE *file, HX_VERTEX_NU vertex, int version, bool isBi
 			iohelper_write_u32_ve(file, 0, isBigEndian);
 			iohelper_write_u32_ve(file, 0, isBigEndian);
 			iohelper_write_f32_ve(file, -1.0f, isBigEndian);
-	// these are the default values. can you tell i didn't bother making a var for them
 			iohelper_write_f32_ve(file, 1.0f, isBigEndian);
 	 // these are the default values. can you tell i didn't bother making a var for them
 		}

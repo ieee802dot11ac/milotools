@@ -182,7 +182,7 @@ SUPPORTED_OUTPUT_FILETYPE get_output_filetype_arg(char const *const arg)
 		return OFILETYPE_PNG;
 	} else if (streq(arg, "mtl")) {
 		return OFILETYPE_WAVEFRONT_MTL;
-	} else if (streq(arg, "rnd")) {
+	} else if (streq(arg, "flatmilo")) {
 		return OFILETYPE_HX_RAWMILO;
 	} else if (streq(arg, "dir")) {
 		return OFILETYPE_DIR;

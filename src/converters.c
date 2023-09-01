@@ -18,7 +18,7 @@
 #include "hmxbitmap.h"
 #include "hmxmesh.h"
 #include "fast_obj.h"
-#include "spngwrapper.h"
+#include "stbwrapper.h"
 #include "hmxlight.h"
 #include "hmxmaterial.h"
 #include "hmxcamera.h"
@@ -205,7 +205,7 @@ bool conv_hxbmp_to_png(HX_BITMAP hxBmp, char const *const pngFilePath) {
 			}
 		}
 	}
-	export_png(pngFilePath, hxBmp.width, hxBmp.height, pixels);
+	//export_png(pngFilePath, hxBmp.width, hxBmp.height, pixels);
 
 	goto CLEAN_UP_SUCCESS;
 CLEAN_UP_FAILURE:

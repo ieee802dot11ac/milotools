@@ -1,11 +1,11 @@
-// hmxvgs.h - Harmonix VGS audio format (container for VAG (lol) audio)
-#ifndef HMXVGS_H
-#define HMXVGS_H
+// hmxaudio.h - Harmonix's stuff for VAG (laugh) audio, e.g. .vgs and .nse
+#ifndef HMXAUDIO_H
+#define HMXAUDIO_H
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "hmx.h"
+#include "hmxcommon.h"
 
 #define MAX_CHANNELS 15
 #define VAG_BYTES_PER_BLOCK 16
