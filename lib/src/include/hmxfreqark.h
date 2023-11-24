@@ -1,6 +1,6 @@
-// hmxark.h: Harmonix .ark archives (used to work around iso-9660 limits)
-#ifndef HMXARK_H
-#define HMXARK_H
+// hmxfreqark.h: the early archives used in FreQuency
+#ifndef HMXFREQARK_H
+#define HMXFREQARK_H
 #ifdef __cplusplus
 extern C {
 #endif

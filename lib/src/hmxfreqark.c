@@ -1,4 +1,4 @@
-#include "hmxark.h"
+#include "hmxfreqark.h"
 #include "iohelper.h"
 #include <stdio.h>
 #include <stdlib.h>

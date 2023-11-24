@@ -1,27 +1,11 @@
 #include "converters.h"
 #include "argparse.h"
-#include "hmxark.h"
-#include "hmxdraw.h"
-#include "hmxenviron.h"
+#include "hmx.h"
 #include "filetypes.h"
-#include "hmxmetadata.h"
-#include "hmxmilo.h"
-#include "hmxstring.h"
-#include "hmxtext.h"
-#include "hmxtransanim.h"
-#include "hmxtransform.h"
-#include "hmxvertex.h"
 #include "programinfo.h"
 #include "err.h"
-#include "hmxcolor.h"
-#include "hmxtexture.h"
-#include "hmxbitmap.h"
-#include "hmxmesh.h"
 #include "fast_obj.h"
 #include "stbwrapper.h"
-#include "hmxlight.h"
-#include "hmxmaterial.h"
-#include "hmxcamera.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -153,10 +137,21 @@ int convert(HXConverterArgs args)
 	} else if (args.inputFileType == IFILETYPE_HX_ARK) {
 		
 		FILE *file = fopen(args.inputPath, "r");
-		HX_FREQARK *ark = hmx_freq_ark_load(file, NULL, isBigEndian);
-		// fclose(file); // apparently this makes it crash. oops
-		hmx_freq_ark_print(ark);
-		hmx_freq_ark_cleanup(ark);
+		u32 tmp = iohelper_read_u32(file);
+		printf("%d\n", tmp);
+		fseek(file, 0, SEEK_SET);
+		if (tmp == (0 << 24 | 'K' << 16 | 'R' << 8 | 'A')) { // 'ARK\0' in LE
+			HX_FREQARK *ark = hmx_freq_ark_load(file, NULL, isBigEndian);
+			// fclose(file); // apparently this makes it crash. oops
+			hmx_freq_ark_print(ark);
+			hmx_freq_ark_cleanup(ark);
+		}
+		else if (tmp == 1 || tmp == 2) { // amp... hopefully
+			HX_AMPARK* ark = hmx_ampark_load(file);
+
+			hmx_ampark_print(ark);
+			hmx_ampark_cleanup(ark);
+		}
 
 	/*} else if (args.inputFileType == IFILETYPE_HX_TNM) { // straight borked rn, so we're gonna ignore that
 		
